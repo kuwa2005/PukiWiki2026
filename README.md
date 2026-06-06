@@ -1,14 +1,18 @@
 # pukiwiki2026
 
-**PukiWiki 1.5.4 UTF-8 ベース + PukiWiki2026 セキュリティ強化 fork**（非公式）
+[![Release](https://img.shields.io/github/v/release/kuwa2005/PukiWiki2026?label=PukiWiki2026)](https://github.com/kuwa2005/PukiWiki2026/releases/tag/v1.0.0)
+
+**PukiWiki 1.5.4 UTF-8 ベース + PukiWiki2026 v1.0.0 セキュリティ強化 fork**（非公式）
 
 > PukiWiki2026 は公式 PukiWiki 1.5.4 UTF-8 をベースに、認証必須化・CSRF・スパム対策（Akismet/CAPTCHA 等）・セキュリティ監査対応を加えた非公式 fork です。  
 > 公式 PukiWiki Development Team の配布物ではありません。
 
 | 項目 | 内容 |
 |------|------|
+| バージョン | **PukiWiki2026 v1.0.0** |
 | ベース | [PukiWiki](https://pukiwiki.osdn.jp/) **1.5.4 UTF-8** |
 | ライセンス | **GPL v2** または（あなたの選択で）それ以降の GPL（上流に準拠） |
+| リリース | [v1.0.0](https://github.com/kuwa2005/PukiWiki2026/releases/tag/v1.0.0) |
 | 作業フォルダ | `D:\00_project\pukiwiki2026` |
 
 ## ディレクトリ構成

@@ -11,6 +11,7 @@
 // PukiWiki version / Copyright / Licence
 
 define('S_VERSION', '1.5.4');
+define('PKWK2026_VERSION', '1.0.0');
 define('S_COPYRIGHT',
 	'<strong>PukiWiki '
 	. S_VERSION

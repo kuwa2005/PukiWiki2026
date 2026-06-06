@@ -7,6 +7,21 @@
 
 ## [Unreleased]
 
+（次リリース分をここに記載）
+
+---
+
+## [1.0.0] - 2026-06-07
+
+**PukiWiki2026 v1.0.0** — PukiWiki 1.5.4 UTF-8 ベースのセキュリティ強化 fork 初回リリース。
+
+### 主要機能
+
+- **セキュリティ強化** — 編集認証必須、CSRF トークン、静的監査対応（SEC-M03/L01/L05 等）
+- **スパム対策** — Akismet 連携、編集時 CAPTCHA、外部リンク POST 制限（いずれも既定 OFF で任意有効化）
+- **oEmbed** — YouTube / Vimeo / Twitter(X) / Flickr 等の URL 埋め込み（SSRF・HTML サニタイズ付き）
+- **初回セットアップ** — デモ用 `editor` / `pass` 初期値、`tools/gen-password-hash.php`、[`docs/SETUP.md`](docs/SETUP.md)
+
 ### Added
 
 - **`tools/gen-password-hash.php`** — Web フォームで `{x-php-sha256}` / `{x-php-password}` ハッシュを生成（開発・初回セットアップ用）
