@@ -9,6 +9,22 @@
 
 ### Added
 
+- **Akismet:** `lib/akismet.php` — 書き込み POST の Akismet `comment-check` 連携（既定 OFF）
+- `pukiwiki.ini.php.example` — Akismet 設定雛形
+- `docs/ANTI-SPAM.md` — Akismet 節（設定・API key・プライバシー・テスト手順）
+
+### Changed
+
+- `lib/file.php` — `page_write()` 保存直前に Akismet 判定を追加
+- `lib/init.php` — Akismet 設定の既定値
+- `lib/pukiwiki.php` — `akismet.php` を読み込み
+
+### Security
+
+- 書き込み POST に Akismet 外部判定を追加（任意有効化、既定 OFF）
+
+### Added
+
 - プロジェクト骨格: `README.md`, `CHANGELOG.md`, `docs/`, `vendor/`, `patches/`, `.gitignore`
 - 作業フォルダ `D:\00_project\pukiwiki2026` として非公式フォーク用ドキュメントを整備
 - **oEmbed:** `lib/oembed.php`, `plugin/oembed.inc.php` — URL から YouTube / Vimeo / Twitter(X) / Flickr 等を埋め込み表示

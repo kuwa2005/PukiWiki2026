@@ -155,15 +155,86 @@ $edit_auth = 0;
 
 ---
 
-## 将来の拡張（B: 追加防御・未実装）
+## 将来の拡張（B: 追加防御）
 
 | 対策 | 状態 | 備考 |
 |------|------|------|
+| **Akismet 連携** | **実装済み** | SPAM-05 (#31)。`lib/akismet.php` — 書き込み POST を外部 API で判定（既定 OFF） |
 | CAPTCHA（匿名閲覧＋編集時のみ） | 未実装 | プラグイン新規作成または外部サービス連携が必要 |
 | 新規ページ作成の追加制限 | 部分対応 | `newpage` → `edit` 経由で認証済み |
 | 外部リンク POST 制限 | 未実装 | 記法・プラグインレベルの検証が必要 |
 | レート制限 | 未実装 | `loginform` / 編集 POST に IP 単位制限を追加予定 |
 | CSRF トークン | 未実装 | SECURITY-AUDIT SEC-C02 |
+
+---
+
+## Akismet 連携（SPAM-05）
+
+[Akismet](https://akismet.com/) REST API の `comment-check` で、Wiki への **書き込み POST**（ページ編集・`comment` / `memo` 等のゲスト投稿プラグイン）をスパム判定します。判定は `page_write()` の実保存直前（認証ゲート通過後）に行います。
+
+### 既定 OFF の理由
+
+ログイン必須運用（SPAM-01）では匿名スパムは既に遮断されています。Akismet は **追加防御** として任意有効化とし、API key の取得・外部送信・可用性への依存を避けるため `$akismet_enabled = 0` を既定としています。
+
+### 設定（pukiwiki.ini.php）
+
+`pukiwiki.ini.php.example` の Akismet ブロックを本番の `pukiwiki.ini.php` にコピーし、値を設定します（`pukiwiki.ini.php` は git 管理外）。
+
+```php
+$akismet_enabled = 1;
+$akismet_api_key = 'your-12-char-api-key';
+$akismet_blog_url = '';         // 空なら Wiki の絶対 URL を自動使用
+$akismet_strict = 0;            // 1=API エラー時も保存拒否, 0=エラー時は通す
+```
+
+| 変数 | 説明 |
+|------|------|
+| `$akismet_enabled` | `1` で有効（API key も必須） |
+| `$akismet_api_key` | [Akismet](https://akismet.com/) で発行した API key |
+| `$akismet_blog_url` | サイト URL。空の場合は `get_base_uri(PKWK_URI_ABSOLUTE)` |
+| `$akismet_strict` | `1` なら API 接続失敗時も保存を拒否 |
+
+### API key の取得
+
+1. [Akismet](https://akismet.com/) でアカウント作成（WordPress.com アカウントでも可）
+2. サイトを登録し **API key** を取得（12 文字の英数字）
+3. `$akismet_api_key` に設定
+
+個人・非商用 Wiki 向けの無償プランがある場合があります。利用条件は Akismet 側の規約に従ってください。
+
+### プライバシー（重要）
+
+Akismet 有効時、保存しようとした **Wiki 本文**（`comment_content`）に加え、投稿者名・IP アドレス・User-Agent・Referer・サイト URL が **Automattic（Akismet 運営）のサーバーへ送信**されます。
+
+- 機密情報や個人情報を Wiki に書かない運用を推奨
+- 利用者への告知（プライバシーポリシー等）を検討すること
+- EU 等ではデータ越境・委託処理の観点で要確認
+
+### 動作
+
+| 結果 | 動作 |
+|------|------|
+| ham（非スパム） | 通常どおり保存 |
+| spam | 保存拒否。日本語エラーメッセージを表示 |
+| API エラー + `$akismet_strict = 0` | 保存を許可（可用性優先） |
+| API エラー + `$akismet_strict = 1` | 保存拒否 |
+
+ページ削除（空保存）・内容変更なしの保存は API を呼びません。
+
+### テスト手順
+
+#### API key なし / 無効時（skip）
+
+1. `$akismet_enabled = 0` または `$akismet_api_key = ''` のまま
+2. ログイン後にページ編集・保存 → **従来どおり成功**（Akismet は呼ばれない）
+
+#### 有効時
+
+1. 有効な `$akismet_api_key` を設定し `$akismet_enabled = 1`
+2. 通常の編集を保存 → 成功
+3. 明らかなスパム文（大量 URL・典型的スパムフレーズ等）を投稿 → 拒否メッセージが表示され保存されないこと
+4. 無効な API key + `$akismet_strict = 1` → 保存拒否（strict 動作）
+5. 無効な API key + `$akismet_strict = 0` → 保存成功（フォールスルー）
 
 ---
 
