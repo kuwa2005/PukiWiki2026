@@ -110,6 +110,8 @@ $usefacemark = 1;
 //
 /////////////////////////////////////////////////
 // ユーザ定義ルール(コンバート時に置換)
+// SEC-M03: COLOR/SIZE は lib/security.php で style をサニタイズ（許可: color, font-size 等）。
+// 互換: #hex / 色名 / SIZE(n){} / SIZE(n):（1–7 は class）を従来どおりサポート。
 $line_rules = array(
 	'COLOR\(((?:[a-zA-Z]{1,20})|(?:#[0-9a-fA-F]{3,6}))\){([^}]*)}'
 		=> '<span style="color:$1">$2</span>',

@@ -536,18 +536,28 @@ class TableCell extends Element
 				$text = $matches[6];
 			} else if ($matches[3]) {
 				$name = $matches[2] ? 'background-color' : 'color';
-				$this->style[$name] = $name . ':' . htmlsc($matches[3]) . ';';
+				$color = pkwk_css_sanitize_color($matches[3]);
+				if ($color !== '') {
+					$this->style[$name] = $name . ':' . $color . ';';
+				}
 				$text = $matches[6];
 			} else if (is_numeric($matches[4])) {
-				$this->style['size'] = 'font-size:' . htmlsc($matches[4]) . 'px;';
+				$size = pkwk_css_sanitize_px($matches[4], 99);
+				if ($size !== '') {
+					$this->style['size'] = 'font-size:' . $size . 'px;';
+				}
 				$text = $matches[6];
 			} else if ($matches[5]) {
 				$this->style['bold'] = 'font-weight:bold;';
 				$text = $matches[6];
 			}
 		}
-		if ($is_template && is_numeric($text))
-			$this->style['width'] = 'width:' . $text . 'px;';
+		if ($is_template && is_numeric($text)) {
+			$width = pkwk_css_sanitize_px($text, 9999);
+			if ($width !== '') {
+				$this->style['width'] = 'width:' . $width . 'px;';
+			}
+		}
 
 		if ($text == '>') {
 			$this->colspan = 0;
@@ -588,8 +598,12 @@ class TableCell extends Element
 			$param .= ' colspan="' . $this->colspan . '"';
 			unset($this->style['width']);
 		}
-		if (! empty($this->style))
-			$param .= ' style="' . join(' ', $this->style) . '"';
+		if (! empty($this->style)) {
+			$style = pkwk_sanitize_style_attribute(join(' ', $this->style));
+			if ($style !== '') {
+				$param .= ' style="' . htmlspecialchars($style, ENT_QUOTES, 'UTF-8') . '"';
+			}
+		}
 
 		return $this->wrap(parent::toString(), $this->tag, $param, FALSE);
 	}

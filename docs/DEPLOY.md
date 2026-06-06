@@ -49,7 +49,7 @@ cd D:\00_project\pukiwiki2026
 - ページ保存ディレクトリ（通常 `wiki/`）
 - 管理者パスワード / 認証方式
 - タイムゾーン・文字コード（UTF-8）
-- 本番ではデバッグ表示を無効化
+- 本番ではデバッグ表示を無効化（`index.php` の `error_reporting(0)` が既定。開発時のみ `define('PKWK_DEBUG', 1)` を `index.php` 先頭付近に追加）
 
 ### 3.2 ディレクトリ権限
 
@@ -127,6 +127,19 @@ server {
     }
 }
 ```
+
+---
+
+### 4.4 本番 PHP エラー表示（SEC-L01）
+
+本番では PHP エラーをブラウザに出さないこと。
+
+| 環境 | 設定 |
+|------|------|
+| 本番（既定） | `index.php` — `error_reporting(0)`（`PKWK_DEBUG` 未定義時） |
+| 開発・デバッグ | `index.php` 先頭付近に `define('PKWK_DEBUG', 1);` を追加 → `error_reporting(E_ALL)` |
+
+サーバー側の `display_errors = Off` も併用すること。詳細は PHP エラーログへ出力する。
 
 ---
 

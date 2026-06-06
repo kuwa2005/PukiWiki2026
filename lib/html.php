@@ -553,7 +553,8 @@ function make_line_rules($str)
 		unset($line_rules);
 	}
 
-	return preg_replace($pattern, $replace, $str);
+	$str = preg_replace($pattern, $replace, $str);
+	return pkwk_sanitize_html_style_attributes($str);
 }
 
 // Remove all HTML tags(or just anchor tags), and WikiName-speific decorations

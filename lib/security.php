@@ -296,3 +296,136 @@ function pkwk_is_safe_external_url($url)
 	}
 	return TRUE;
 }
+
+/**
+ * Sanitize CSS color value for inline style (SEC-M03).
+ *
+ * @param string $color
+ * @return string Empty if invalid
+ */
+function pkwk_css_sanitize_color($color)
+{
+	if (! is_string($color)) {
+		return '';
+	}
+	$color = trim($color);
+	if (preg_match('/^#[0-9a-fA-F]{3,8}$/', $color)) {
+		return $color;
+	}
+	if (preg_match('/^[a-zA-Z]{1,20}$/', $color)) {
+		$lower = strtolower($color);
+		$blocked = array('expression', 'javascript', 'import', 'url', 'behavior', 'binding');
+		if (in_array($lower, $blocked, TRUE)) {
+			return '';
+		}
+		return $lower;
+	}
+	return '';
+}
+
+/**
+ * Sanitize font-size / width in px (SEC-M03).
+ *
+ * @param mixed $size
+ * @param int   $max
+ * @return string Empty if invalid
+ */
+function pkwk_css_sanitize_px($size, $max = 9999)
+{
+	if (! is_numeric($size)) {
+		return '';
+	}
+	$n = (int)$size;
+	if ($n < 1 || $n > $max) {
+		return '';
+	}
+	return (string)$n;
+}
+
+/**
+ * Sanitize inline style attribute — allowlisted properties only (SEC-M03).
+ *
+ * @param string $style
+ * @return string
+ */
+function pkwk_sanitize_style_attribute($style)
+{
+	if ($style === '' || ! is_string($style)) {
+		return '';
+	}
+	if (preg_match('/expression\s*\(|javascript\s*:|@import|behavior\s*:|binding\s*:|url\s*\(/i', $style)) {
+		return '';
+	}
+
+	$safe = array();
+	foreach (explode(';', $style) as $decl) {
+		$decl = trim($decl);
+		if ($decl === '') {
+			continue;
+		}
+		$parts = explode(':', $decl, 2);
+		if (count($parts) !== 2) {
+			continue;
+		}
+		$prop = strtolower(trim($parts[0]));
+		$val = trim($parts[1]);
+
+		switch ($prop) {
+		case 'color':
+		case 'background-color':
+			$v = pkwk_css_sanitize_color($val);
+			if ($v !== '') {
+				$safe[] = $prop . ':' . $v;
+			}
+			break;
+		case 'font-size':
+			if (preg_match('/^(\d{1,2})px$/i', $val, $m)) {
+				$v = pkwk_css_sanitize_px($m[1], 99);
+				if ($v !== '') {
+					$safe[] = 'font-size:' . $v . 'px';
+				}
+			}
+			break;
+		case 'font-weight':
+			if (preg_match('/^bold$/i', $val)) {
+				$safe[] = 'font-weight:bold';
+			}
+			break;
+		case 'text-align':
+			if (preg_match('/^(left|center|right)$/i', $val)) {
+				$safe[] = 'text-align:' . strtolower($val);
+			}
+			break;
+		case 'width':
+			if (preg_match('/^(\d{1,4})px$/i', $val, $m)) {
+				$v = pkwk_css_sanitize_px($m[1], 9999);
+				if ($v !== '') {
+					$safe[] = 'width:' . $v . 'px';
+				}
+			}
+			break;
+		}
+	}
+	return join(' ', $safe);
+}
+
+/**
+ * Sanitize all style="..." attributes in an HTML fragment (SEC-M03).
+ *
+ * @param string $html
+ * @return string
+ */
+function pkwk_sanitize_html_style_attributes($html)
+{
+	return preg_replace_callback(
+		'/\sstyle=(["\'])(.*?)\1/is',
+		function ($m) {
+			$safe = pkwk_sanitize_style_attribute($m[2]);
+			if ($safe === '') {
+				return '';
+			}
+			return ' style="' . htmlspecialchars($safe, ENT_QUOTES, 'UTF-8') . '"';
+		},
+		$html
+	);
+}
