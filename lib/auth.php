@@ -28,7 +28,7 @@ function pkwk_login($pass = '')
 	global $adminpass;
 
 	if (! PKWK_READONLY && isset($adminpass) &&
-		pkwk_hash_compute($pass, $adminpass) === $adminpass) {
+		pkwk_hash_verify($pass, $adminpass)) {
 		return TRUE;
 	} else {
 		sleep(2);       // Blocking brute force attack
@@ -173,9 +173,18 @@ function pkwk_hash_compute($phrase = '', $scheme = '{x-php-md5}', $prefix = TRUE
 			base64_encode(hash('sha512', $phrase . $salt, TRUE) . $salt);
 		break;
 
-	// LDAP CLEARTEXT and just cleartext
+	// PHP password_hash() / password_verify()
+	case '{x-php-password}' :
+		$hash = ($prefix ? ($canonical ? '{x-php-password}' : $scheme) : '') .
+			password_hash($phrase, PASSWORD_DEFAULT);
+		break;
+
+	// LDAP CLEARTEXT and just cleartext (deprecated — SEC-M01)
 	case '{cleartext}'   : /* FALLTHROUGH */
 	case ''              :
+		if ($phrase !== '') {
+			error_log('PukiWiki2026: cleartext password scheme is deprecated');
+		}
 		$hash = ($prefix ? ($canonical ? '{CLEARTEXT}' : $scheme) : '') .
 			$phrase;
 		break;
@@ -606,9 +615,9 @@ function ensure_valid_auth_user()
 			if (isset($_SERVER['PHP_AUTH_USER'])) {
 				$user = $_SERVER['PHP_AUTH_USER'];
 				if (in_array($user, array_keys($auth_users))) {
-					if (pkwk_hash_compute(
+					if (pkwk_hash_verify(
 						$_SERVER['PHP_AUTH_PW'],
-						$auth_users[$user]) === $auth_users[$user]) {
+						$auth_users[$user])) {
 						$auth_user = $user;
 						$auth_user_fullname = $auth_user;
 						$auth_user_groups = get_groups_from_username($user);
@@ -626,6 +635,7 @@ function ensure_valid_auth_user()
 		case AUTH_TYPE_EXTERNAL:
 		case AUTH_TYPE_SAML:
 		{
+			pkwk_session_set_cookie_params();
 			session_start();
 			$user = '';
 			$fullname = '';
@@ -659,8 +669,19 @@ function ensure_valid_auth_user()
 			$auth_user_fullname = $auth_user;
 			break;
 		case AUTH_TYPE_EXTERNAL_X_FORWARDED_USER:
-			$auth_user =  $_SERVER['HTTP_X_FORWARDED_USER'];
-			$auth_user_fullname = $auth_user;
+			global $auth_trusted_proxies;
+			$remote = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+			if (! is_array($auth_trusted_proxies)) {
+				$auth_trusted_proxies = array('127.0.0.1', '::1');
+			}
+			if (pkwk_is_trusted_proxy($remote, $auth_trusted_proxies) &&
+				isset($_SERVER['HTTP_X_FORWARDED_USER'])) {
+				$auth_user = $_SERVER['HTTP_X_FORWARDED_USER'];
+				$auth_user_fullname = $auth_user;
+			} else {
+				$auth_user = '';
+				$auth_user_fullname = '';
+			}
 			break;
 		default: // AUTH_TYPE_NONE
 			$auth_user = '';
@@ -727,6 +748,10 @@ function get_auth_user()
 function form_auth($username, $password)
 {
 	global $ldap_user_account, $auth_users;
+	if (! pkwk_login_rate_limit_check()) {
+		sleep(2);
+		return FALSE;
+	}
 	$user = $username;
 	if ($ldap_user_account) {
 		// LDAP account
@@ -734,17 +759,18 @@ function form_auth($username, $password)
 	} else {
 		// Defined users in pukiwiki.ini.php
 		if (in_array($user, array_keys($auth_users))) {
-			if (pkwk_hash_compute(
-				$password,
-				$auth_users[$user]) === $auth_users[$user]) {
+			if (pkwk_hash_verify($password, $auth_users[$user])) {
+				pkwk_session_set_cookie_params();
 				session_start();
 				session_regenerate_id(true); // require: PHP5.1+
 				$_SESSION['authenticated_user'] = $user;
 				$_SESSION['authenticated_user_fullname'] = $user;
+				pkwk_login_rate_limit_reset();
 				return true;
 			}
 		}
 	}
+	pkwk_login_rate_limit_fail();
 	return false;
 }
 
@@ -868,6 +894,7 @@ function get_ldap_user_info($ldapconn, $username, $base_dn) {
 function form_auth_redirect($location, $page)
 {
 	header('HTTP/1.0 302 Found');
+	$location = pkwk_safe_redirect_url($location);
 	if ($location) {
 		header('Location: ' . $location);
 	} else {

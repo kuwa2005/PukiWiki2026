@@ -325,7 +325,7 @@ function file_head($file, $count = 1, $lock = TRUE, $buffer = 8192)
 
 	$fp = @fopen($file, 'r');
 	if ($fp === FALSE) return FALSE;
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	if ($lock) flock($fp, LOCK_SH);
 	rewind($fp);
 	$index = 0;
@@ -392,7 +392,7 @@ function file_write($dir, $page, $str, $notimestamp = FALSE, $is_delete = FALSE)
 		htmlsc(basename($dir) . '/' . encode($page) . '.txt') .	
 		'<br />' . "\n" .
 		'Maybe permission is not writable or filename is too long');
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 	ftruncate($fp, 0);
 	rewind($fp);
@@ -409,7 +409,7 @@ function file_write($dir, $page, $str, $notimestamp = FALSE, $is_delete = FALSE)
 
 		// Command execution per update
 		if (defined('PKWK_UPDATE_EXEC') && PKWK_UPDATE_EXEC)
-			system(PKWK_UPDATE_EXEC . ' > /dev/null &');
+			pkwk_run_update_exec();
 
 	} else if ($dir == DIFF_DIR && $notify) {
 		if ($notify_diff_only) $str = preg_replace('/^[^-+].*\n/m', '', $str);
@@ -456,7 +456,7 @@ function add_recent($page, $recentpage, $subject = '', $limit = 0)
 		die_message('Cannot write page file ' .
 		htmlsc($recentpage) .
 		'<br />Maybe permission is not writable or filename is too long');
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 	rewind($fp);
 	fputs($fp, '#freeze'    . "\n");
@@ -491,7 +491,7 @@ function lastmodified_add($update = '', $remove = '')
 	pkwk_touch_file($file);
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open ' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 
 	// Read (keep the order of the lines)
@@ -536,7 +536,7 @@ function lastmodified_add($update = '', $remove = '')
 	pkwk_touch_file($file);
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open ' . htmlsc($whatsnew));
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 
 	// Recreate
@@ -588,7 +588,7 @@ function put_lastmodified()
 	pkwk_touch_file($file);
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open' . 'CACHE_DIR/' . PKWK_MAXSHOW_CACHE);
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 	ftruncate($fp, 0);
 	rewind($fp);
@@ -602,7 +602,7 @@ function put_lastmodified()
 	pkwk_touch_file($file);
 	$fp = fopen($file, 'r+') or
 		die_message('Cannot open ' . htmlsc($whatsnew));
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 	ftruncate($fp, 0);
 	rewind($fp);
@@ -677,7 +677,7 @@ function autolink_pattern_write($filename, $autolink_pattern)
 
 	$fp = fopen($filename, 'w') or
 		die_message('Cannot open ' . $filename);
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 	flock($fp, LOCK_EX);
 	rewind($fp);
 	fputs($fp, $pattern   . "\n");
@@ -922,7 +922,7 @@ function get_readings()
 
 					$readings[$page] = $page;
 					foreach ($patterns as $no => $pattern)
-						$readings[$page] = mb_convert_kana(mb_ereg_replace($pattern,
+						$readings[$page] = mb_convert_kana(preg_replace('/' . $pattern . '/u',
 							$replacements[$no], $readings[$page]), 'aKCV');
 				}
 				break;

@@ -576,11 +576,11 @@ function page_list($pages, $cmd = 'read', $withfilename = FALSE)
 
 		// WARNING: Japanese code hard-wired
 		if($pagereading_enable) {
-			if(mb_ereg('^([A-Za-z])', mb_convert_kana($page, 'a'), $matches)) {
+			if (preg_match('/^([A-Za-z])/u', mb_convert_kana($page, 'a'), $matches)) {
 				$head = strtoupper($matches[1]);
-			} elseif (isset($readings[$page]) && mb_ereg('^([ァ-ヶ])', $readings[$page], $matches)) { // here
+			} elseif (isset($readings[$page]) && preg_match('/^([ァ-ヶ])/u', $readings[$page], $matches)) {
 				$head = $matches[1];
-			} elseif (mb_ereg('^[ -~]|[^ぁ-ん亜-熙]', $page)) { // and here
+			} elseif (preg_match('/^[ -~]|[^ぁ-ん亜-熙]/u', $page)) {
 				$head = $symbol;
 			} else {
 				$head = $other;
