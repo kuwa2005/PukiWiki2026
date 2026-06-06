@@ -31,6 +31,8 @@ require(LIB_DIR . 'security.php');
 require(LIB_DIR . 'csrf.php');
 require(LIB_DIR . 'proxy.php');
 require(LIB_DIR . 'akismet.php');
+require(LIB_DIR . 'captcha.php');
+require(LIB_DIR . 'spamfilter.php');
 if (! extension_loaded('mbstring')) {
 	require(LIB_DIR . 'mbstring.php');
 }

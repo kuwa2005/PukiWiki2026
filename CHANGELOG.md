@@ -9,6 +9,26 @@
 
 ### Added
 
+- **CAPTCHA（SPAM-02）:** `lib/captcha.php` — 編集フォーム向け reCAPTCHA v2/v3 または honeypot（既定 OFF）
+- **外部リンク制限（SPAM-04）:** `lib/spamfilter.php` — 書き込み POST 本文の外部 URL 拒否（既定 OFF）
+- `pukiwiki.ini.php.example` — CAPTCHA・外部リンク設定雛形
+- `docs/ANTI-SPAM.md` — CAPTCHA・外部リンク節（設定・テスト手順）
+
+### Changed
+
+- `lib/html.php` — `edit_form()` に CAPTCHA マークアップを追加
+- `lib/file.php` — `page_write()` に外部リンク検証を追加
+- `plugin/edit.inc.php` — 編集保存前に CAPTCHA 検証を追加
+- `lib/init.php` — CAPTCHA・外部リンク設定の既定値
+- `lib/pukiwiki.php` — `captcha.php` / `spamfilter.php` を読み込み
+
+### Security
+
+- 編集保存に CAPTCHA 第2防御を追加（任意有効化、reCAPTCHA 未設定時は無影響）
+- 書き込み POST 本文の外部リンクを設定で拒否可能に
+
+### Added
+
 - `.github/workflows/php.yml` — PHP 8.1〜8.4 の構文チェック CI（SEC-L05）
 - `lib/security.php` — インライン `style` サニタイズ（`pkwk_sanitize_style_attribute` 等、SEC-M03）
 

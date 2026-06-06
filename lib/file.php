@@ -134,8 +134,9 @@ function page_write($page, $postdata, $notimestamp = FALSE)
 		return;
 	}
 
-	// Akismet spam check (after auth gate, before persist)
+	// Spam checks (after auth gate, before persist)
 	if (! $is_delete) {
+		pkwk_spamfilter_verify_external_links_or_die($text_without_author);
 		pkwk_akismet_verify_write_or_die($page, $text_without_author);
 	}
 

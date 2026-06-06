@@ -138,7 +138,7 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 - **匿名編集ができなくなる** — Wiki の「誰でも編集」文化からは離れますが、現代のスパム環境では実用的な落としどころです。
 - **アカウント管理が必要** — `$auth_users` の登録・パスワード変更を運用で行う必要があります。
-- **CAPTCHA なし** — ログイン情報が漏洩した場合やボットがアカウントを取得した場合は別途対策が必要です。
+- **CAPTCHA は任意** — `$captcha_enabled = 0`（既定）では無効。有効化すると編集保存時に reCAPTCHA または honeypot で第2防御を追加できます（[CAPTCHA 節](#captcha-連携spam-02) 参照）。
 - **CSRF 未対策** — 認証後の編集リクエストには CSRF トークンがありません（`docs/SECURITY-AUDIT.md` SEC-C02 参照）。
 
 ---
@@ -160,11 +160,11 @@ $edit_auth = 0;
 | 対策 | 状態 | 備考 |
 |------|------|------|
 | **Akismet 連携** | **実装済み** | SPAM-05 (#31)。`lib/akismet.php` — 書き込み POST を外部 API で判定（既定 OFF） |
-| CAPTCHA（匿名閲覧＋編集時のみ） | 未実装 | プラグイン新規作成または外部サービス連携が必要 |
+| **CAPTCHA（編集時）** | **実装済み** | SPAM-02 (#14)。`lib/captcha.php` — reCAPTCHA v2/v3 または honeypot（既定 OFF） |
 | 新規ページ作成の追加制限 | 部分対応 | `newpage` → `edit` 経由で認証済み |
-| 外部リンク POST 制限 | 未実装 | 記法・プラグインレベルの検証が必要 |
-| レート制限 | 未実装 | `loginform` / 編集 POST に IP 単位制限を追加予定 |
-| CSRF トークン | 未実装 | SECURITY-AUDIT SEC-C02 |
+| **外部リンク POST 制限** | **実装済み** | SPAM-04 (#16)。`lib/spamfilter.php` — 本文中の外部 URL を拒否（既定 OFF） |
+| レート制限 | **実装済み** | SPAM-03 (#15)。`loginform` / 編集 POST の IP 単位制限 |
+| CSRF トークン | **実装済み** | SEC-C02 (#2)。`lib/csrf.php` |
 
 ---
 
@@ -235,6 +235,102 @@ Akismet 有効時、保存しようとした **Wiki 本文**（`comment_content`
 3. 明らかなスパム文（大量 URL・典型的スパムフレーズ等）を投稿 → 拒否メッセージが表示され保存されないこと
 4. 無効な API key + `$akismet_strict = 1` → 保存拒否（strict 動作）
 5. 無効な API key + `$akismet_strict = 0` → 保存成功（フォールスルー）
+
+---
+
+## CAPTCHA 連携（SPAM-02）
+
+編集フォーム（`cmd=edit`）に CAPTCHA を表示し、**保存 POST** 時に検証します。プレビュー・キャンセルでは検証しません。`enforce_edit_auth` および CSRF 検証の後、`page_write()` の直前（`plugin/edit.inc.php`）で実行します。
+
+### 既定 OFF の理由
+
+ログイン必須運用では第一防御として認証があります。CAPTCHA は **アカウント漏洩・ボット対策の第2防御** として任意有効化とし、reCAPTCHA 未設定時は `$captcha_enabled = 0` で既存動作に影響しません。
+
+### 設定（pukiwiki.ini.php）
+
+```php
+$captcha_enabled = 1;
+$captcha_provider = 'recaptcha_v2'; // recaptcha_v2 | recaptcha_v3 | honeypot
+$recaptcha_site_key = 'your-site-key';
+$recaptcha_secret_key = 'your-secret-key';
+```
+
+| 変数 | 説明 |
+|------|------|
+| `$captcha_enabled` | `1` で有効 |
+| `$captcha_provider` | `recaptcha_v2`（チェックボックス）、`recaptcha_v3`（スコア判定）、`honeypot`（外部 API 不要の簡易代替） |
+| `$recaptcha_site_key` | Google reCAPTCHA のサイトキー（honeypot 時は不要） |
+| `$recaptcha_secret_key` | Google reCAPTCHA のシークレットキー（honeypot 時は不要） |
+
+reCAPTCHA キーは [Google reCAPTCHA 管理コンソール](https://www.google.com/recaptcha/admin) で取得します。v3 はスコア閾値 `0.5`（`PKWK_CAPTCHA_RECAPTCHA_V3_THRESHOLD`）未満を拒否します。
+
+### 動作
+
+| 操作 | CAPTCHA 検証 |
+|------|--------------|
+| 編集フォーム表示 | 有効時のみウィジェット（または honeypot フィールド）を表示 |
+| プレビュー | 検証なし |
+| 保存（write） | 検証あり（失敗時は日本語エラーで保存拒否） |
+| ページ削除（空保存） | 検証スキップ |
+| `comment` 等の他プラグイン | 検証なし（編集フォーム経由のみ） |
+
+### テスト手順
+
+#### 無効時（skip）
+
+1. `$captcha_enabled = 0` のまま
+2. ログイン後に編集・保存 → **従来どおり成功**
+
+#### reCAPTCHA v2 有効時
+
+1. 有効な site/secret key を設定し `$captcha_enabled = 1`
+2. 編集画面に reCAPTCHA ウィジェットが表示されること
+3. チェックなしで保存 → 拒否メッセージ
+4. チェック後に保存 → 成功
+
+#### honeypot 有効時
+
+1. `$captcha_provider = 'honeypot'`、`$captcha_enabled = 1`
+2. 通常保存 → 成功
+3. `pkwk_hp_url` フィールドに値を入れて POST → 拒否
+
+---
+
+## 外部リンク POST 制限（SPAM-04）
+
+書き込み POST の本文（Wiki ソース）に含まれる **外部 URL**（`http://` / `https://`、自サイト以外）を制限します。判定は `page_write()` の認証ゲート通過後・保存直前に行い、Akismet と共存します。
+
+### 設定（pukiwiki.ini.php）
+
+```php
+$spam_block_external_links = 1;   // 0=無効, 1=全員拒否, 2=管理者のみ許可
+$spam_external_link_allowlist = array('youtube.com', 'github.com');
+```
+
+| 変数 | 説明 |
+|------|------|
+| `$spam_block_external_links` | `0` 無効（既定）、`1` 外部リンクを全員拒否、`2` 管理者のみ許可 |
+| `$spam_external_link_allowlist` | 許可するドメイン（サブドメイン含む。`www.` は正規化して比較） |
+
+自サイト判定は `get_base_uri(PKWK_URI_ABSOLUTE)` のホストと比較します。モード `2` では `auth_groups` の `admin` グループ所属、または POST の管理者パスワード（`pass` / `adminpass`）検証で許可します。
+
+### 動作
+
+| モード | 外部 URL を含む保存 |
+|--------|---------------------|
+| `0` | 制限なし |
+| `1` | 拒否（許可リスト・自サイト除く） |
+| `2` | 一般ユーザーは拒否、管理者は許可 |
+
+拒否時は検出したホスト名を含む日本語エラーメッセージを表示します。
+
+### テスト手順
+
+1. `$spam_block_external_links = 0` → 外部 URL 付き保存が成功すること
+2. `$spam_block_external_links = 1` → `https://example.com` を含む保存が拒否されること
+3. 自サイト URL（`get_base_uri()` と同ホスト）→ 保存成功
+4. `$spam_external_link_allowlist = array('example.com')` → `https://www.example.com/foo` は許可
+5. モード `2` で一般ユーザー → 拒否、管理者パスワード入力または `admin` グループで許可
 
 ---
 

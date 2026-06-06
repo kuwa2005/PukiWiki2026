@@ -279,6 +279,8 @@ function plugin_edit_write()
 		return $retvars;
 	}
 
+	$text_for_checks = remove_author_info(make_str_rules($postdata));
+	pkwk_captcha_verify_edit_or_die($text_for_checks);
 	page_write($page, $postdata, $notimeupdate != 0 && $notimestamp);
 	pkwk_headers_sent();
 	header('Location: ' . get_page_uri($page, PKWK_URI_ROOT));
