@@ -497,3 +497,11 @@ if ($oembed_enabled && file_exists(PLUGIN_DIR . 'oembed.inc.php')) {
 	exist_plugin('oembed');
 	do_plugin_init('oembed');
 }
+
+/////////////////////////////////////////////////
+// Akismet (optional — write-side spam check)
+
+if (! isset($akismet_enabled)) $akismet_enabled = 0;
+if (! isset($akismet_api_key)) $akismet_api_key = '';
+if (! isset($akismet_blog_url)) $akismet_blog_url = '';
+if (! isset($akismet_strict)) $akismet_strict = 0;

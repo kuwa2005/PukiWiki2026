@@ -43,3 +43,12 @@ $oembed_providers = array('youtube', 'vimeo', 'twitter', 'flickr');
 $oembed_maxwidth = 640;
 $oembed_maxheight = 480;
 $oembed_cache_hours = 24;
+
+/////////////////////////////////////////////////
+// Akismet — 書き込み POST のスパム判定（docs/ANTI-SPAM.md）
+/////////////////////////////////////////////////
+
+$akismet_enabled = 0;           // 既定 OFF（ログイン必須運用では任意）
+$akismet_api_key = '';          // Akismet API key（https://akismet.com/）
+$akismet_blog_url = '';         // 空なら get_base_uri(PKWK_URI_ABSOLUTE) を使用
+$akismet_strict = 0;            // 1=API エラー時も拒否, 0=エラー時は通す
