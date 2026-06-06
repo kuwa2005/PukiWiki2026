@@ -9,6 +9,24 @@
 
 ### Added
 
+- `.github/workflows/php.yml` — PHP 8.1〜8.4 の構文チェック CI（SEC-L05）
+- `lib/security.php` — インライン `style` サニタイズ（`pkwk_sanitize_style_attribute` 等、SEC-M03）
+
+### Changed
+
+- `index.php` — 本番既定で `error_reporting(0)`、`PKWK_DEBUG` 定数でデバッグ切替（SEC-L01）
+- `lib/html.php` — `make_line_rules()` 出力に style 属性サニタイズを適用（SEC-M03）
+- `lib/convert_html.php` — 表セルの COLOR/SIZE/width を許可値のみに制限（SEC-M03）
+- `docs/DEPLOY.md` — 本番 `error_reporting` / `PKWK_DEBUG` 手順を追記（SEC-L01）
+
+### Security
+
+- SEC-M03: Wiki 記法インライン style の許可プロパティ制限と危険パターン除去
+- SEC-L01: 本番向け error_reporting 既定を無効化
+- SEC-L05: PHP 8.2+ 回帰の CI smoke test（構文チェック）
+
+### Added
+
 - **Akismet:** `lib/akismet.php` — 書き込み POST の Akismet `comment-check` 連携（既定 OFF）
 - `pukiwiki.ini.php.example` — Akismet 設定雛形
 - `docs/ANTI-SPAM.md` — Akismet 節（設定・API key・プライバシー・テスト手順）
