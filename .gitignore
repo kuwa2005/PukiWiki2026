@@ -1,0 +1,43 @@
+# 機密・環境依存
+.env
+.env.*
+!.env.example
+pukiwiki.ini.php
+
+# Wiki データ（本番・開発ともサーバー／環境ごと）
+wiki/
+!wiki/.htaccess
+!wiki/index.html
+
+# ランタイム生成物
+cache/*
+!cache/.htaccess
+!cache/index.html
+backup/*
+!backup/.htaccess
+!backup/index.html
+attach/*
+!attach/.htaccess
+!attach/index.html
+
+# vendor 内の上流実体（参照用コピーはローカル任意）
+vendor/*
+!vendor/.gitkeep
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.vscode/
+.idea/
+
+# PHP / ツール
+composer.phar
+.phpunit.result.cache
+
+# ログ・一時ファイル
+*.log
+tmp/
+temp/

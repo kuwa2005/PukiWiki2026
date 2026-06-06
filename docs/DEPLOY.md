@@ -1,0 +1,164 @@
+# DEPLOY — デプロイ手順
+
+pukiwiki2026（PukiWiki 1.5.4 ベース）を開発・ステージング・本番へ載せる手順のテンプレートです。  
+環境に合わせて値を埋めて使用してください。
+
+---
+
+## 1. 前提条件
+
+| 項目 | 推奨 |
+|------|------|
+| PHP | 8.1 以上（上流は 8.1 まで公式確認。要動作確認） |
+| 拡張 | mbstring, session, json 等（標準的な Web 用 PHP） |
+| Web サーバー | Apache 2.4 または nginx |
+| 作業パス | `D:\00_project\pukiwiki2026` |
+
+---
+
+## 2. ローカル開発（Windows 例）
+
+### 2.1 PHP ビルトインサーバー（簡易確認）
+
+```powershell
+cd D:\00_project\pukiwiki2026
+php -S localhost:8080
+```
+
+ブラウザで http://localhost:8080/index.php を開く。
+
+### 2.2 XAMPP / Laragon 等
+
+1. 本フォルダを vhost の DocumentRoot に指定、または `htdocs/pukiwiki2026` へシンボリックリンク。
+2. `httpd.conf` / vhost で `AllowOverride` を有効にし、各ディレクトリの `.htaccess` が効くようにする。
+
+---
+
+## 3. 初回セットアップ
+
+### 3.1 設定ファイル
+
+```powershell
+cd D:\00_project\pukiwiki2026
+# 雛形が別名の場合はコピー（環境に合わせる）
+# Copy-Item pukiwiki.ini.php.sample pukiwiki.ini.php
+```
+
+`pukiwiki.ini.php` で最低限確認する項目:
+
+- ページ保存ディレクトリ（通常 `wiki/`）
+- 管理者パスワード / 認証方式
+- タイムゾーン・文字コード（UTF-8）
+- 本番ではデバッグ表示を無効化
+
+### 3.2 ディレクトリ権限
+
+Web サーバー実行ユーザーが書き込めること:
+
+- `wiki/`
+- `cache/`
+- `backup/`
+- `attach/`（添付を使う場合）
+
+```powershell
+# Windows（IIS / 特定ユーザー向け例 — 環境に応じて調整）
+# icacls wiki /grant "IIS_IUSRS:(OI)(CI)M"
+```
+
+### 3.3 動作確認チェックリスト
+
+- [ ] トップページが表示される
+- [ ] 新規ページ作成・編集・保存
+- [ ] 差分・履歴（該当機能）
+- [ ] プラグイン（利用予定分）
+- [ ] 添付アップロード（利用する場合）
+- [ ] HTTPS（本番）
+
+---
+
+## 4. 本番デプロイ
+
+### 4.1 配置方針
+
+| 方式 | 説明 |
+|------|------|
+| フルコピー | rsync / scp / FTP でファイル一式を配置 |
+| git pull | サーバーで `git pull`（`wiki/` 等はサーバー固有で .gitignore） |
+
+**配置から除外するもの（またはサーバー側のみ）:**
+
+- `.env`（秘密情報）
+- `wiki/`（本番データ — 初回以外は上書きしない）
+- `cache/`, `backup/`（再生成可だが運用中は注意）
+
+### 4.2 Apache 例（抜粋）
+
+```apache
+<VirtualHost *:443>
+    ServerName wiki.example.com
+    DocumentRoot "D:/00_project/pukiwiki2026"
+
+    <Directory "D:/00_project/pukiwiki2026">
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # SSL 設定 ...
+</VirtualHost>
+```
+
+### 4.3 nginx 例（抜粋）
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name wiki.example.com;
+    root /path/to/pukiwiki2026;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+```
+
+---
+
+## 5. リリース後
+
+1. [CHANGELOG.md](../CHANGELOG.md) にリリース内容を記載
+2. キャッシュクリア（必要に応じて `cache/` 内の生成ファイル削除）
+3. バックアップ取得（`wiki/` + DB を使う場合は DB も）
+
+---
+
+## 6. ロールバック
+
+1. 直前の `wiki/`・設定のバックアップを復元
+2. 前バージョンのコードに差し戻し（git tag / アーカイブ）
+3. 表示・編集の smoke test
+
+---
+
+## 7. トラブルシューティング
+
+| 症状 | 確認 |
+|------|------|
+| 500 エラー | PHP エラーログ、`pukiwiki.ini.php` の syntax |
+| 保存できない | `wiki/` 権限 |
+| 文字化け | UTF-8 統一、mbstring |
+| プラグインエラー | `plugin/` の PHP 互換、改造差分 |
+
+---
+
+## 8. 関連
+
+- [README.md](../README.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- 公式 [README.txt](../README.txt)
