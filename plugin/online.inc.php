@@ -70,7 +70,7 @@ function plugin_online_check_online(& $count, $host = '')
 	// Open
 	$fp = @fopen(PLUGIN_ONLINE_USER_LIST, 'r');
 	if ($fp == FALSE) return FALSE;
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 
 	// Init
 	$count   = 0;
@@ -109,7 +109,7 @@ function plugin_online_sweep_records($host = '')
 	// Open
 	$fp = @fopen(PLUGIN_ONLINE_USER_LIST, 'r+');
 	if ($fp == FALSE) return FALSE;
-	set_file_buffer($fp, 0);
+	pkwk_set_file_buffer($fp, 0);
 
 	flock($fp, LOCK_EX);
 

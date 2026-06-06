@@ -480,3 +480,20 @@ $line_rules = array_merge(array(
 	'&amp;(#[0-9]+|#x[0-9a-f]+|' . get_html_entity_pattern() . ');' => '&$1;',
 	"\r"          => '<br />' . "\n",	/* 行末にチルダは改行 */
 ), $line_rules);
+
+/////////////////////////////////////////////////
+// oEmbed (optional — display-side embed)
+
+if (! isset($oembed_enabled)) $oembed_enabled = 1;
+if (! isset($oembed_standalone_url)) $oembed_standalone_url = 1;
+if (! isset($oembed_providers)) {
+	$oembed_providers = array('youtube', 'vimeo', 'twitter', 'flickr');
+}
+if (! isset($oembed_maxwidth)) $oembed_maxwidth = 640;
+if (! isset($oembed_maxheight)) $oembed_maxheight = 480;
+if (! isset($oembed_cache_hours)) $oembed_cache_hours = 24;
+
+if ($oembed_enabled && file_exists(PLUGIN_DIR . 'oembed.inc.php')) {
+	exist_plugin('oembed');
+	do_plugin_init('oembed');
+}

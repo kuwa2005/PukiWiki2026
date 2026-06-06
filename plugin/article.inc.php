@@ -54,6 +54,8 @@ function plugin_article_action()
 
 	$script = get_base_uri();
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
+	if (! isset($vars['refer'])) return array('msg'=>'','body'=>'');
+	check_editable($vars['refer']);
 
 	if ($post['msg'] == '')
 		return array('msg'=>'','body'=>'');

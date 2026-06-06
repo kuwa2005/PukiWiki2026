@@ -4,8 +4,8 @@
 // Copyright (C) 2001-2006 PukiWiki Developers Team
 // License: GPL v2 or (at your option) any later version
 
-// Error reporting
-//error_reporting(0); // Nothing
+// Error reporting (SEC-L01: production should disable verbose errors)
+//error_reporting(0); // Production recommended
 error_reporting(E_ERROR | E_PARSE); // Avoid E_WARNING, E_NOTICE, etc
 //error_reporting(E_ALL); // Debug purpose
 

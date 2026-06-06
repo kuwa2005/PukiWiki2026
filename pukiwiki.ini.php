@@ -234,7 +234,8 @@ $pagereading_config_dict = ':config/PageReading/dict';
 /////////////////////////////////////////////////
 // Authentication type
 // AUTH_TYPE_NONE, AUTH_TYPE_FORM, AUTH_TYPE_BASIC, AUTH_TYPE_EXTERNAL, ...
-// $auth_type = AUTH_TYPE_FORM;
+// PukiWiki2026: 匿名編集スパム対策のためフォーム認証を既定で有効化
+$auth_type = AUTH_TYPE_FORM;
 // $auth_external_login_url_base = './exlogin.php';
 
 /////////////////////////////////////////////////
@@ -255,18 +256,17 @@ $auth_provider_user_prefix_saml = 'saml:';
 
 /////////////////////////////////////////////////
 // User definition
+// PukiWiki2026: 編集にはログイン必須。必ず1件以上のユーザーを設定すること。
+// 詳細: docs/ANTI-SPAM.md
 $auth_users = array(
-	// Username => password
-	'foo'	=> 'foo_passwd', // Cleartext
-	'bar'	=> '{x-php-md5}f53ae779077e987718cc285b14dfbe86', // PHP md5() 'bar_passwd'
-	'hoge'	=> '{SMD5}OzJo/boHwM4q5R+g7LCOx2xGMkFKRVEx',      // LDAP SMD5 'hoge_passwd'
+	// Username => password hash
+	// 例: 'editor' => '{x-php-sha256}d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', // pass
 );
 
 // Group definition
 $auth_groups = array(
 	// Groupname => group members(users)
 	'valid-user' => '', // Reserved 'valid-user' group contains all authenticated users
-	'groupfoobar'	=> 'foo,bar',
 );
 
 /////////////////////////////////////////////////
@@ -288,13 +288,12 @@ $read_auth_pages = array(
 
 /////////////////////////////////////////////////
 // Edit auth (0:Disable, 1:Enable)
-$edit_auth = 0;
+// PukiWiki2026: 全ページ編集にログイン必須（匿名は閲覧のみ）
+$edit_auth = 1;
 
 $edit_auth_pages = array(
-	// Regex		   Username
-	'#BarDiary#'		=> 'bar',
-	'#HogeHoge#'		=> 'hoge',
-	'#(NETABARE|NetaBare)#'	=> 'foo,bar,hoge',
+	// Regex		   Groupname or Username
+	'#.*#'			=> 'valid-user',
 );
 
 /////////////////////////////////////////////////

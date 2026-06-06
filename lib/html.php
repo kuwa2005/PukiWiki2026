@@ -411,9 +411,11 @@ EOD;
 	// are for layout of 'cancel button'
 	$h_msg_edit_cancel_confirm = htmlsc($_msg_edit_cancel_confirm);
 	$h_msg_edit_unloadbefore_message = htmlsc($_msg_edit_unloadbefore_message);
+	$csrf = pkwk_csrf_hidden_field();
 	$body = <<<EOD
 <div class="edit_form">
  <form action="$script" method="post" class="_plugin_edit_edit_form" style="margin-bottom:0;">
+$csrf
 $template
   $addtag
   <input type="hidden" name="cmd"    value="edit" />
@@ -432,6 +434,7 @@ $template
   <textarea name="original" rows="1" cols="1" style="display:none">$s_original</textarea>
  </form>
  <form action="$script" method="post" class="_plugin_edit_cancel" style="margin-top:0;">
+  $csrf
   <input type="hidden" name="cmd"    value="edit" />
   <input type="hidden" name="page"   value="$s_page" />
   <input type="submit" name="cancel" value="$_btn_cancel" accesskey="c" />

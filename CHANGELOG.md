@@ -11,11 +11,49 @@
 
 - プロジェクト骨格: `README.md`, `CHANGELOG.md`, `docs/`, `vendor/`, `patches/`, `.gitignore`
 - 作業フォルダ `D:\00_project\pukiwiki2026` として非公式フォーク用ドキュメントを整備
+- **oEmbed:** `lib/oembed.php`, `plugin/oembed.inc.php` — URL から YouTube / Vimeo / Twitter(X) / Flickr 等を埋め込み表示
+- `docs/OEMBED.md` — oEmbed 使い方・設定・セキュリティ・手動テスト手順
+- `pukiwiki.ini.php.example` — oEmbed 設定雛形（抜粋）
+
+### Changed
+
+- `lib/convert_html.php` — 単独 HTTPS URL 行の oEmbed 自動検出
+- `lib/init.php` — oEmbed 設定の既定値とプラグイン初期化
+- `pukiwiki.ini.php` — oEmbed 設定ブロックを追加
+
+### Security
+
+- **セキュリティ強化:** `lib/csrf.php`, `lib/security.php` — CSRF トークン、SameSite Cookie、ログインレート制限、安全リダイレクト等
+- `wiki/.htaccess` — ページソース直アクセス拒否（SEC-H05）
+- パスワード検証を `pkwk_hash_verify()` に統一（`password_hash` / レガシーハッシュ両対応）
+- 添付: `Content-Disposition: attachment`（危険 MIME）、パスワードを `password_hash` 化
+- `PKWK_UPDATE_EXEC` の `system()` をホワイトリスト付き `proc_open` に置換
+- oEmbed consumer: SSRF 対策（内部 IP / localhost 拒否、エンドポイント HTTPS 必須）
+- oEmbed consumer: 返却 HTML のサニタイズ（許可タグ・iframe src ホワイトリスト）
+- `docs/SECURITY-AUDIT.md` — 静的セキュリティ監査レポート
+- `docs/ANTI-SPAM.md` — 匿名編集スパム対策の設定・運用ガイド
+- `docs/ISSUES.md` — GitHub Issue 索引（監査 ID・スパム対策との対応表）
+- `pukiwiki.ini.php.example` — 編集認証の設定雛形
+
+### Changed
+
+- **スパム対策:** 編集認証（`$edit_auth`）を既定で有効化し、全ページ編集にログイン必須化（匿名は閲覧のみ）
+- `pukiwiki.ini.php`: `$auth_type = AUTH_TYPE_FORM`、`$edit_auth_pages` に `#.*# => valid-user`
+- `lib/auth.php`: `enforce_edit_auth_for_request()` で未認証の変更系 GET/POST を早期遮断
+- `lib/pukiwiki.php`: プラグイン実行前に編集認証ゲートを呼び出し
+- `lib/file.php`: `page_write()` に `is_page_writable()` チェックを追加（拒否時はログイン誘導）
+- ゲスト投稿プラグイン（`comment`, `memo`, `insert`, `vote`, `article`, `paint`）に `check_editable()` を追加
+
+### Security
+
+- 匿名による Wiki 編集・ゲストプラグイン経由の書き込みをブロック（ログイン必須）
+- 編集フォームを経由しない未認証 POST 直叩きをリクエスト早期段階で拒否
 
 ### Notes
 
 - ルート直下に PukiWiki 1.5.4 UTF-8 ソースが既に存在（`lib/init.php` → `S_VERSION = '1.5.4'`）
 - 大規模改造はこれ以降 `CHANGELOG.md` と `docs/ARCHITECTURE.md` に記録すること
+- 本番適用時は `pukiwiki.ini.php` の `$auth_users` と `$adminpass` を必ず設定すること（`docs/ANTI-SPAM.md` 参照）
 
 ---
 

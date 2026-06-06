@@ -11,10 +11,9 @@
 ## needs 'AllowOverride Limit' at httpd.conf
 
 # Prohibit direct access to .htaccess, .htpasswd or others
-# (If it's not set by default)
-#<FilesMatch "^\.ht">
-#  Require all denied
-#</FilesMatch>
+<FilesMatch "^\.ht">
+  Require all denied
+</FilesMatch>
 
 # Prohibit direct access
 <FilesMatch "\.(ini\.php|lng\.php|txt|gz|tgz|zip)$">

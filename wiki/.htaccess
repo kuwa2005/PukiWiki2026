@@ -1,1 +1,2 @@
+# Deny direct HTTP access to wiki page source (SEC-H05)
 Require all denied

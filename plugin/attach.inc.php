@@ -209,7 +209,7 @@ function attach_upload($file, $page, $pass = NULL)
 		pkwk_touch_file(get_filename($page));
 
 	$obj->getstatus();
-	$obj->status['pass'] = ($pass !== TRUE && $pass !== NULL) ? md5($pass) : '';
+	$obj->status['pass'] = ($pass !== TRUE && $pass !== NULL) ? pkwk_attach_hash_password($pass) : '';
 	$obj->putstatus();
 
 	if ($notify) {
@@ -411,8 +411,10 @@ EOD;
 		$title = $_attach_messages[PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY ? 'msg_adminpass' : 'msg_password'];
 		$pass = '<br />' . $title . ': <input type="password" name="pass" size="8" />';
 	}
+	$csrf = pkwk_csrf_hidden_field();
 	return <<<EOD
 <form enctype="multipart/form-data" action="$script" method="post">
+ $csrf
  <div>
   <input type="hidden" name="plugin" value="attach" />
   <input type="hidden" name="pcmd"   value="post" />
@@ -489,7 +491,7 @@ class AttachFile
 		$this->status['count'] = join(',', $this->status['count']);
 		$fp = fopen($this->logname, 'wb') or
 			die_message('cannot write ' . $this->logname);
-		set_file_buffer($fp, 0);
+		pkwk_set_file_buffer($fp, 0);
 		flock($fp, LOCK_EX);
 		rewind($fp);
 		foreach ($this->status as $key=>$value) {
@@ -571,6 +573,7 @@ class AttachFile
 		}
 		$info = $this->toString(TRUE, FALSE);
 		$hash = $this->gethash();
+		$csrf = pkwk_csrf_hidden_field();
 
 		$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
 		$retval['body'] = <<< EOD
@@ -581,7 +584,7 @@ class AttachFile
 <dl>
  <dt>$info</dt>
  <dd>{$_attach_messages['msg_page']}:$s_page</dd>
- <dd>{$_attach_messages['msg_filename']}:{$this->filename}</dd>
+ <dd>{$_attach_messages['msg_filename']}:{$s_file}</dd>
  <dd>{$_attach_messages['msg_md5hash']}:$hash</dd>
  <dd>{$_attach_messages['msg_filesize']}:{$this->size_str} ({$this->size} bytes)</dd>
  <dd>Content-type:{$this->type}</dd>
@@ -592,7 +595,8 @@ class AttachFile
 <hr />
 $s_err
 <form action="$script" method="post">
- <div>
+  $csrf
+  <div>
   <input type="hidden" name="plugin" value="attach" />
   <input type="hidden" name="refer" value="$s_page" />
   <input type="hidden" name="file" value="$s_file" />
@@ -620,7 +624,7 @@ EOD;
 			if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age) {
 				return attach_info('err_adminpass');
 			} else if (PLUGIN_ATTACH_PASSWORD_REQUIRE &&
-				md5($pass) !== $this->status['pass']) {
+				! pkwk_attach_verify_password($pass, $this->status['pass'])) {
 				return attach_info('err_password');
 			}
 		}
@@ -671,7 +675,7 @@ EOD;
 			if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age) {
 				return attach_info('err_adminpass');
 			} else if (PLUGIN_ATTACH_PASSWORD_REQUIRE &&
-				md5($pass) !== $this->status['pass']) {
+				! pkwk_attach_verify_password($pass, $this->status['pass'])) {
 				return attach_info('err_password');
 			}
 		}
@@ -739,7 +743,8 @@ EOD;
 		mb_http_output('pass');
 
 		pkwk_common_headers();
-		header('Content-Disposition: inline; filename*=utf-8\'\'' . rawurlencode($utf8filename));
+		$disposition = pkwk_attach_content_disposition($this->type, $this->file);
+		header('Content-Disposition: ' . $disposition . '; filename*=utf-8\'\'' . rawurlencode($utf8filename));
 		header('Content-Length: ' . $this->size);
 		header('Content-Type: '   . $this->type);
 		// Disable output bufferring

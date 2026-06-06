@@ -27,6 +27,8 @@ require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'link.php');
 require(LIB_DIR . 'auth.php');
+require(LIB_DIR . 'security.php');
+require(LIB_DIR . 'csrf.php');
 require(LIB_DIR . 'proxy.php');
 if (! extension_loaded('mbstring')) {
 	require(LIB_DIR . 'mbstring.php');
@@ -54,6 +56,9 @@ if (manage_page_redirect()) {
 }
 $retvars = array();
 $is_cmd = FALSE;
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+	pkwk_csrf_verify_or_die($vars);
+}
 if (isset($vars['cmd'])) {
 	$is_cmd  = TRUE;
 	$plugin = & $vars['cmd'];
@@ -64,6 +69,7 @@ if (isset($vars['cmd'])) {
 }
 if ($plugin != '') {
 	ensure_valid_auth_user();
+	enforce_edit_auth_for_request($vars);
 	if (exist_plugin_action($plugin)) {
 		// Found and exec
 		$retvars = do_plugin_action($plugin);

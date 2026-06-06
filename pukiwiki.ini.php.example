@@ -1,0 +1,45 @@
+<?php
+// PukiWiki2026 — 設定雛形（抜粋）
+//
+// 使い方: 必要なブロックを pukiwiki.ini.php に反映する
+// 詳細: docs/ANTI-SPAM.md, docs/SECURITY-AUDIT.md, docs/OEMBED.md
+
+/////////////////////////////////////////////////
+// セキュリティ（PukiWiki2026 推奨既定）
+/////////////////////////////////////////////////
+
+// PKWK_SAFE_MODE=1 — #version 等の情報漏洩を抑制（SEC-M04）
+// PKWK_DISABLE_INLINE_IMAGE_FROM_URI=1 — 外部画像ビーコン防止（SEC-L02）
+
+// 管理者パスワード（必ず変更）
+// $adminpass = '{x-php-password}' . password_hash('your-password', PASSWORD_DEFAULT);
+
+// 編集者（1件以上必須）
+// $auth_users = array(
+//     'editor' => '{x-php-password}$2y$10$...',
+// );
+
+// 信頼プロキシ（HTTP_X_FORWARDED_USER 使用時のみ）
+// $auth_trusted_proxies = array('127.0.0.1', '::1', '10.0.0.1');
+
+// PKWK_UPDATE_EXEC を使う場合はホワイトリスト必須（SEC-C01）
+// define('PKWK_UPDATE_EXEC', '/path/to/fixed/script.sh');
+// define('PKWK_UPDATE_EXEC_ALLOWED', array('/path/to/fixed/script.sh'));
+
+// セキュリティ HTTP ヘッダー（SEC-M06）
+// $http_response_custom_headers = array(
+//     'X-Content-Type-Options: nosniff',
+//     'X-Frame-Options: SAMEORIGIN',
+//     'Referrer-Policy: same-origin',
+// );
+
+/////////////////////////////////////////////////
+// oEmbed — URL から外部コンテンツを埋め込み表示
+/////////////////////////////////////////////////
+
+$oembed_enabled = 1;
+$oembed_standalone_url = 1;
+$oembed_providers = array('youtube', 'vimeo', 'twitter', 'flickr');
+$oembed_maxwidth = 640;
+$oembed_maxheight = 480;
+$oembed_cache_hours = 24;

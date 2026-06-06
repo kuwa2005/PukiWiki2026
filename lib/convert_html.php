@@ -176,6 +176,13 @@ class Inline extends Element
 	function __construct($text)
 	{
 		parent::__construct();
+		if (function_exists('pkwk_oembed_render_standalone_line')) {
+			$html = pkwk_oembed_render_standalone_line($text);
+			if ($html !== FALSE) {
+				$this->elements[] = $html;
+				return;
+			}
+		}
 		$this->elements[] = trim((substr($text, 0, 1) == "\n") ?
 			$text : make_link($text));
 	}

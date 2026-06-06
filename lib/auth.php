@@ -28,7 +28,7 @@ function pkwk_login($pass = '')
 	global $adminpass;
 
 	if (! PKWK_READONLY && isset($adminpass) &&
-		pkwk_hash_compute($pass, $adminpass) === $adminpass) {
+		pkwk_hash_verify($pass, $adminpass)) {
 		return TRUE;
 	} else {
 		sleep(2);       // Blocking brute force attack
@@ -173,9 +173,18 @@ function pkwk_hash_compute($phrase = '', $scheme = '{x-php-md5}', $prefix = TRUE
 			base64_encode(hash('sha512', $phrase . $salt, TRUE) . $salt);
 		break;
 
-	// LDAP CLEARTEXT and just cleartext
+	// PHP password_hash() / password_verify()
+	case '{x-php-password}' :
+		$hash = ($prefix ? ($canonical ? '{x-php-password}' : $scheme) : '') .
+			password_hash($phrase, PASSWORD_DEFAULT);
+		break;
+
+	// LDAP CLEARTEXT and just cleartext (deprecated — SEC-M01)
 	case '{cleartext}'   : /* FALLTHROUGH */
 	case ''              :
+		if ($phrase !== '') {
+			error_log('PukiWiki2026: cleartext password scheme is deprecated');
+		}
 		$hash = ($prefix ? ($canonical ? '{CLEARTEXT}' : $scheme) : '') .
 			$phrase;
 		break;
@@ -323,6 +332,174 @@ function ensure_page_writable($page) {
 }
 
 /**
+ * Resolve a page name from request variables for auth checks.
+ *
+ * @param array $vars
+ * @return string
+ */
+function pkwk_resolve_auth_page($vars)
+{
+	if (isset($vars['page']) && $vars['page'] !== '') {
+		return $vars['page'];
+	}
+	if (isset($vars['refer']) && $vars['refer'] !== '') {
+		return $vars['refer'];
+	}
+	global $defaultpage;
+	return $defaultpage;
+}
+
+/**
+ * Plugins that may POST without mutating wiki content.
+ *
+ * @return array
+ */
+function pkwk_edit_auth_readonly_post_plugins()
+{
+	return array('search', 'loginform', 'saml', 'basicauthlogout');
+}
+
+/**
+ * cmd values that mutate wiki content or show mutation UI.
+ *
+ * @return array
+ */
+function pkwk_edit_auth_mutation_cmds()
+{
+	return array('edit', 'add', 'freeze', 'unfreeze', 'rename', 'copy', 'write');
+}
+
+/**
+ * plugin values that mutate wiki content or show mutation UI.
+ *
+ * @return array
+ */
+function pkwk_edit_auth_mutation_plugins()
+{
+	return array(
+		'comment', 'memo', 'insert', 'vote', 'article', 'paint',
+		'pcomment', 'attach', 'tracker', 'bugtrack', 'rename',
+		'newpage', 'template', 'backup', 'calendar_edit',
+	);
+}
+
+/**
+ * Whether attach plugin request is read-only (download/list/info).
+ *
+ * @param array $vars
+ * @return bool
+ */
+function pkwk_attach_is_readonly_request($vars)
+{
+	$pcmd = isset($vars['pcmd']) ? $vars['pcmd'] : '';
+	if (in_array($pcmd, array('info', 'open', 'list'), TRUE)) {
+		return TRUE;
+	}
+	if (isset($vars['openfile'])) {
+		return TRUE;
+	}
+	if ($pcmd === '' && isset($vars['delfile'])) {
+		return FALSE;
+	}
+	if ($pcmd === '' && ! empty($_FILES)) {
+		return FALSE;
+	}
+	$page = isset($vars['page']) ? $vars['page'] : '';
+	if ($pcmd === '' && ($page === '' || ! is_page($page))) {
+		return TRUE; // attach_list()
+	}
+	return FALSE;
+}
+
+/**
+ * Whether current request mutates wiki content or exposes mutation UI.
+ *
+ * @param array $vars
+ * @return bool
+ */
+function pkwk_is_mutation_request($vars)
+{
+	if (PKWK_READONLY) {
+		return FALSE;
+	}
+
+	$method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+
+	if ($method === 'POST') {
+		if (empty($_POST) && empty($_FILES)) {
+			return FALSE;
+		}
+		if (isset($vars['plugin']) &&
+			in_array($vars['plugin'], pkwk_edit_auth_readonly_post_plugins(), TRUE)) {
+			return FALSE;
+		}
+		if (isset($vars['write'])) {
+			return TRUE;
+		}
+		if (! empty($_FILES)) {
+			return TRUE;
+		}
+		if (isset($vars['cmd']) &&
+			in_array($vars['cmd'], pkwk_edit_auth_mutation_cmds(), TRUE)) {
+			return TRUE;
+		}
+		if (isset($vars['plugin'])) {
+			if ($vars['plugin'] === 'attach' && pkwk_attach_is_readonly_request($vars)) {
+				return FALSE;
+			}
+			return in_array($vars['plugin'], pkwk_edit_auth_mutation_plugins(), TRUE);
+		}
+		return TRUE; // Unknown POST payload
+	}
+
+	if ($method === 'GET') {
+		if (isset($vars['cmd']) &&
+			in_array($vars['cmd'], pkwk_edit_auth_mutation_cmds(), TRUE)) {
+			return TRUE;
+		}
+		if (isset($vars['plugin'])) {
+			if ($vars['plugin'] === 'attach' && pkwk_attach_is_readonly_request($vars)) {
+				return FALSE;
+			}
+			return in_array($vars['plugin'], pkwk_edit_auth_mutation_plugins(), TRUE);
+		}
+	}
+
+	return FALSE;
+}
+
+/**
+ * Deny unauthenticated mutation access (login redirect or forbidden page).
+ *
+ * @param array $vars
+ */
+function deny_edit_auth_request($vars)
+{
+	global $edit_auth_pages, $_title_cannotedit;
+	basic_auth(pkwk_resolve_auth_page($vars), TRUE, TRUE,
+		$edit_auth_pages, $_title_cannotedit);
+}
+
+/**
+ * Block unauthenticated write/mutation requests when $edit_auth is enabled.
+ * Called from pukiwiki.php before plugin dispatch.
+ *
+ * @param array $vars
+ */
+function enforce_edit_auth_for_request($vars)
+{
+	global $edit_auth, $auth_user;
+
+	if (! $edit_auth || $auth_user !== '') {
+		return;
+	}
+	if (! pkwk_is_mutation_request($vars)) {
+		return;
+	}
+	deny_edit_auth_request($vars);
+}
+
+/**
  * Check a page is readable or not, show Auth UI in some cases.
  *
  * @param $page page name
@@ -438,9 +615,9 @@ function ensure_valid_auth_user()
 			if (isset($_SERVER['PHP_AUTH_USER'])) {
 				$user = $_SERVER['PHP_AUTH_USER'];
 				if (in_array($user, array_keys($auth_users))) {
-					if (pkwk_hash_compute(
+					if (pkwk_hash_verify(
 						$_SERVER['PHP_AUTH_PW'],
-						$auth_users[$user]) === $auth_users[$user]) {
+						$auth_users[$user])) {
 						$auth_user = $user;
 						$auth_user_fullname = $auth_user;
 						$auth_user_groups = get_groups_from_username($user);
@@ -458,6 +635,7 @@ function ensure_valid_auth_user()
 		case AUTH_TYPE_EXTERNAL:
 		case AUTH_TYPE_SAML:
 		{
+			pkwk_session_set_cookie_params();
 			session_start();
 			$user = '';
 			$fullname = '';
@@ -491,8 +669,19 @@ function ensure_valid_auth_user()
 			$auth_user_fullname = $auth_user;
 			break;
 		case AUTH_TYPE_EXTERNAL_X_FORWARDED_USER:
-			$auth_user =  $_SERVER['HTTP_X_FORWARDED_USER'];
-			$auth_user_fullname = $auth_user;
+			global $auth_trusted_proxies;
+			$remote = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+			if (! is_array($auth_trusted_proxies)) {
+				$auth_trusted_proxies = array('127.0.0.1', '::1');
+			}
+			if (pkwk_is_trusted_proxy($remote, $auth_trusted_proxies) &&
+				isset($_SERVER['HTTP_X_FORWARDED_USER'])) {
+				$auth_user = $_SERVER['HTTP_X_FORWARDED_USER'];
+				$auth_user_fullname = $auth_user;
+			} else {
+				$auth_user = '';
+				$auth_user_fullname = '';
+			}
 			break;
 		default: // AUTH_TYPE_NONE
 			$auth_user = '';
@@ -559,6 +748,10 @@ function get_auth_user()
 function form_auth($username, $password)
 {
 	global $ldap_user_account, $auth_users;
+	if (! pkwk_login_rate_limit_check()) {
+		sleep(2);
+		return FALSE;
+	}
 	$user = $username;
 	if ($ldap_user_account) {
 		// LDAP account
@@ -566,17 +759,18 @@ function form_auth($username, $password)
 	} else {
 		// Defined users in pukiwiki.ini.php
 		if (in_array($user, array_keys($auth_users))) {
-			if (pkwk_hash_compute(
-				$password,
-				$auth_users[$user]) === $auth_users[$user]) {
+			if (pkwk_hash_verify($password, $auth_users[$user])) {
+				pkwk_session_set_cookie_params();
 				session_start();
 				session_regenerate_id(true); // require: PHP5.1+
 				$_SESSION['authenticated_user'] = $user;
 				$_SESSION['authenticated_user_fullname'] = $user;
+				pkwk_login_rate_limit_reset();
 				return true;
 			}
 		}
 	}
+	pkwk_login_rate_limit_fail();
 	return false;
 }
 
@@ -700,6 +894,7 @@ function get_ldap_user_info($ldapconn, $username, $base_dn) {
 function form_auth_redirect($location, $page)
 {
 	header('HTTP/1.0 302 Found');
+	$location = pkwk_safe_redirect_url($location);
 	if ($location) {
 		header('Location: ' . $location);
 	} else {

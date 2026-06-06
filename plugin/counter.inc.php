@@ -194,7 +194,7 @@ function plugin_counter_get_count($page)
 		pkwk_touch_file($file);
 		$fp = fopen($file, 'r+')
 			or die('counter.inc.php: Cannot open COUNTER_DIR/' . basename($file));
-		set_file_buffer($fp, 0);
+		pkwk_set_file_buffer($fp, 0);
 		flock($fp, LOCK_EX);
 		rewind($fp);
 

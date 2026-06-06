@@ -43,7 +43,9 @@ function plugin_paint_action()
 
 	$script = get_base_uri();
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
-	
+	if (! isset($vars['refer'])) return array('msg'=>'','body'=>'');
+	check_editable($vars['refer']);
+
 	//戻り値を初期化
 	$retval['msg'] = $_paint_messages['msg_title'];
 	$retval['body'] = '';

@@ -26,6 +26,9 @@ function plugin_comment_action()
 
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 
+	if (! isset($vars['refer'])) return array('msg'=>'', 'body'=>'');
+	check_editable($vars['refer']);
+
 	if (! isset($vars['msg'])) return array('msg'=>'', 'body'=>''); // Do nothing
 
 	$vars['msg'] = str_replace("\n", '', $vars['msg']); // Cut LFs

@@ -245,7 +245,8 @@ function plugin_ref_body($args)
 
 		$is_image = (! $params['noimg'] && preg_match(PLUGIN_REF_IMAGE, $name));
 
-		if ($is_image && PLUGIN_REF_URL_GET_IMAGE_SIZE && (bool)ini_get('allow_url_fopen')) {
+		if ($is_image && PLUGIN_REF_URL_GET_IMAGE_SIZE && (bool)ini_get('allow_url_fopen') &&
+			pkwk_is_safe_external_url($name)) {
 			$size = @getimagesize($name);
 			if (is_array($size)) {
 				$width  = $size[0];

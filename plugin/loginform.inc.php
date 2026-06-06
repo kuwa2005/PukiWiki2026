@@ -112,6 +112,7 @@ function plugin_loginform_action()
 </style>
 <div class="loginformcontainer">
 <form name="loginform" class="loginform" action="<?php echo htmlsc($action_url) ?>" method="post">
+<?php echo pkwk_csrf_hidden_field() ?>
 <div>
 <table style="border:0">
   <tbody>

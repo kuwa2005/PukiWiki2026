@@ -16,6 +16,8 @@ function plugin_memo_action()
 
 	$script = get_base_uri();
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
+	if (! isset($vars['refer'])) return;
+	check_editable($vars['refer']);
 	if (! isset($vars['msg']) || $vars['msg'] == '') return;
 
 	$memo_body = preg_replace('/' . "\r" . '/', '', $vars['msg']);
