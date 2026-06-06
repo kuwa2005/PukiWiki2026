@@ -30,6 +30,7 @@ require(LIB_DIR . 'auth.php');
 require(LIB_DIR . 'security.php');
 require(LIB_DIR . 'csrf.php');
 require(LIB_DIR . 'proxy.php');
+require(LIB_DIR . 'akismet.php');
 if (! extension_loaded('mbstring')) {
 	require(LIB_DIR . 'mbstring.php');
 }
