@@ -505,3 +505,17 @@ if (! isset($akismet_enabled)) $akismet_enabled = 0;
 if (! isset($akismet_api_key)) $akismet_api_key = '';
 if (! isset($akismet_blog_url)) $akismet_blog_url = '';
 if (! isset($akismet_strict)) $akismet_strict = 0;
+
+/////////////////////////////////////////////////
+// CAPTCHA (optional — edit form, SPAM-02)
+
+if (! isset($captcha_enabled)) $captcha_enabled = 0;
+if (! isset($captcha_provider)) $captcha_provider = 'recaptcha_v2';
+if (! isset($recaptcha_site_key)) $recaptcha_site_key = '';
+if (! isset($recaptcha_secret_key)) $recaptcha_secret_key = '';
+
+/////////////////////////////////////////////////
+// External link filter (optional — write POST, SPAM-04)
+
+if (! isset($spam_block_external_links)) $spam_block_external_links = 0;
+if (! isset($spam_external_link_allowlist)) $spam_external_link_allowlist = array();

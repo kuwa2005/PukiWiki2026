@@ -412,6 +412,7 @@ EOD;
 	$h_msg_edit_cancel_confirm = htmlsc($_msg_edit_cancel_confirm);
 	$h_msg_edit_unloadbefore_message = htmlsc($_msg_edit_unloadbefore_message);
 	$csrf = pkwk_csrf_hidden_field();
+	$captcha = pkwk_captcha_form_markup();
 	$body = <<<EOD
 <div class="edit_form">
  <form action="$script" method="post" class="_plugin_edit_edit_form" style="margin-bottom:0;">
@@ -425,6 +426,7 @@ $template
   <input type="hidden" id="_msg_edit_unloadbefore_message" value="$h_msg_edit_unloadbefore_message" />
   <textarea name="msg" rows="$rows" cols="$cols">$s_postdata</textarea>
   <br />
+$captcha
   <div style="float:left;">
    <input type="submit" name="preview" value="$btn_preview" accesskey="p" />
    <input type="submit" name="write"   value="$_btn_update" accesskey="s" />
