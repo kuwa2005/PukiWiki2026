@@ -9,6 +9,24 @@
 
 ### Added
 
+- **`tools/gen-password-hash.php`** — Web フォームで `{x-php-sha256}` / `{x-php-password}` ハッシュを生成（開発・初回セットアップ用）
+- **`tools/README.md`**, **`tools/.htaccess`** — 支援ツールのセキュリティ注意・IP 制限例
+- **`docs/SETUP.md`** — 初回ログイン（`editor` / `pass`）、パスワード変更フロー、支援ツール案内
+- **`pukiwiki.ini.php.example`** — デモ用初期ユーザー `editor`（SHA-256 ハッシュ、`pass` 相当）を既定値として記載
+
+### Changed
+
+- **`README.md`** — PukiWiki2026 セキュリティ強化 fork のコンセプト、初回ログイン・パスワード変更必須の注意を追記
+- **`docs/ANTI-SPAM.md`** — 初回セットアップ・`tools/gen-password-hash.php` 案内、CSRF 対応済み表記に更新
+- **`docs/DEPLOY.md`** — 初回セットアップ手順（ログイン・パスワード変更）を追記
+
+### Security
+
+- 初期 `editor` / `pass` はデモ用であることを ini 雛形・ドキュメントで明示。本番公開前の変更を必須化
+- パスワード生成支援スクリプトに XSS 対策（`htmlsc`）と本番削除/IP 制限の警告を記載
+
+### Added
+
 - **CAPTCHA（SPAM-02）:** `lib/captcha.php` — 編集フォーム向け reCAPTCHA v2/v3 または honeypot（既定 OFF）
 - **外部リンク制限（SPAM-04）:** `lib/spamfilter.php` — 書き込み POST 本文の外部 URL 拒否（既定 OFF）
 - `pukiwiki.ini.php.example` — CAPTCHA・外部リンク設定雛形

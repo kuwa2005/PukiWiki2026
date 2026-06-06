@@ -69,19 +69,29 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 ## 本番での有効化手順
 
+初回セットアップの全体像（ログイン・パスワード変更）は [SETUP.md](./SETUP.md) を参照してください。
+
 ### 1. 設定ファイルの確認
 
 `pukiwiki.ini.php`（本番では環境ごとにコピー・調整。雛形は `pukiwiki.ini.php.example`）で以下を確認してください。
 
-1. **`$auth_users` に編集者を1件以上登録**（空のままでは誰もログインできません）
+1. **`$auth_users` に編集者を1件以上登録**
+
+   雛形にはデモ用の初期ユーザーが含まれます。**本番・公開前に必ずパスワードを変更**してください。
 
    ```php
    $auth_users = array(
-       'editor' => '{x-php-sha256}YOUR_HASH_HERE',
+       'editor' => '{x-php-sha256}d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', // pass — 必ず変更
    );
    ```
 
-   ハッシュ生成例（PHP CLI）:
+   ハッシュ生成（推奨）: Web 支援スクリプト **`tools/gen-password-hash.php`**
+
+   - URL 例: `https://your-wiki.example/tools/gen-password-hash.php`
+   - `{x-php-sha256}` または `{x-php-password}` を選択可能
+   - **本番公開後は削除または IP 制限**（[tools/README.md](../tools/README.md)）
+
+   CLI 例:
 
    ```bash
    php -r "echo '{x-php-sha256}' . hash('sha256', 'your-password') . PHP_EOL;"
@@ -139,7 +149,7 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 - **匿名編集ができなくなる** — Wiki の「誰でも編集」文化からは離れますが、現代のスパム環境では実用的な落としどころです。
 - **アカウント管理が必要** — `$auth_users` の登録・パスワード変更を運用で行う必要があります。
 - **CAPTCHA は任意** — `$captcha_enabled = 0`（既定）では無効。有効化すると編集保存時に reCAPTCHA または honeypot で第2防御を追加できます（[CAPTCHA 節](#captcha-連携spam-02) 参照）。
-- **CSRF 未対策** — 認証後の編集リクエストには CSRF トークンがありません（`docs/SECURITY-AUDIT.md` SEC-C02 参照）。
+- **CSRF** — 編集 POST 等に CSRF トークンを付与（`lib/csrf.php`、SEC-C02 対応済み）
 
 ---
 
@@ -336,6 +346,7 @@ $spam_external_link_allowlist = array('youtube.com', 'github.com');
 
 ## 関連ドキュメント
 
+- [SETUP.md](./SETUP.md) — 初回ログイン・パスワード変更
 - [SECURITY-AUDIT.md](./SECURITY-AUDIT.md) — セキュリティ監査（スパム・認証関連: SEC-H02, SEC-L04）
 - [DEPLOY.md](./DEPLOY.md) — デプロイ手順
 - [CHANGELOG.md](../CHANGELOG.md) — 変更履歴

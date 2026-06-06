@@ -1,7 +1,9 @@
 # pukiwiki2026
 
-**非公式フォーク** — PukiWiki 1.5.4 UTF-8 をベースにした大規模改造用の作業リポジトリです。  
-公式 PukiWiki Development Team の配布物ではありません。
+**PukiWiki 1.5.4 UTF-8 ベース + PukiWiki2026 セキュリティ強化 fork**（非公式）
+
+> PukiWiki2026 は公式 PukiWiki 1.5.4 UTF-8 をベースに、認証必須化・CSRF・スパム対策（Akismet/CAPTCHA 等）・セキュリティ監査対応を加えた非公式 fork です。  
+> 公式 PukiWiki Development Team の配布物ではありません。
 
 | 項目 | 内容 |
 |------|------|
@@ -16,6 +18,7 @@ pukiwiki2026/
 ├── README.md          … 本ファイル
 ├── CHANGELOG.md       … 改造履歴
 ├── docs/              … 設計・デプロイ・上流メモ
+├── tools/             … セットアップ支援（パスワードハッシュ生成等）
 ├── vendor/            … 未改造の上流参照用（任意）
 ├── patches/           … パッチファイル置き場（任意）
 ├── lib/, plugin/, …   … 作業中の PukiWiki 本体（改造対象）
@@ -30,11 +33,22 @@ pukiwiki2026/
 ## クイックスタート
 
 1. Web サーバー（Apache / nginx + PHP 8.x 推奨）のドキュメントルート、または仮想ホストで本フォルダを公開する。
-2. `pukiwiki.ini.php` を環境に合わせて編集する（初回は `pukiwiki.ini.php` の雛形をコピー）。
+2. `pukiwiki.ini.php.example` を参考に `pukiwiki.ini.php` を編集する（初回はコピー）。
 3. `wiki/`・`cache/`・`backup/` に書き込み権限を付与する。
 4. ブラウザで `index.php` にアクセスし、初期ページが表示されることを確認する。
 
-詳細は [docs/DEPLOY.md](docs/DEPLOY.md) を参照。
+### 初回ログイン
+
+| 項目 | 値 |
+|------|-----|
+| ユーザー名 | `editor` |
+| パスワード | `pass` |
+
+> **必ず変更して使うこと。** `editor` / `pass` はデモ用初期値です。本番・公開前にパスワードを変更してください。
+
+パスワードハッシュの生成: **`tools/gen-password-hash.php`**（Web）または [docs/SETUP.md](docs/SETUP.md) の CLI 手順。
+
+詳細: [docs/SETUP.md](docs/SETUP.md) · [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ## 改造の進め方
 
