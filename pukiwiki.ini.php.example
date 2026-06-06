@@ -1,0 +1,40 @@
+<?php
+// PukiWiki2026 — 認証・編集権限の設定例
+//
+// 使い方:
+//   1. リポジトリの pukiwiki.ini.php を本番にコピー（または既存設定をバックアップ）
+//   2. 下記「認証ブロック」の値を pukiwiki.ini.php に反映する
+//   3. $auth_users / $adminpass を必ず本番用に設定する（空のままではログイン不可）
+//
+// 詳細: docs/ANTI-SPAM.md
+
+/////////////////////////////////////////////////
+// 認証ブロック（スパム対策: 編集はログイン必須）
+/////////////////////////////////////////////////
+
+// フォームログイン（?plugin=loginform）
+$auth_type = AUTH_TYPE_FORM;
+
+// 編集者アカウント（1件以上必須）
+// ハッシュ生成: php -r "echo '{x-php-sha256}' . hash('sha256', 'your-password') . PHP_EOL;"
+$auth_users = array(
+    'editor' => '{x-php-sha256}CHANGE_ME',
+);
+
+$auth_groups = array(
+    'valid-user' => '', // 全認証ユーザーが属する予約グループ
+);
+
+// 閲覧: 匿名可
+$read_auth = 0;
+$read_auth_pages = array();
+
+// 編集: 全ページで認証必須
+$edit_auth = 1;
+$edit_auth_pages = array(
+    '#.*#' => 'valid-user',
+);
+
+// 管理者パスワード（凍結解除・添付アップロード等）
+// ハッシュ生成: php -r "echo '{x-php-sha256}' . hash('sha256', 'admin-password') . PHP_EOL;"
+$adminpass = '{x-php-sha256}CHANGE_ME';

@@ -13,17 +13,22 @@
 - 作業フォルダ `D:\00_project\pukiwiki2026` として非公式フォーク用ドキュメントを整備
 - `docs/SECURITY-AUDIT.md` — 静的セキュリティ監査レポート
 - `docs/ANTI-SPAM.md` — 匿名編集スパム対策の設定・運用ガイド
+- `docs/ISSUES.md` — GitHub Issue 索引（監査 ID・スパム対策との対応表）
+- `pukiwiki.ini.php.example` — 編集認証の設定雛形
 
 ### Changed
 
 - **スパム対策:** 編集認証（`$edit_auth`）を既定で有効化し、全ページ編集にログイン必須化（匿名は閲覧のみ）
 - `pukiwiki.ini.php`: `$auth_type = AUTH_TYPE_FORM`、`$edit_auth_pages` に `#.*# => valid-user`
-- `lib/file.php`: `page_write()` に `is_page_writable()` チェックを追加（防御層）
+- `lib/auth.php`: `enforce_edit_auth_for_request()` で未認証の変更系 GET/POST を早期遮断
+- `lib/pukiwiki.php`: プラグイン実行前に編集認証ゲートを呼び出し
+- `lib/file.php`: `page_write()` に `is_page_writable()` チェックを追加（拒否時はログイン誘導）
 - ゲスト投稿プラグイン（`comment`, `memo`, `insert`, `vote`, `article`, `paint`）に `check_editable()` を追加
 
 ### Security
 
 - 匿名による Wiki 編集・ゲストプラグイン経由の書き込みをブロック（ログイン必須）
+- 編集フォームを経由しない未認証 POST 直叩きをリクエスト早期段階で拒否
 
 ### Notes
 

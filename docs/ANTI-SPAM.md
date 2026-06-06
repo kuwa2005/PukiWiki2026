@@ -50,7 +50,20 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 ### 3. `page_write()` への防御層
 
-`lib/file.php` の `page_write()` で `is_page_writable()` を確認し、認証をバイパスする経路からの書き込みをブロックします。
+`lib/file.php` の `page_write()` で `is_page_writable()` を確認し、認証をバイパスする経路からの書き込みをブロックします。拒否時は `ensure_page_writable()` 経由でログイン画面へ誘導します。
+
+### 4. リクエスト早期ゲート（POST 直叩き対策）
+
+`lib/pukiwiki.php` でプラグイン実行前に `enforce_edit_auth_for_request()` を呼び出し、未認証の変更系リクエストを **共通フック 1 箇所** で遮断します（実装: `lib/auth.php`）。
+
+| 種別 | 動作 |
+|------|------|
+| 未認証 POST（`?write=` / `?plugin=comment` 等） | ログインフォームへリダイレクト（`AUTH_TYPE_FORM` 時） |
+| 未認証 GET `cmd=edit` 等 | 編集フォームを表示せずログイン誘導 |
+| 未認証 GET 閲覧 | 従来どおり許可 |
+| 例外 | `plugin=search` / `plugin=loginform` / `plugin=saml` の POST、`attach` の download/list 等 |
+
+ページロック（`#freeze`）に依存せず、`$edit_auth` と `valid-user` グループで **グローバルに編集権限を強制** します。
 
 ---
 
@@ -58,7 +71,7 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 ### 1. 設定ファイルの確認
 
-`pukiwiki.ini.php`（git 管理下。本番では環境ごとにコピー・調整）で以下を確認してください。
+`pukiwiki.ini.php`（本番では環境ごとにコピー・調整。雛形は `pukiwiki.ini.php.example`）で以下を確認してください。
 
 1. **`$auth_users` に編集者を1件以上登録**（空のままでは誰もログインできません）
 
@@ -88,6 +101,17 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 2. `?plugin=loginform` で登録ユーザーがログインできること
 3. ログイン後に編集・保存できること
 4. 匿名のままページ閲覧ができること
+5. 未認証で `curl -X POST` による編集 payload を送っても保存されないこと（ログイン誘導または拒否）
+
+#### テスト観点（手動）
+
+| # | 操作 | 期待結果 |
+|---|------|----------|
+| 1 | 未認証 GET `?FrontPage` | 閲覧 OK |
+| 2 | 未認証 GET `?FrontPage&cmd=edit` | 拒否（ログイン誘導） |
+| 3 | 未認証 POST 編集 payload | 拒否（保存されない） |
+| 4 | 認証後 `cmd=edit` → 保存 | OK |
+| 5 | ロックページでも未認証は編集不可 | 拒否 |
 
 ### 3. 既存スパムページの削除
 
