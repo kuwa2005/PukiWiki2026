@@ -1,40 +1,45 @@
 <?php
-// PukiWiki2026 — 認証・編集権限の設定例
+// PukiWiki2026 — 設定雛形（抜粋）
 //
-// 使い方:
-//   1. リポジトリの pukiwiki.ini.php を本番にコピー（または既存設定をバックアップ）
-//   2. 下記「認証ブロック」の値を pukiwiki.ini.php に反映する
-//   3. $auth_users / $adminpass を必ず本番用に設定する（空のままではログイン不可）
-//
-// 詳細: docs/ANTI-SPAM.md
+// 使い方: 必要なブロックを pukiwiki.ini.php に反映する
+// 詳細: docs/ANTI-SPAM.md, docs/SECURITY-AUDIT.md, docs/OEMBED.md
 
 /////////////////////////////////////////////////
-// 認証ブロック（スパム対策: 編集はログイン必須）
+// セキュリティ（PukiWiki2026 推奨既定）
 /////////////////////////////////////////////////
 
-// フォームログイン（?plugin=loginform）
-$auth_type = AUTH_TYPE_FORM;
+// PKWK_SAFE_MODE=1 — #version 等の情報漏洩を抑制（SEC-M04）
+// PKWK_DISABLE_INLINE_IMAGE_FROM_URI=1 — 外部画像ビーコン防止（SEC-L02）
 
-// 編集者アカウント（1件以上必須）
-// ハッシュ生成: php -r "echo '{x-php-sha256}' . hash('sha256', 'your-password') . PHP_EOL;"
-$auth_users = array(
-    'editor' => '{x-php-sha256}CHANGE_ME',
-);
+// 管理者パスワード（必ず変更）
+// $adminpass = '{x-php-password}' . password_hash('your-password', PASSWORD_DEFAULT);
 
-$auth_groups = array(
-    'valid-user' => '', // 全認証ユーザーが属する予約グループ
-);
+// 編集者（1件以上必須）
+// $auth_users = array(
+//     'editor' => '{x-php-password}$2y$10$...',
+// );
 
-// 閲覧: 匿名可
-$read_auth = 0;
-$read_auth_pages = array();
+// 信頼プロキシ（HTTP_X_FORWARDED_USER 使用時のみ）
+// $auth_trusted_proxies = array('127.0.0.1', '::1', '10.0.0.1');
 
-// 編集: 全ページで認証必須
-$edit_auth = 1;
-$edit_auth_pages = array(
-    '#.*#' => 'valid-user',
-);
+// PKWK_UPDATE_EXEC を使う場合はホワイトリスト必須（SEC-C01）
+// define('PKWK_UPDATE_EXEC', '/path/to/fixed/script.sh');
+// define('PKWK_UPDATE_EXEC_ALLOWED', array('/path/to/fixed/script.sh'));
 
-// 管理者パスワード（凍結解除・添付アップロード等）
-// ハッシュ生成: php -r "echo '{x-php-sha256}' . hash('sha256', 'admin-password') . PHP_EOL;"
-$adminpass = '{x-php-sha256}CHANGE_ME';
+// セキュリティ HTTP ヘッダー（SEC-M06）
+// $http_response_custom_headers = array(
+//     'X-Content-Type-Options: nosniff',
+//     'X-Frame-Options: SAMEORIGIN',
+//     'Referrer-Policy: same-origin',
+// );
+
+/////////////////////////////////////////////////
+// oEmbed — URL から外部コンテンツを埋め込み表示
+/////////////////////////////////////////////////
+
+$oembed_enabled = 1;
+$oembed_standalone_url = 1;
+$oembed_providers = array('youtube', 'vimeo', 'twitter', 'flickr');
+$oembed_maxwidth = 640;
+$oembed_maxheight = 480;
+$oembed_cache_hours = 24;
