@@ -40,16 +40,30 @@ php -S localhost:8080
 
 ```powershell
 cd D:\00_project\pukiwiki2026
-# 雛形が別名の場合はコピー（環境に合わせる）
-# Copy-Item pukiwiki.ini.php.sample pukiwiki.ini.php
+Copy-Item pukiwiki.ini.php.example pukiwiki.ini.php   # 初回のみ
 ```
 
 `pukiwiki.ini.php` で最低限確認する項目:
 
 - ページ保存ディレクトリ（通常 `wiki/`）
-- 管理者パスワード / 認証方式
+- **`$auth_users`** — 雛形の `editor` / `pass` はデモ用。**公開前に必ず変更**
+- 管理者パスワード `$adminpass`（凍結解除・添付等）
 - タイムゾーン・文字コード（UTF-8）
 - 本番ではデバッグ表示を無効化（`index.php` の `error_reporting(0)` が既定。開発時のみ `define('PKWK_DEBUG', 1)` を `index.php` 先頭付近に追加）
+
+#### 初回ログインとパスワード変更
+
+| 項目 | 初期値（デモ用） |
+|------|------------------|
+| ユーザー名 | `editor` |
+| パスワード | `pass` |
+
+> **必ず変更して使うこと。** 詳細: [SETUP.md](SETUP.md)
+
+パスワードハッシュ生成:
+
+- Web: **`/tools/gen-password-hash.php`**（セットアップ後は削除または IP 制限）
+- CLI: [SETUP.md](SETUP.md) 参照
 
 ### 3.2 ディレクトリ権限
 
@@ -173,5 +187,6 @@ server {
 ## 8. 関連
 
 - [README.md](../README.md)
+- [SETUP.md](SETUP.md) — 初回ログイン・パスワード変更
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - 公式 [README.txt](../README.txt)

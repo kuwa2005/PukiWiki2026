@@ -1,0 +1,8 @@
+# PukiWiki2026 tools/ — 本番では gen-password-hash.php を削除するか IP 制限すること
+#
+# 例: 特定 IP のみ許可（Apache 2.4）
+# Require all denied
+# Require ip 203.0.113.10
+# Require ip 192.168.1.0/24
+#
+# 詳細: tools/README.md, docs/SETUP.md
