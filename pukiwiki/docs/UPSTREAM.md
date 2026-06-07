@@ -21,8 +21,8 @@
 | 場所 | 内容 |
 |------|------|
 | **git タグ `upstream-1.5.4-utf8`** | 公式 PukiWiki 1.5.4 UTF-8 の**未改造スナップショット**（diff 基準） |
-| **ルート直下** | `index.php`、`.htaccess`、`README.md`、`CHANGELOG.md`、`.github/` 等 |
-| **`pukiwiki/`** | 改造済み Wiki 本体（`lib/`、`plugin/`、`docs/`、`tools/` 等） |
+| **ルート直下** | `index.php`、`.htaccess`、`README.md`、`CHANGELOG.md`、`.github/` 等（**プロジェクト文書・git 管理用**） |
+| **`pukiwiki/`** | 改造済み Wiki 本体（`lib/`、`plugin/`、`docs/`、`tools/` 等）＋**公式同梱**（`README.txt`, `INSTALL.txt`, `COPYING.txt`, `UPDATING.txt`, `*.en.txt.zip`, `wiki.en.zip`） |
 
 ローカルに `vendor/` ディレクトリを置く必要はありません。公式との比較は git タグを使います。
 
