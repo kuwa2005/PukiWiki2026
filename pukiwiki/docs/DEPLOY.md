@@ -104,7 +104,7 @@ Web サーバー実行ユーザーが書き込めること:
 - `.env`（秘密情報）
 - `pukiwiki/wiki/`（本番データ — 初回以外は上書きしない）
 - `pukiwiki/cache/`, `pukiwiki/backup/`（再生成可だが運用中は注意）
-- `pukiwiki/docs/`, `pukiwiki/tools/`, `pukiwiki/vendor/`（開発用 — 本番では `.htaccess` で Web アクセス拒否、または配置から除外）
+- `pukiwiki/docs/`, `pukiwiki/tools/`（開発用 — 本番では `.htaccess` で Web アクセス拒否、または配置から除外）
 
 ### 4.2 Apache 例（抜粋）
 

@@ -22,7 +22,7 @@
 
 # 開発用サブディレクトリへの直接アクセスを拒否（本番は index.php + pukiwiki/ のみ配置時は docs 等を除外可）
 <IfModule mod_authz_core.c>
-  RedirectMatch 403 ^/pukiwiki/(docs|tools|vendor|patches)(/|$)
+  RedirectMatch 403 ^/pukiwiki/(docs|tools)(/|$)
 </IfModule>
 
 ## Authentication to this directory with basic-auth

@@ -9,6 +9,19 @@
 
 ### Changed
 
+- **`README.md` / `CHANGELOG.md` を root へ戻す** — git / プロジェクト文書はリポジトリ root。`docs/`・`tools/` は `pukiwiki/` 内のまま
+- **upstream diff を git タグ基準に** — `vendor/` ローカルコピー不要。`upstream-1.5.4-utf8` と `pukiwiki/docs/UPSTREAM.md` を参照
+- **開発用ディレクトリを `pukiwiki/` へ集約** — `docs/`, `tools/` を `pukiwiki/` 配下へ。`.github/` のみ root
+- **バックアップ単位** — `index.php` + `pukiwiki/`（`docs/`・`tools/` 含む）。`pukiwiki/docs/BACKUP.md` 更新
+- **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンクを更新
+
+### Removed
+
+- **`vendor/`** — 公式 pristine コピーのローカル置き場（git タグ `upstream-1.5.4-utf8` で代替）
+- **`patches/`** — 未使用のパッチ保管プレースホルダ
+
+### Changed
+
 - **開発用ディレクトリを `pukiwiki/` へ集約** — `docs/`, `tools/`, `vendor/`, `patches/`, `README.md`, `CHANGELOG.md` を root から `pukiwiki/` へ移動。`.github/` のみ root に残す
 - **バックアップ単位** — `index.php` + `pukiwiki/`（`docs/` 含む）。`docs/BACKUP.md` 更新
 - **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンク, `tools/gen-password-hash.php` ドキュメントパスを更新

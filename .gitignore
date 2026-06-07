@@ -20,10 +20,6 @@ pukiwiki/attach/*
 !pukiwiki/attach/.htaccess
 !pukiwiki/attach/index.html
 
-# vendor 内の上流実体（参照用コピーはローカル任意）
-pukiwiki/vendor/*
-!pukiwiki/vendor/.gitkeep
-
 # OS / エディタ
 .DS_Store
 Thumbs.db

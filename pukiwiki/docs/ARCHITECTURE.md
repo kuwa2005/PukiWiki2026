@@ -48,7 +48,7 @@ index.php（DATA_HOME = ./pukiwiki/）
          └── wiki/*.txt（ページ本文・データ）
 ```
 
-**デプロイ / バックアップ単位:** リポジトリ root の `index.php` と `pukiwiki/` ディレクトリ（`docs/`・`tools/`・`vendor/`・`patches/` を含む）。
+**デプロイ / バックアップ単位:** リポジトリ root の `index.php` と `pukiwiki/` ディレクトリ（`docs/`・`tools/` を含む）。
 
 ### 2.1 主要ディレクトリ
 
@@ -64,8 +64,6 @@ index.php（DATA_HOME = ./pukiwiki/）
 | `pukiwiki/backup/` | ページバックアップ（ランタイム） |
 | `pukiwiki/docs/` | 設計・デプロイ文書 |
 | `pukiwiki/tools/` | セットアップ支援 |
-| `pukiwiki/vendor/` | 上流 pristine 参照用 |
-| `pukiwiki/patches/` | パッチ保管 |
 
 ---
 
@@ -127,7 +125,7 @@ index.php（DATA_HOME = ./pukiwiki/）
 
 | 日付 | 決定 | 理由 | 代替案 |
 |------|------|------|--------|
-| YYYY-MM-DD | （例: vendor に pristine を置く） | diff 基準の明確化 | submodule は使わない |
+| 2026-06-07 | git タグ `upstream-1.5.4-utf8` を diff 基準に | vendor/ コピー不要 | submodule / vendor ディレクトリ |
 | | | | |
 
 ---
@@ -137,4 +135,4 @@ index.php（DATA_HOME = ./pukiwiki/）
 - [UPSTREAM.md](UPSTREAM.md) — 上流取得・diff
 - [DEPLOY.md](DEPLOY.md) — デプロイ手順
 - [BACKUP.md](BACKUP.md) — バックアップ・リストア
-- [CHANGELOG.md](../CHANGELOG.md) — 変更履歴
+- [CHANGELOG.md](../../CHANGELOG.md) — 変更履歴

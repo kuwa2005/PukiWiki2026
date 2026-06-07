@@ -100,7 +100,7 @@ git show upstream-1.5.4-utf8 --stat
 git diff upstream-1.5.4-utf8..main --stat
 ```
 
-公式配布物との diff 方針・`vendor/` の扱いは [UPSTREAM.md](./UPSTREAM.md) を参照。
+公式配布物との diff 方針（git タグ `upstream-1.5.4-utf8`）は [UPSTREAM.md](./UPSTREAM.md) を参照。
 
 ## ロールバック例
 
