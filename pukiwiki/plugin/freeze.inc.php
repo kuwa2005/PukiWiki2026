@@ -13,7 +13,7 @@ function plugin_freeze_action()
 {
 	global $vars, $function_freeze;
 	global $_title_isfreezed, $_title_freezed, $_title_freeze;
-	global $_msg_invalidpass, $_msg_freezing, $_btn_freeze;
+	global $_msg_invalidpass, $_msg_freezing, $_msg_freezing_confirm, $_btn_freeze;
 
 	$script = get_base_uri();
 	$page = isset($vars['page']) ? $vars['page'] : '';
@@ -48,8 +48,11 @@ function plugin_freeze_action()
 			"<p><strong>$_msg_invalidpass</strong></p>\n" : '';
 		$pass_input = pkwk_is_authenticated() ? '' :
 			'<input type="password" name="pass" size="12" />';
+		$action_msg = pkwk_is_authenticated()
+			? "<p>$_msg_freezing_confirm</p>\n"
+			: "<p>$_msg_freezing</p>\n";
 		$body  .= <<<EOD
-<p>$_msg_freezing</p>
+$action_msg
 <form action="$script" method="post">
  <div>
   <input type="hidden"   name="cmd"  value="freeze" />

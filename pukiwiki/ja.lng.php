@@ -258,8 +258,9 @@ $_title_filelist = 'ページファイルの一覧';
 $_title_isfreezed = '$1 はすでに凍結されています';
 $_title_freezed   = '$1 を凍結しました';
 $_title_freeze    = '$1 の凍結';
-$_msg_freezing    = '凍結用のパスワードを入力してください。';
-$_btn_freeze      = '凍結';
+$_msg_freezing         = '凍結用のパスワードを入力してください。';
+$_msg_freezing_confirm = '凍結するには、以下のボタンを押してください。';
+$_btn_freeze           = '凍結';
 
 ///////////////////////////////////////
 // insert.inc.php
@@ -422,8 +423,9 @@ $_tracker_messages = array(
 $_title_isunfreezed = '$1 は凍結されていません';
 $_title_unfreezed   = '$1 の凍結を解除しました';
 $_title_unfreeze    = '$1 の凍結解除';
-$_msg_unfreezing    = '凍結解除用のパスワードを入力してください。';
-$_btn_unfreeze      = '凍結解除';
+$_msg_unfreezing         = '凍結解除用のパスワードを入力してください。';
+$_msg_unfreezing_confirm = '凍結解除するには、以下のボタンを押してください。';
+$_btn_unfreeze           = '凍結解除';
 
 ///////////////////////////////////////
 // versionlist.inc.php
