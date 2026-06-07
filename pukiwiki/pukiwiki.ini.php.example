@@ -110,6 +110,11 @@ $attach_max_filesize = 2 * 1024 * 1024 * 1024;
 
 // Skins / Stylesheets
 define('SKIN_DIR', 'pukiwiki/skin/');
+// サブディレクトリ skin（modernskin / bluebox 等）では SKIN_FILE も指定すること。
+// define('SKIN_DIR', 'pukiwiki/skin/modernskin/');
+// define('SKIN_FILE', DATA_HOME . 'skin/modernskin/pukiwiki.skin.php');
+// PukiWiki 1.5.4 由来スキンは skin/main.js 等のパスをスキン側で SKIN_DIR に合わせて書き換えること（symlink 推奨はしない）。
+// 詳細: docs/PUKIWIKI154-SKIN.md
 // Skin files (*.skin.php) are at DATA_HOME . 'skin/' (filesystem).
 // CSS/JS are served via web path SKIN_DIR (relative to index.php).
 

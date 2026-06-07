@@ -122,9 +122,19 @@ $perm_check_on_boot = FALSE;
 
 ---
 
-## 6. 関連ドキュメント
+## 6. スキン（任意）
+
+カスタムスキンは `pukiwiki/pukiwiki.ini.php` の **`SKIN_DIR`** と **`SKIN_FILE`** で指定します。PukiWiki2026 が提供するのはこの設定のみで、1.5.4 由来スキンのパス修正は利用者側の責務です。
+
+- サブディレクトリ skin（modernskin / bluebox 等）では **`SKIN_FILE` も必須**
+- 詳細: [PUKIWIKI154-SKIN.md](./PUKIWIKI154-SKIN.md)
+
+---
+
+## 7. 関連ドキュメント
 
 - [DEPLOY.md](./DEPLOY.md) — デプロイ・ディレクトリ権限
+- [PUKIWIKI154-SKIN.md](./PUKIWIKI154-SKIN.md) — PukiWiki 1.5.4 スキンのパス修正
 - [ANTI-SPAM.md](./ANTI-SPAM.md) — 編集認証・スパム対策
 - [tools/README.md](../tools/README.md) — 支援ツールのセキュリティ注意
 - 公式 [INSTALL.txt](../INSTALL.txt) — インストール・アップグレード手順（上流同梱）

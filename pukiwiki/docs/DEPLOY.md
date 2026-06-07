@@ -74,6 +74,13 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回
 - Web: **`/pukiwiki/tools/gen-password-hash.php`**（セットアップ後は削除または IP 制限）
 - CLI: [SETUP.md](SETUP.md) 参照
 
+#### スキン（`SKIN_DIR` / `SKIN_FILE`）
+
+- 同梱デフォルト: `SKIN_DIR` = `pukiwiki/skin/`（`SKIN_FILE` は `default.ini.php` が解決）
+- サブディレクトリ skin（modernskin / bluebox 等）では **`SKIN_FILE` も必須**
+- PukiWiki 1.5.4 由来スキンは **スキン側で** CSS/JS パスを `SKIN_DIR` に合わせて書き換える（Wiki ルート symlink は推奨しない）
+- 詳細: [PUKIWIKI154-SKIN.md](PUKIWIKI154-SKIN.md)
+
 ### 3.2 ディレクトリ権限
 
 Web サーバー実行ユーザーが書き込めること:
@@ -244,7 +251,7 @@ Copy-Item index.php, pukiwiki -Destination $backup -Recurse
 |------|------|
 | 500 エラー | PHP エラーログ、`pukiwiki/pukiwiki.ini.php` の syntax |
 | 保存できない | `pukiwiki/wiki/` 権限 |
-| CSS/JS 404 | `SKIN_DIR` / `IMAGE_DIR` が `pukiwiki/skin/` 等になっているか |
+| CSS/JS 404 | `SKIN_DIR` / `IMAGE_DIR` が `pukiwiki/skin/` 等になっているか。サブディレクトリ skin では `SKIN_FILE` も設定。1.5.4 スキンは [PUKIWIKI154-SKIN.md](./PUKIWIKI154-SKIN.md) |
 | プラグインエラー | `pukiwiki/plugin/` の PHP 互換、改造差分 |
 
 ---
@@ -253,6 +260,7 @@ Copy-Item index.php, pukiwiki -Destination $backup -Recurse
 
 - [README.md](../../README.md)
 - [SETUP.md](SETUP.md) — 初回ログイン・パスワード変更
+- [PUKIWIKI154-SKIN.md](PUKIWIKI154-SKIN.md) — PukiWiki 1.5.4 スキン・`SKIN_DIR` / `SKIN_FILE`
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [BACKUP.md](BACKUP.md) — バックアップ・リストア
 - 公式 [README.txt](../README.txt) · [INSTALL.txt](../INSTALL.txt)
