@@ -18,6 +18,8 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
 
 `pukiwiki/pukiwiki.ini.php` は git 管理外です。初回は `pukiwiki/pukiwiki.ini.php.example` をコピーし、環境に合わせて調整してください。
 
+添付ファイルの上限は `pukiwiki/pukiwiki.ini.php` の **`$attach_max_filesize`**（**バイト**、雛形既定 **2GB** = `2 * 1024 * 1024 * 1024`）で変更します。PukiWiki 設定だけでは PHP / Web サーバーの制限は超えられません — **`upload_max_filesize`** と **`post_max_size`**（php.ini 等）および nginx の **`client_max_body_size`** 等も同上限以上にしてください。
+
 ---
 
 ## 2. 初回ログイン（デモ用アカウント）

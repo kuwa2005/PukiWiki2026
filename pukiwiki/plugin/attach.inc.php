@@ -10,14 +10,20 @@
 //
 // File attach plugin
 
-// NOTE (PHP > 4.2.3):
-//    This feature is disabled at newer version of PHP.
-//    Set this at php.ini if you want.
-// Max file size for upload on PHP (PHP default: 2MB)
-ini_set('upload_max_filesize', '2M');
+// Max file size for upload (bytes). Override in pukiwiki.ini.php: $attach_max_filesize
+if (! defined('PLUGIN_ATTACH_MAX_FILESIZE')) {
+	$_pkwk_attach_max = isset($GLOBALS['attach_max_filesize'])
+		? (int)$GLOBALS['attach_max_filesize']
+		: (1024 * 1024); // default: 1MB
+	define('PLUGIN_ATTACH_MAX_FILESIZE', $_pkwk_attach_max);
+	unset($_pkwk_attach_max);
+}
 
-// Max file size for upload on script of PukiWikiX_FILESIZE
-define('PLUGIN_ATTACH_MAX_FILESIZE', (1024 * 1024)); // default: 1MB
+// NOTE: ini_set may fail on PHP-FPM/CGI — set upload_max_filesize / post_max_size in php.ini too
+$_pkwk_attach_mb = max(2, (int)ceil(PLUGIN_ATTACH_MAX_FILESIZE / (1024 * 1024)));
+@ini_set('upload_max_filesize', $_pkwk_attach_mb . 'M');
+@ini_set('post_max_size', ($_pkwk_attach_mb + 64) . 'M');
+unset($_pkwk_attach_mb);
 
 // 管理者だけが添付ファイルをアップロードできるようにする
 define('PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY', TRUE); // FALSE or TRUE
@@ -404,7 +410,14 @@ EOD;
 	if (! is_page($page))          return '#attach(): No such page<br />'          . $navi;
 
 	$maxsize = PLUGIN_ATTACH_MAX_FILESIZE;
-	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], number_format($maxsize/1024) . 'KB');
+	if ($maxsize >= 1073741824 && ($maxsize % 1073741824) == 0) {
+		$maxsize_str = number_format($maxsize / 1073741824) . 'GB';
+	} else if ($maxsize >= 1048576 && ($maxsize % 1048576) == 0) {
+		$maxsize_str = number_format($maxsize / 1048576) . 'MB';
+	} else {
+		$maxsize_str = number_format($maxsize / 1024) . 'KB';
+	}
+	$msg_maxsize = sprintf($_attach_messages['msg_maxsize'], $maxsize_str);
 
 	$pass = '';
 	if ((PLUGIN_ATTACH_PASSWORD_REQUIRE || PLUGIN_ATTACH_UPLOAD_ADMIN_ONLY) &&

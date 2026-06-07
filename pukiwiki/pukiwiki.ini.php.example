@@ -99,6 +99,13 @@ define('COUNTER_DIR',   DATA_HOME . 'counter/'  ); // Counter plugin's counts
 define('PLUGIN_DIR',    DATA_HOME . 'plugin/'   ); // Plugin directory
 
 /////////////////////////////////////////////////
+// Attach plugin — max upload size (bytes)
+// PukiWiki 側の上限。PHP の upload_max_filesize / post_max_size および
+// Web サーバー (nginx client_max_body_size 等) も同値以上にすること。
+// 2GB = 2 * 1024 * 1024 * 1024 (= 2147483648)
+$attach_max_filesize = 2 * 1024 * 1024 * 1024;
+
+/////////////////////////////////////////////////
 // Directory settings II (ended with '/')
 
 // Skins / Stylesheets
