@@ -30,7 +30,7 @@ php -S localhost:8080
 ### 2.2 XAMPP / Laragon 等
 
 1. 本フォルダを vhost の DocumentRoot に指定、または `htdocs/pukiwiki2026` へシンボリックリンク。
-2. `httpd.conf` / vhost で `AllowOverride` を有効にし、各ディレクトリの `.htaccess` が効くようにする。
+2. 同梱の `.htaccess` を使う場合は、`httpd.conf` / vhost で `AllowOverride` を有効にする（**任意・推奨** — 詳細は [4.5 `.htaccess`（任意・推奨）](#45-htaccess任意推奨)）。
 
 ---
 
@@ -104,7 +104,7 @@ Web サーバー実行ユーザーが書き込めること:
 - `.env`（秘密情報）
 - `pukiwiki/wiki/`（本番データ — 初回以外は上書きしない）
 - `pukiwiki/cache/`, `pukiwiki/backup/`（再生成可だが運用中は注意）
-- `pukiwiki/docs/`, `pukiwiki/tools/`（開発用 — 本番では `.htaccess` で Web アクセス拒否、または配置から除外）
+- `pukiwiki/docs/`, `pukiwiki/tools/`（開発用 — 本番では配置から除外するか、Apache なら `.htaccess` で Web アクセス拒否を**推奨**）
 
 ### 4.2 Apache 例（抜粋）
 
@@ -155,6 +155,29 @@ server {
 | 開発・デバッグ | `index.php` 先頭付近に `define('PKWK_DEBUG', 1);` を追加 → `error_reporting(E_ALL)` |
 
 サーバー側の `display_errors = Off` も併用すること。詳細は PHP エラーログへ出力する。
+
+---
+
+### 4.5 `.htaccess`（任意・推奨）
+
+**方針:** 同梱の `.htaccess` は**任意**です。Apache で `AllowOverride` が有効な環境では、Web から直接見られたくないディレクトリやファイルへのアクセス拒否に使えます。**無くても Wiki 本体**（`index.php` 経由の表示・編集・保存）は動作します。nginx 等 `.htaccess` 非対応の Web サーバーでは、vhost / `location` 設定で同等の保護を行ってください。
+
+| ファイル | 役割 |
+|----------|------|
+| **ルート `.htaccess`** | git checkout 全体を DocumentRoot にした**開発環境**向け。`.github/` 等への直接アクセス拒否、`.` 始まり ht 系ファイル（`.htaccess` 等）の直接参照拒否 |
+| **`pukiwiki/.htaccess`** | `*.ini.php` / `*.lng.php` / `*.txt` 等の直接参照拒否。`pukiwiki/docs/`, `tools/` への直接アクセス拒否 |
+| **`pukiwiki/attach/.htaccess`** 等 | `wiki/`, `cache/`, `backup/`, `attach/` 等のデータディレクトリへの直接 HTTP アクセス拒否（**推奨**。`wiki/.htaccess` は未同梱の場合あり — 下記参照） |
+| **`pukiwiki/tools/.htaccess`** | IP 制限の記述例（コメントアウト済み）。本番で `gen-password-hash.php` を残す場合の参考 |
+
+**`wiki/` の保護:** ページソース（`.txt`）が DocumentRoot 配下にある場合、直接 URL で読まれるリスクがあります。Apache では `pukiwiki/wiki/.htaccess` で `Require all denied` を置くことを**推奨**します（リポジトリに未同梱の場合は手動作成）。nginx では例:
+
+```nginx
+location ^~ /pukiwiki/wiki/ { deny all; }
+location ^~ /pukiwiki/docs/  { deny all; }
+location ^~ /pukiwiki/tools/ { deny all; }
+```
+
+**配置から除外する方式**（開発用 `docs/` / `tools/` を本番に載せない）でも同等の効果が得られます。`.htaccess` は「載せたまま Web から隠す」ための**追加防御**と考えてください。
 
 ---
 

@@ -48,7 +48,7 @@ PukiWiki 1.5.4 は 2022 年に公開された CVE（CVE-2022-36350 / CVE-2022-34
 | SEC-H02 | High | 認証 | フォームログイン（`loginform`）にブルートフォース対策なし。`pkwk_login()` の `sleep(2)` は管理者パスワード専用 | `plugin/loginform.inc.php`、`lib/auth.php` | ログイン失敗時の指数バックオフ、IP/アカウント単位レート制限、必要なら CAPTCHA / アカウントロック |
 | SEC-H03 | High | 認証 | `AUTH_TYPE_EXTERNAL_X_FORWARDED_USER` 使用時、`HTTP_X_FORWARDED_USER` を無検証で信頼 | `lib/auth.php`（`ensure_valid_auth_user`） | 信頼プロキシ IP 限定、ヘッダー署名検証、または REMOTE_USER 等への限定 |
 | SEC-H04 | High | 認証 | ログイン成功後 `url_after_login` パラメータで任意 URL へリダイレクト（フィッシング） | `plugin/loginform.inc.php`、`lib/auth.php`（`form_auth_redirect`） | 同一オリジン相対パスのみ許可。許可リスト方式に変更 |
-| SEC-H05 | High | 情報漏洩 / 設定 | `wiki/`（`DATA_DIR`）に `.htaccess` なし。Web サーバー設定次第で `.txt` ページソース直アクセス可能 | `wiki/`（未保護）、`backup/`/`cache/`/`attach/` は保護済み | `wiki/.htaccess` で `Require all denied`、nginx では location deny。DocumentRoot 外配置も検討 |
+| SEC-H05 | High | 情報漏洩 / 設定 | `wiki/`（`DATA_DIR`）に `.htaccess` 未同梱。Web サーバー設定次第で `.txt` ページソース直アクセス可能 | `wiki/`（未保護）、`backup/`/`cache/`/`attach/` は保護済み | **推奨:** `wiki/.htaccess` で `Require all denied`、nginx では `location deny`。`.htaccess` は任意だが、DocumentRoot 配下では保護を推奨（[DEPLOY.md §4.5](DEPLOY.md#45-htaccess任意推奨)） |
 | SEC-H06 | High | ファイルアップロード | 添付 MIME 検証が拡張子ベース。`Content-Disposition: inline` 配信のため HTML/SVG 等アップロード時に XSS 化しうる（管理者のみでも被害拡大） | `plugin/attach.inc.php`（`attach_mime_content_type`、`open()`） | 許可拡張子ホワイトリスト、`Content-Disposition: attachment`、CSP `default-src 'self'` |
 | SEC-H07 | High | セッション | セッション Cookie に `HttpOnly` / `Secure` / `SameSite` 未設定 | `lib/init.php`（session ini のみ） | `session_set_cookie_params()` で本番必須属性を設定 |
 | SEC-M01 | Medium | 認証 | 平文パスワードスキーム `{cleartext}` およびサンプル `$auth_users` に平文例 | `lib/auth.php`、`pukiwiki.ini.php` | 平文スキームを廃止または警告。サンプルから平文例を削除 |
@@ -61,7 +61,7 @@ PukiWiki 1.5.4 は 2022 年に公開された CVE（CVE-2022-36350 / CVE-2022-34
 | SEC-M08 | Medium | PHP 互換 | `set_file_buffer()`（PHP 8 削除）、`mb_ereg()`（非推奨）使用 | `lib/file.php`、`lib/func.php` | PHP 8.x CI 追加。非推奨 API 置換 |
 | SEC-L01 | Low | 設定 | `index.php` で `error_reporting(E_ERROR \| E_PARSE)` — 一部環境で情報漏洩余地 | `index.php` | 本番は `0` またはログファイル出力のみ |
 | SEC-L02 | Low | プライバシー | `PKWK_DISABLE_INLINE_IMAGE_FROM_URI=0` 既定 — 外部 URI インライン画像で Web ビーコン可能 | `pukiwiki.ini.php`、`lib/make_link.php` | 必要なら `1` に設定 |
-| SEC-L03 | Low | 設定 | `.htaccess` の `^\.ht` 拒否がコメントアウト | `.htaccess` | 有効化（`AllowOverride` 前提） |
+| SEC-L03 | Low | 設定 | （2026-06 時点）ルート・`pukiwiki/.htaccess` で `^\.ht` 拒否は有効 | `.htaccess` | Apache 利用時は `AllowOverride` を有効化。`.htaccess` 自体は任意（[DEPLOY.md §4.5](DEPLOY.md#45-htaccess任意推奨)） |
 | SEC-L04 | Low | 監査 | `pcomment` / `comment` 等、ゲスト投稿プラグインはスパム・荒らし対象 | `plugin/pcomment.inc.php` 等 | CAPTCHA、レート制限、凍結運用 |
 | SEC-L05 | Low | 依存 | PHP 8.1+ 公式確認済みだが 8.2/8.3/8.4 での回帰未検証 | 全体 | CI で複数 PHP バージョンの smoke test |
 
@@ -102,7 +102,7 @@ PukiWiki 1.5.4 は 2022 年に公開された CVE（CVE-2022-36350 / CVE-2022-34
 
 1. **SEC-C02** CSRF トークン基盤の追加（編集・管理者 POST から）
 2. **SEC-H01** パスワードハッシュを `password_hash` へ移行
-3. **SEC-H05** `wiki/.htaccess` 追加と DEPLOY 手順更新
+3. **SEC-H05** `wiki/.htaccess` 追加（推奨）と DEPLOY 手順整備 — `.htaccess` は Wiki 動作に必須ではない
 4. **SEC-H07** セッション Cookie 属性の本番設定
 5. **SEC-H02** ログインレート制限
 6. **SEC-H06** 添付 MIME/拡張子ホワイトリスト + `attachment` 配信

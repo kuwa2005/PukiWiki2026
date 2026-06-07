@@ -110,6 +110,14 @@ index.php（DATA_HOME = ./pukiwiki/）
 | CSRF 対策 | PukiWiki 標準 + （追加施策） |
 | ファイルアップロード | `attach/` 制限 |
 | 本番設定 | `lib/init.php` のデバッグ表示オフ等 |
+| ディレクトリ保護 | `.htaccess` は**任意・推奨**（Apache）。無くても Wiki 本体は動作。詳細: [DEPLOY.md §4.5](DEPLOY.md#45-htaccess任意推奨) |
+
+### 5.1 `.htaccess` の位置付け
+
+- **ルート `.htaccess`:** リポジトリ root を DocumentRoot にした開発時の `.github/` 等の遮断。
+- **`pukiwiki/.htaccess`:** 設定ファイル（`*.ini.php` 等）と開発用サブディレクトリ（`docs/`, `tools/`）の直接アクセス拒否。
+- **各データディレクトリ**（`attach/`, `cache/`, `backup/` 等）: 直接 HTTP アクセス拒否を**推奨**。`wiki/` も DocumentRoot 配下なら同様（[SECURITY-AUDIT.md](SECURITY-AUDIT.md) SEC-H05）。
+- nginx 等では vhost / `location deny` で同等設定。本番で開発用ディレクトリを配置しない方式でもよい。
 
 ---
 

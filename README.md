@@ -33,6 +33,8 @@ pukiwiki2026/                    ← git リポジトリ root
 
 **バックアップ:** `index.php` と `pukiwiki/` をコピーするだけで完了。詳細: [pukiwiki/docs/BACKUP.md](pukiwiki/docs/BACKUP.md)
 
+**`.htaccess`:** 同梱の `.htaccess` は**任意・推奨**（Apache で直接アクセス拒否に使える。無くても Wiki 本体は動作）。詳細: [pukiwiki/docs/DEPLOY.md §4.5](pukiwiki/docs/DEPLOY.md#45-htaccess任意推奨)
+
 公式との diff は git タグ **`upstream-1.5.4-utf8`** を基準に取ります（[pukiwiki/docs/UPSTREAM.md](pukiwiki/docs/UPSTREAM.md)）。ローカルに vendor コピーは不要です。
 
 ## クイックスタート
