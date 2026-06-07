@@ -190,7 +190,7 @@ PukiWiki 本体は IDN を処理しない。`pkwk_safe_redirect_url()` / CSRF Or
 
 | ID | Issue | 深刻度 |
 |----|-------|--------|
-| SEC-U01 | （PR マージ時に起票） | High |
+| SEC-U01 | https://github.com/kuwa2005/PukiWiki2026/issues/81 | High |
 | SEC-U02 | （Medium — 必要に応じて起票） | Medium |
 
 ---
