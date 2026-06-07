@@ -257,8 +257,9 @@ $_title_filelist = 'List of page files';
 $_title_isfreezed = ' $1 has already been frozen';
 $_title_freezed   = ' $1 has been frozen.';
 $_title_freeze    = 'Freeze  $1';
-$_msg_freezing    = 'Please input the password for freezing.';
-$_btn_freeze      = 'Freeze';
+$_msg_freezing         = 'Please input the password for freezing.';
+$_msg_freezing_confirm = 'Press the button below to freeze this page.';
+$_btn_freeze           = 'Freeze';
 
 ///////////////////////////////////////
 // include.inc.php
@@ -421,8 +422,9 @@ $_tracker_messages = array(
 $_title_isunfreezed = ' $1 is not frozen';
 $_title_unfreezed   = ' $1 has been unfrozen.';
 $_title_unfreeze    = 'Unfreeze  $1';
-$_msg_unfreezing    = 'Please input the password for unfreezing.';
-$_btn_unfreeze      = 'Unfreeze';
+$_msg_unfreezing         = 'Please input the password for unfreezing.';
+$_msg_unfreezing_confirm = 'Press the button below to unfreeze this page.';
+$_btn_unfreeze           = 'Unfreeze';
 
 ///////////////////////////////////////
 // versionlist.inc.php
