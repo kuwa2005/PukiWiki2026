@@ -18,27 +18,26 @@
 ## ディレクトリ構成
 
 ```
-pukiwiki2026/
-├── README.md          … 本ファイル
-├── CHANGELOG.md       … 改造履歴
-├── docs/              … 設計・デプロイ・上流メモ
-├── tools/             … セットアップ支援（パスワードハッシュ生成等）
-├── vendor/            … 未改造の上流参照用（任意）
-├── patches/           … パッチファイル置き場（任意）
-├── lib/, plugin/, …   … 作業中の PukiWiki 本体（改造対象）
-├── wiki/              … ページデータ（運用時に生成）
-├── cache/, backup/    … ランタイム生成物
-└── .gitignore
+pukiwiki2026/                    ← git リポジトリ root
+├── index.php                    ← エントリ（DATA_HOME 定義）
+├── README.md, CHANGELOG.md      … 開発用
+├── docs/, tools/, vendor/        … 開発用（バックアップ対象外）
+└── pukiwiki/                    ← ★ デプロイ / バックアップ対象
+    ├── lib/, plugin/, skin/, image/
+    ├── wiki/, cache/, backup/, attach/
+    ├── pukiwiki.ini.php         … 設定（git 除外）
+    └── pukiwiki.ini.php.example
 ```
 
-ルート直下にはすでに PukiWiki 1.5.4 のソースが配置されています（`lib/init.php` の `S_VERSION` を参照）。  
-`vendor/` には**未改造の公式配布物**を別途置き、diff の基準に使います。
+**バックアップ:** `index.php` と `pukiwiki/` をコピーするだけで完了。詳細: [docs/BACKUP.md](docs/BACKUP.md)
+
+`vendor/` には**未改造の公式配布物**を別途置き、diff の基準に使います（[docs/UPSTREAM.md](docs/UPSTREAM.md)）。
 
 ## クイックスタート
 
 1. Web サーバー（Apache / nginx + PHP 8.x 推奨）のドキュメントルート、または仮想ホストで本フォルダを公開する。
-2. `pukiwiki.ini.php.example` を参考に `pukiwiki.ini.php` を編集する（初回はコピー）。
-3. `wiki/`・`cache/`・`backup/` に書き込み権限を付与する。
+2. `pukiwiki/pukiwiki.ini.php.example` を参考に `pukiwiki/pukiwiki.ini.php` を編集する（初回はコピー）。
+3. `pukiwiki/wiki/`・`pukiwiki/cache/`・`pukiwiki/backup/` に書き込み権限を付与する。
 4. ブラウザで `index.php` にアクセスし、初期ページが表示されることを確認する。
 
 ### 初回ログイン
@@ -70,7 +69,7 @@ git pull origin main   # 作業前に同期
 # 変更後: git add … → git commit → git push origin main
 ```
 
-`.env` や `wiki/`・`cache/`・`vendor/pukiwiki-1.5.4_utf8/` 等は `.gitignore` で除外済みです。
+`.env` や `pukiwiki/wiki/`・`pukiwiki/cache/`・`vendor/pukiwiki-1.5.4_utf8/` 等は `.gitignore` で除外済みです。
 
 ## 参考リンク
 

@@ -18,9 +18,9 @@ if (defined('PKWK_DEBUG') && PKWK_DEBUG) {
 //define('TDIARY_THEME',   'digital_gadgets');
 
 // Directory definition
-// (Ended with a slash like '../path/to/pkwk/', or '')
-define('DATA_HOME',	'');
-define('LIB_DIR',	'lib/');
+// DATA_HOME: Wiki 本体（lib, plugin, skin, wiki 等）のルート。末尾スラッシュ必須。
+define('DATA_HOME', __DIR__ . '/pukiwiki/');
+define('LIB_DIR',     DATA_HOME . 'lib/');
 
 require(LIB_DIR . 'pukiwiki.php');
 ?>

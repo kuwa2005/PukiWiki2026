@@ -31,34 +31,40 @@
 
 ---
 
-## 2. 現状アーキテクチャ（PukiWiki 1.5.4）
+## 2. 現状アーキテクチャ（PukiWiki 1.5.4 + pukiwiki/ 集約）
 
 ```
 Browser
    │
    ▼
-index.php ──► lib/init.php（bootstrap, S_VERSION）
-   │              │
-   │              ├── lib/config.php / pukiwiki.ini.php
-   │              ├── lib/plugin.php
-   │              └── lib/pukiwiki.php（メイン処理）
+index.php（DATA_HOME = ./pukiwiki/）
    │
-   ├── plugin/*.inc.php（機能拡張）
-   ├── skin/*.skin.php（表示）
-   └── wiki/*.txt（ページ本文・データ）
+   └── pukiwiki/
+         ├── lib/init.php（bootstrap, S_VERSION）
+         │      ├── pukiwiki.ini.php
+         │      └── lib/pukiwiki.php（メイン処理）
+         ├── plugin/*.inc.php（機能拡張）
+         ├── skin/*.skin.php（表示）
+         └── wiki/*.txt（ページ本文・データ）
 ```
+
+**デプロイ / バックアップ単位:** リポジトリ root の `index.php` と `pukiwiki/` ディレクトリのみ。  
+`docs/`, `tools/`, `vendor/` 等は開発用でバックアップ対象外。
 
 ### 2.1 主要ディレクトリ
 
 | パス | 役割 |
 |------|------|
-| `lib/` | コアライブラリ、Wiki エンジン |
-| `plugin/` | プラグイン（`plugin=xxx` で呼び出し） |
-| `skin/` | 表示テンプレート・CSS |
-| `wiki/` | ページデータ（テキスト） |
-| `attach/` | 添付ファイル |
-| `cache/` | キャッシュ（ランタイム） |
-| `backup/` | ページバックアップ（ランタイム） |
+| `index.php` | エントリポイント（`DATA_HOME` 定義のみ） |
+| `pukiwiki/lib/` | コアライブラリ、Wiki エンジン |
+| `pukiwiki/plugin/` | プラグイン（`plugin=xxx` で呼び出し） |
+| `pukiwiki/skin/` | 表示テンプレート・CSS |
+| `pukiwiki/wiki/` | ページデータ（テキスト） |
+| `pukiwiki/attach/` | 添付ファイル |
+| `pukiwiki/cache/` | キャッシュ（ランタイム） |
+| `pukiwiki/backup/` | ページバックアップ（ランタイム） |
+| `docs/` | 設計・デプロイ文書（開発用） |
+| `tools/` | セットアップ支援（開発用） |
 
 ---
 
@@ -68,10 +74,10 @@ index.php ──► lib/init.php（bootstrap, S_VERSION）
 
 | レイヤ | 方針 | 備考 |
 |--------|------|------|
-| 設定 | `pukiwiki.ini.php` / `.env` に集約 | 秘密情報は git 除外 |
-| 拡張 | 新規は `plugin/` 優先 | コア触る理由を必ず記載 |
-| 表示 | `skin/` または専用 CSS | |
-| データ | `wiki/` 構造変更は慎重に | マイグレーション手順を別途 |
+| 設定 | `pukiwiki/pukiwiki.ini.php` / `.env` に集約 | 秘密情報は git 除外 |
+| 拡張 | 新規は `pukiwiki/plugin/` 優先 | コア触る理由を必ず記載 |
+| 表示 | `pukiwiki/skin/` または専用 CSS | |
+| データ | `pukiwiki/wiki/` 構造変更は慎重に | マイグレーション手順を別途 |
 
 ### 3.2 互換性
 
@@ -111,7 +117,7 @@ index.php ──► lib/init.php（bootstrap, S_VERSION）
 ## 6. パフォーマンス・運用
 
 - キャッシュ戦略: （`cache/` / OPcache / 逆プロキシ）
-- バックアップ: `backup/` + 外部バックアップ
+- バックアップ: [BACKUP.md](BACKUP.md) — `index.php` + `pukiwiki/` のコピー
 - ログ: （Web サーバー / アプリログ）
 
 ---
@@ -129,4 +135,5 @@ index.php ──► lib/init.php（bootstrap, S_VERSION）
 
 - [UPSTREAM.md](UPSTREAM.md) — 上流取得・diff
 - [DEPLOY.md](DEPLOY.md) — デプロイ手順
+- [BACKUP.md](BACKUP.md) — バックアップ・リストア
 - [CHANGELOG.md](../CHANGELOG.md) — 変更履歴

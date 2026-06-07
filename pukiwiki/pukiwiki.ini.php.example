@@ -1,8 +1,12 @@
 <?php
 // PukiWiki2026 — 設定雛形（抜粋）
 //
+// 配置: pukiwiki/pukiwiki.ini.php（git 管理外）
 // 使い方: 必要なブロックを pukiwiki.ini.php に反映する
 // 詳細: docs/ANTI-SPAM.md, docs/SECURITY-AUDIT.md, docs/OEMBED.md
+//
+// ディレクトリ定数（SKIN_DIR / IMAGE_DIR 等）は上流同梱の pukiwiki.ini.php を
+// 初回コピー後、index.php の DATA_HOME=pukiwiki/ に合わせて確認すること。
 
 /////////////////////////////////////////////////
 // セキュリティ（PukiWiki2026 推奨既定）

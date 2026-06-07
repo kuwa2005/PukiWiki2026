@@ -9,6 +9,17 @@
 
 ### Changed
 
+- **ディレクトリ構成を `pukiwiki/` 集約（案 B 改）** — Wiki 運用に必要なファイルを `pukiwiki/` 配下へ移動。デプロイ / バックアップ単位は `index.php` + `pukiwiki/` のみ
+- **`index.php`** — `DATA_HOME` を `__DIR__ . '/pukiwiki/'` に変更
+- **`.htaccess`** — ルートは開発用ディレクトリ保護、`pukiwiki/.htaccess` に ini 保護を移動
+- **`SKIN_DIR` / `IMAGE_DIR`** — Web URL を `pukiwiki/skin/`・`pukiwiki/image/` に更新。`SKIN_FILE` は `DATA_HOME . 'skin/'` 基準
+- **`skin/pukiwiki.skin.php`** — JS 参照を `SKIN_DIR` 定数利用に修正
+- **`.gitignore`** — パスを `pukiwiki/` 基準に更新
+- **docs** — `DEPLOY.md`, `SETUP.md`, `ARCHITECTURE.md`, `UPSTREAM.md` 更新、`BACKUP.md` 新規
+- **CI** — `pukiwiki/lib/mbstring.php` 除外パス更新
+
+### Changed
+
 - **スキン構成を v1.0.0 に復元** — PR #37（classic/forge サブディレクトリ化）・PR #39（React forge）・PR #41（React revert）を巻き戻し。`skin/pukiwiki.skin.php` 等を `skin/` 直下に戻し、`default.ini.php` の SKIN 解決ロジックを簡素化
 - **`pukiwiki.ini.php.example`** — `$skin` 設定を削除（サブディレクトリ方式廃止）
 

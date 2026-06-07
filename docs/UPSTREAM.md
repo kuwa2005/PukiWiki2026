@@ -8,7 +8,7 @@
 | バージョン | **1.5.4** |
 | 文字コード | **UTF-8** 版 |
 | ライセンス | GPL v2 or later |
-| 確認箇所 | `lib/init.php` の `S_VERSION` |
+| 確認箇所 | `pukiwiki/lib/init.php` の `S_VERSION` |
 
 ## 公式配布元
 
@@ -30,7 +30,8 @@ Expand-Archive -Path .\downloads\pukiwiki-1.5.4_utf8.zip -DestinationPath .\vend
 
 ### 2. 本リポジトリのルートとの関係
 
-- **ルート直下** … 実際に改造・デプロイする作業ツリー（現在 PukiWiki 1.5.4 が配置済み）
+- **ルート直下** … 開発用（`docs/`, `tools/`, `index.php` 等）
+- **`pukiwiki/`** … 実際に改造・デプロイ・バックアップする Wiki 本体
 - **`vendor/`** … diff 比較用の** pristine（未改造）** コピー。git には `.gitkeep` のみ追跡し、実体はローカル任意（`.gitignore` 参照）
 
 ## diff 方針
@@ -42,14 +43,17 @@ Expand-Archive -Path .\downloads\pukiwiki-1.5.4_utf8.zip -DestinationPath .\vend
 ### 推奨ワークフロー
 
 1. `vendor/pukiwiki-1.5.4_utf8/` を公式配布物で更新する（改造しない）。
-2. 作業ツリー（ルート）との diff を取る。
+2. 作業ツリー（`pukiwiki/`）との diff を取る。
 
 ```powershell
 # PowerShell（git 利用時）
-git diff --no-index vendor/pukiwiki-1.5.4_utf8 lib/
+git diff --no-index vendor/pukiwiki-1.5.4_utf8 pukiwiki/
+
+# lib のみ比較
+git diff --no-index vendor/pukiwiki-1.5.4_utf8/lib pukiwiki/lib
 
 # または diff ツール
-# WinMerge / Beyond Compare 等で vendor とルートを比較
+# WinMerge / Beyond Compare 等で vendor と pukiwiki/ を比較
 ```
 
 3. 変更が大きい場合は `patches/` にパッチファイル（`.patch` / `.diff`）として保存し、`CHANGELOG.md` に概要を書く。
@@ -60,7 +64,7 @@ git diff --no-index vendor/pukiwiki-1.5.4_utf8 lib/
 - **GPL 遵守**: 配布・公開する場合はソース開示義務に留意する。
 - **最小差分**: 公式ファイルは必要な箇所だけ変更し、理由を `docs/ARCHITECTURE.md` に残す。
 - **プラグイン分離**: 可能なら `plugin/` への追加で済ませ、コア改変は計画的に行う。
-- **設定分離**: 環境依存値は `pukiwiki.ini.php`（git 除外推奨）や `.env` に寄せる。
+- **設定分離**: 環境依存値は `pukiwiki/pukiwiki.ini.php`（git 除外推奨）や `.env` に寄せる。
 
 ## 上流 README
 

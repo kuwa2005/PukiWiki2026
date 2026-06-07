@@ -15,7 +15,7 @@
 
 /////////////////////////////////////////////////
 // スキンファイルの場所
-define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'keitai.skin.php');
+define('SKIN_FILE', DATA_HOME . 'skin/keitai.skin.php');
 
 /////////////////////////////////////////////////
 // 雛形とするページの読み込みを可能にする

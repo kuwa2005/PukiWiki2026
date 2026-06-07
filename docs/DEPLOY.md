@@ -40,12 +40,12 @@ php -S localhost:8080
 
 ```powershell
 cd D:\00_project\pukiwiki2026
-Copy-Item pukiwiki.ini.php.example pukiwiki.ini.php   # 初回のみ
+Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回のみ
 ```
 
-`pukiwiki.ini.php` で最低限確認する項目:
+`pukiwiki/pukiwiki.ini.php` で最低限確認する項目:
 
-- ページ保存ディレクトリ（通常 `wiki/`）
+- ページ保存ディレクトリ（通常 `pukiwiki/wiki/` — `DATA_DIR` は `DATA_HOME . 'wiki/'`）
 - **`$auth_users`** — 雛形の `editor` / `pass` はデモ用。**公開前に必ず変更**
 - 管理者パスワード `$adminpass`（凍結解除・添付等）
 - タイムゾーン・文字コード（UTF-8）
@@ -69,10 +69,10 @@ Copy-Item pukiwiki.ini.php.example pukiwiki.ini.php   # 初回のみ
 
 Web サーバー実行ユーザーが書き込めること:
 
-- `wiki/`
-- `cache/`
-- `backup/`
-- `attach/`（添付を使う場合）
+- `pukiwiki/wiki/`
+- `pukiwiki/cache/`
+- `pukiwiki/backup/`
+- `pukiwiki/attach/`（添付を使う場合）
 
 ```powershell
 # Windows（IIS / 特定ユーザー向け例 — 環境に応じて調整）
@@ -96,14 +96,15 @@ Web サーバー実行ユーザーが書き込めること:
 
 | 方式 | 説明 |
 |------|------|
-| フルコピー | rsync / scp / FTP でファイル一式を配置 |
-| git pull | サーバーで `git pull`（`wiki/` 等はサーバー固有で .gitignore） |
+| フルコピー | `index.php` + `pukiwiki/` を rsync / scp / FTP で配置 |
+| git pull | 開発環境で `git pull` 後、`index.php` + `pukiwiki/` のみ本番へ同期 |
 
 **配置から除外するもの（またはサーバー側のみ）:**
 
 - `.env`（秘密情報）
-- `wiki/`（本番データ — 初回以外は上書きしない）
-- `cache/`, `backup/`（再生成可だが運用中は注意）
+- `pukiwiki/wiki/`（本番データ — 初回以外は上書きしない）
+- `pukiwiki/cache/`, `pukiwiki/backup/`（再生成可だが運用中は注意）
+- `docs/`, `tools/`, `vendor/`（開発用 — 本番 DocumentRoot には置かない）
 
 ### 4.2 Apache 例（抜粋）
 
@@ -160,15 +161,19 @@ server {
 ## 5. リリース後
 
 1. [CHANGELOG.md](../CHANGELOG.md) にリリース内容を記載
-2. キャッシュクリア（必要に応じて `cache/` 内の生成ファイル削除）
-3. バックアップ取得（`wiki/` + DB を使う場合は DB も）
+2. キャッシュクリア（必要に応じて `pukiwiki/cache/` 内の生成ファイル削除）
+3. バックアップ取得 — [BACKUP.md](BACKUP.md) 参照
+
+```powershell
+Copy-Item index.php, pukiwiki -Destination $backup -Recurse
+```
 
 ---
 
 ## 6. ロールバック
 
-1. 直前の `wiki/`・設定のバックアップを復元
-2. 前バージョンのコードに差し戻し（git tag / アーカイブ）
+1. 直前の `pukiwiki/wiki/`・`pukiwiki/pukiwiki.ini.php` のバックアップを復元
+2. 前バージョンの `index.php` + `pukiwiki/` に差し戻し（git tag / アーカイブ）
 3. 表示・編集の smoke test
 
 ---
@@ -177,10 +182,10 @@ server {
 
 | 症状 | 確認 |
 |------|------|
-| 500 エラー | PHP エラーログ、`pukiwiki.ini.php` の syntax |
-| 保存できない | `wiki/` 権限 |
-| 文字化け | UTF-8 統一、mbstring |
-| プラグインエラー | `plugin/` の PHP 互換、改造差分 |
+| 500 エラー | PHP エラーログ、`pukiwiki/pukiwiki.ini.php` の syntax |
+| 保存できない | `pukiwiki/wiki/` 権限 |
+| CSS/JS 404 | `SKIN_DIR` / `IMAGE_DIR` が `pukiwiki/skin/` 等になっているか |
+| プラグインエラー | `pukiwiki/plugin/` の PHP 互換、改造差分 |
 
 ---
 
@@ -189,4 +194,5 @@ server {
 - [README.md](../README.md)
 - [SETUP.md](SETUP.md) — 初回ログイン・パスワード変更
 - [ARCHITECTURE.md](ARCHITECTURE.md)
+- [BACKUP.md](BACKUP.md) — バックアップ・リストア
 - 公式 [README.txt](../README.txt)
