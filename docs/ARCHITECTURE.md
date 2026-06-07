@@ -127,6 +127,7 @@ index.php ──► lib/init.php（bootstrap, S_VERSION）
 
 ## 8. 関連ドキュメント
 
+- [DESIGN.md](DESIGN.md) — スキン・プラグインの軽量設計方針
 - [UPSTREAM.md](UPSTREAM.md) — 上流取得・diff
 - [DEPLOY.md](DEPLOY.md) — デプロイ手順
 - [CHANGELOG.md](../CHANGELOG.md) — 変更履歴

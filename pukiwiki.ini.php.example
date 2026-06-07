@@ -70,3 +70,9 @@ $recaptcha_secret_key = '';
 
 $spam_block_external_links = 0; // 0=無効, 1=全員拒否, 2=管理者のみ許可
 $spam_external_link_allowlist = array(); // 例: array('example.com', 'youtube.com')
+
+/////////////////////////////////////////////////
+// スキン（docs/DESIGN.md）
+/////////////////////////////////////////////////
+
+$skin = 'classic';              // classic（既定・オリジナル相当）| forge（モダン寄り）

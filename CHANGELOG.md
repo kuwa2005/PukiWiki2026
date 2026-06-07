@@ -7,7 +7,17 @@
 
 ## [Unreleased]
 
-（次リリース分をここに記載）
+### Added
+
+- **`skin/classic/`** — 既定スキン（PukiWiki 標準 pukiwiki スキンをサブディレクトリ化、デザイン非改変）
+- **`skin/forge/`** — 新スキン（classic コピー + 配色・タイポグラフィ・余白の modern 化）
+- **`docs/DESIGN.md`** — スキン・オプション plugin の軽量設計方針
+
+### Changed
+
+- **`default.ini.php`** — `$skin` による `SKIN_FILE` / `SKIN_ASSETS_DIR` 解決
+- **`pukiwiki.ini.php`**, **`pukiwiki.ini.php.example`** — 既定 `$skin = 'classic'`
+- ルート直下の `skin/pukiwiki.*`・`main.js`・`search2.js` を `skin/classic/` に移行
 
 ---
 

@@ -57,7 +57,7 @@ pukiwiki2026/
 ## 改造の進め方
 
 - 上流との差分方針: [docs/UPSTREAM.md](docs/UPSTREAM.md)
-- 設計メモ: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- 設計メモ: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/DESIGN.md](docs/DESIGN.md)（スキン・軽量方針）
 - 変更履歴: [CHANGELOG.md](CHANGELOG.md)
 
 ## バージョン管理
