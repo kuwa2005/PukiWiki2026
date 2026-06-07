@@ -2,23 +2,23 @@
 .env
 .env.*
 !.env.example
-pukiwiki.ini.php
+pukiwiki/pukiwiki.ini.php
 
 # Wiki データ（本番・開発ともサーバー／環境ごと）
-wiki/
-!wiki/.htaccess
-!wiki/index.html
+pukiwiki/wiki/
+!pukiwiki/wiki/.htaccess
+!pukiwiki/wiki/index.html
 
 # ランタイム生成物
-cache/*
-!cache/.htaccess
-!cache/index.html
-backup/*
-!backup/.htaccess
-!backup/index.html
-attach/*
-!attach/.htaccess
-!attach/index.html
+pukiwiki/cache/*
+!pukiwiki/cache/.htaccess
+!pukiwiki/cache/index.html
+pukiwiki/backup/*
+!pukiwiki/backup/.htaccess
+!pukiwiki/backup/index.html
+pukiwiki/attach/*
+!pukiwiki/attach/.htaccess
+!pukiwiki/attach/index.html
 
 # vendor 内の上流実体（参照用コピーはローカル任意）
 vendor/*
