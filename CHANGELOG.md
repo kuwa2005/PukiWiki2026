@@ -9,6 +9,7 @@
 
 ### Added
 
+- **`docs/PUKIWIKI154-SKIN.md` §8 / `docs/DEPLOY.md` §4.6** — Apache mod_rewrite（および nginx 相当）で legacy `skin/` パスを吸収する**任意**デプロイ手段を追記（公式サポート外・正攻法はスキン内 `SKIN_DIR` 修正）
 - **`docs/PUKIWIKI154-SKIN.md`** — PukiWiki 1.5.4 由来スキン利用方針（`SKIN_DIR` / `SKIN_FILE` のみ提供、スキン側パス修正は利用者責任、symlink 推奨の削除）。`README.md`・`SETUP.md`・`DEPLOY.md`・`pukiwiki.ini.php.example` からリンク
 - **初回ログイン強制パスワード変更** — デモ用 `editor` / `editor` でログインした場合、`plugin/changepassword` で変更完了まで Wiki 操作をブロック。`lib/auth_ini.php` で `pukiwiki.ini.php` の `$auth_users` 該当行を自動更新（書き込み可能な場合）
 - **起動時ディレクトリパーミッションチェック** — `lib/perm.php` を追加。Unix/Linux 本番で書き込みディレクトリ（`wiki/`, `diff/`, `backup/`, `cache/`, `attach/`, `counter/`）自身の mode のみ確認し、不適切な場合のみ chmod と配下の再帰修正。Windows では自動スキップ。`$perm_check_on_boot` 等は `pukiwiki.ini.php` で設定可能（`docs/DEPLOY.md` §3.2）

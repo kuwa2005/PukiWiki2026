@@ -225,6 +225,32 @@ location ^~ /pukiwiki/tools/ { deny all; }
 
 ---
 
+### 4.6 任意: legacy `skin/` パスの rewrite（nginx 相当）
+
+[PR #78](https://github.com/kuwa2005/PukiWiki2026/pull/78) どおり、PukiWiki2026 が提供するのは **`SKIN_DIR` / `SKIN_FILE` の設定のみ**です。1.5.4 スキン内で `SKIN_DIR` を使う修正が**正攻法**（[PUKIWIKI154-SKIN.md §4](PUKIWIKI154-SKIN.md#4-修正例スキン側)）。
+
+Apache の `mod_rewrite` で `/skin/*` を `pukiwiki/skin/*` に内部転送する方法は、**利用者の任意デプロイ手段**です。同梱 `.htaccess` には含まれません。制限・サブディレクトリ skin 向けの注意は [PUKIWIKI154-SKIN.md §8](PUKIWIKI154-SKIN.md#8-任意-apache-mod_rewrite-で-legacy-skin-パスを吸収) を参照してください。
+
+**Apache（ルート `.htaccess` または vhost）** — `AllowOverride FileInfo`（または `All`）が必要:
+
+```apache
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^skin/(.*)$ pukiwiki/skin/$1 [L]
+</IfModule>
+```
+
+**nginx（抜粋）:**
+
+```nginx
+location ~ ^/skin/(.*)$ {
+    rewrite ^/skin/(.*)$ /pukiwiki/skin/$1 last;
+}
+```
+
+---
+
 ## 5. リリース後
 
 1. [CHANGELOG.md](../../CHANGELOG.md) にリリース内容を記載

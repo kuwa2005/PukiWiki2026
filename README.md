@@ -65,7 +65,7 @@ pukiwiki2026/                    ← git リポジトリ root
 
 - 上流との差分方針: [pukiwiki/docs/UPSTREAM.md](pukiwiki/docs/UPSTREAM.md)
 - 設計メモ: [pukiwiki/docs/ARCHITECTURE.md](pukiwiki/docs/ARCHITECTURE.md)
-- **PukiWiki 1.5.4 スキン利用:** [pukiwiki/docs/PUKIWIKI154-SKIN.md](pukiwiki/docs/PUKIWIKI154-SKIN.md) — `SKIN_DIR` / `SKIN_FILE` のみ提供。サブディレクトリ skin では `SKIN_FILE` 必須
+- **PukiWiki 1.5.4 スキン利用:** [pukiwiki/docs/PUKIWIKI154-SKIN.md](pukiwiki/docs/PUKIWIKI154-SKIN.md) — `SKIN_DIR` / `SKIN_FILE` のみ提供。サブディレクトリ skin では `SKIN_FILE` 必須。任意: [Apache rewrite で legacy `skin/` 吸収](pukiwiki/docs/PUKIWIKI154-SKIN.md#8-任意-apache-mod_rewrite-で-legacy-skin-パスを吸収)
 - 変更履歴: [CHANGELOG.md](CHANGELOG.md)
 
 ## バージョン管理

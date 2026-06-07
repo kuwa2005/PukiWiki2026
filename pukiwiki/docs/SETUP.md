@@ -128,6 +128,7 @@ $perm_check_on_boot = FALSE;
 
 - サブディレクトリ skin（modernskin / bluebox 等）では **`SKIN_FILE` も必須**
 - 詳細: [PUKIWIKI154-SKIN.md](./PUKIWIKI154-SKIN.md)
+- 任意（Apache のみ）: [mod_rewrite で legacy `skin/` パスを吸収](./PUKIWIKI154-SKIN.md#8-任意-apache-mod_rewrite-で-legacy-skin-パスを吸収)
 
 ---
 
