@@ -13,8 +13,19 @@
 
 if (defined('TDIARY_THEME')) {
 	define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'tdiary.skin.php');
+	define('SKIN_ASSETS_DIR', SKIN_DIR);
 } else {
-	define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'pukiwiki.skin.php');
+	$_skin_name = isset($skin) ? preg_replace('/[^a-zA-Z0-9_-]/', '', basename($skin)) : 'classic';
+	if ($_skin_name === '') $_skin_name = 'classic';
+	$_skin_subdir = SKIN_DIR . $_skin_name . '/';
+	$_skin_file   = DATA_HOME . $_skin_subdir . 'pukiwiki.skin.php';
+	if (file_exists($_skin_file) && is_readable($_skin_file)) {
+		define('SKIN_ASSETS_DIR', $_skin_subdir);
+		define('SKIN_FILE', $_skin_file);
+	} else {
+		define('SKIN_ASSETS_DIR', SKIN_DIR);
+		define('SKIN_FILE', DATA_HOME . SKIN_DIR . 'pukiwiki.skin.php');
+	}
 }
 
 /////////////////////////////////////////////////

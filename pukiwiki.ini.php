@@ -83,10 +83,13 @@ define('PLUGIN_DIR',    DATA_HOME . 'plugin/'   ); // Plugin directory
 
 // Skins / Stylesheets
 define('SKIN_DIR', 'skin/');
-// Skin files (SKIN_DIR/*.skin.php) are needed at
+// Skin files (SKIN_DIR/<name>/*.skin.php) are needed at
 // ./DATAHOME/SKIN_DIR from index.php, but
 // CSSs(*.css) and JavaScripts(*.js) are needed at
-// ./SKIN_DIR from index.php.
+// ./SKIN_DIR/<name>/ from index.php.
+
+// Active skin subdirectory (classic | forge)
+$skin = 'classic';
 
 // Static image files
 define('IMAGE_DIR', 'image/');
@@ -258,9 +261,9 @@ $auth_provider_user_prefix_saml = 'saml:';
 // User definition
 // PukiWiki2026: 編集にはログイン必須。必ず1件以上のユーザーを設定すること。
 // 詳細: docs/ANTI-SPAM.md
+// 警告: editor / pass はデモ用初期値。本番・公開前に必ず変更すること（docs/SETUP.md）
 $auth_users = array(
-	// Username => password hash
-	// 例: 'editor' => '{x-php-sha256}d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', // pass
+	'editor' => '{x-php-sha256}d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', // pass — 必ず変更
 );
 
 // Group definition
