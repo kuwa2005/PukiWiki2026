@@ -16,7 +16,7 @@ cd D:\00_project\pukiwiki2026
 Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
 ```
 
-`pukiwiki/pukiwiki.ini.php` は git 管理外です。`pukiwiki/pukiwiki.ini.php.example` の内容を環境に合わせて反映してください。
+`pukiwiki/pukiwiki.ini.php` は git 管理外です。初回は `pukiwiki/pukiwiki.ini.php.example` をコピーし、環境に合わせて調整してください。
 
 ---
 
@@ -27,7 +27,7 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
 | ユーザー名 | `editor` |
 | パスワード | `editor` |
 
-`pukiwiki.ini.php.example` およびローカル雛形には、上記の SHA-256 ハッシュが既定で入っています。
+`pukiwiki.ini.php.example` およびローカル `pukiwiki.ini.php` には、上記の平文パスワード（デモ用）が既定で入っています。ハッシュ形式（`{x-php-sha256}...` 等）でも設定可能です（[方法 B](#方法-b-web-支援スクリプト手動変更) 参照）。
 
 > **警告:** `editor` / `editor` は**デモ・動作確認用の初期値**です。**必ず変更してから使ってください。** 本番公開・インターネット公開前にも必ずパスワードを変更してください。変更しないまま公開すると第三者に編集され得ます。
 
@@ -81,7 +81,7 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 
 ### 管理者パスワード（`$adminpass`）
 
-凍結解除・添付アップロード等に使用します。同様にハッシュを生成し、`pukiwiki/pukiwiki.ini.php` の `$adminpass` に設定してください（初期の `{x-php-md5}!` のままでは管理者操作ができません）。
+凍結解除・添付アップロード等に使用します。デモ用初期値は `$adminpass = 'editor'`（平文）です。本番では [方法 B](#方法-b-web-支援スクリプト手動変更) と同様にハッシュを生成し、`pukiwiki/pukiwiki.ini.php` の `$adminpass` に設定してください。
 
 ### ini 自動更新の制限
 

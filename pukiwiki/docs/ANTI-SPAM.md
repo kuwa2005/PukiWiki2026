@@ -81,9 +81,11 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
    ```php
    $auth_users = array(
-       'editor' => '{x-php-sha256}1553cc62ff246044c683a61e203e65541990e7fcd4af9443d22b9557ecc9ac54', // editor — 必ず変更
+       'editor' => 'editor', // pass — 必ず変更
    );
    ```
+
+   平文のほか `{x-php-sha256}...` 等のハッシュ形式も利用可能です。雛形内にハッシュ例のコメント行もあります。
 
    ハッシュ生成（推奨）: Web 支援スクリプト **`pukiwiki/tools/gen-password-hash.php`**
 
@@ -189,7 +191,7 @@ $edit_auth = 0;
 
 ### 設定（pukiwiki.ini.php）
 
-`pukiwiki.ini.php.example` の Akismet ブロックを本番の `pukiwiki.ini.php` にコピーし、値を設定します（`pukiwiki.ini.php` は git 管理外）。
+`pukiwiki.ini.php.example`（完全版雛形）をコピーした `pukiwiki.ini.php` 内の Akismet 設定を調整します（`pukiwiki.ini.php` は git 管理外）。
 
 ```php
 $akismet_enabled = 1;
