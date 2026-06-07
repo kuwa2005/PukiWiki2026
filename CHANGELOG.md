@@ -9,6 +9,7 @@
 
 ### Changed
 
+- **フッタの PukiWiki Development Team リンク** — `S_COPYRIGHT`（`lib/init.php`）の href を `https://pukiwiki.sourceforge.io/` に更新
 - **`.htaccess` の位置付け** — 任意・推奨であることを `pukiwiki/docs/DEPLOY.md` §4.5、`ARCHITECTURE.md`、`README.md`、`SECURITY-AUDIT.md` に明記。ルート / `pukiwiki/.htaccess` の役割分担を整理
 - **`README.md` / `CHANGELOG.md` を root へ戻す** — git / プロジェクト文書はリポジトリ root。`docs/`・`tools/` は `pukiwiki/` 内のまま
 - **upstream diff を git タグ基準に** — `vendor/` ローカルコピー不要。`upstream-1.5.4-utf8` と `pukiwiki/docs/UPSTREAM.md` を参照
