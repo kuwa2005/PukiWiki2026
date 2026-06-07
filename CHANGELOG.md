@@ -7,6 +7,12 @@
 
 ## [Unreleased]
 
+---
+
+## [1.0.1] - 2026-06-07
+
+**PukiWiki2026 v1.0.1** — v1.0.0 からのメンテナンスリリース。ディレクトリ構成の `pukiwiki/` 集約、認証・CSRF・Unicode セキュリティ強化、添付 2GB 上限、スキン利用ドキュメント等。
+
 ### Added
 
 - **`docs/PUKIWIKI154-SKIN.md` §8 / `docs/DEPLOY.md` §4.6** — Apache mod_rewrite（および nginx 相当）で legacy `skin/` パスを吸収する**任意**デプロイ手段を追記（公式サポート外・正攻法はスキン内 `SKIN_DIR` 修正）
@@ -192,4 +198,4 @@
 - **Removed** … 削除・非推奨化
 - **Security** … セキュリティ関連
 
-リリースタグを切る場合は `[1.0.0] - YYYY-MM-DD` の見出しを追加してください。
+リリースタグを切る場合は `[1.0.1] - YYYY-MM-DD` の見出しを追加してください。
