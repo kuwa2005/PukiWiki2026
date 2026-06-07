@@ -7,6 +7,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- **起動時ディレクトリパーミッションチェック** — `lib/perm.php` を追加。Unix/Linux 本番で書き込みディレクトリ（`wiki/`, `diff/`, `backup/`, `cache/`, `attach/`, `counter/`）自身の mode のみ確認し、不適切な場合のみ chmod と配下の再帰修正。Windows では自動スキップ。`$perm_check_on_boot` 等は `pukiwiki.ini.php` で設定可能（`docs/DEPLOY.md` §3.2）
+
 ### Changed
 
 - **フッタの PukiWiki Development Team リンク** — `S_COPYRIGHT`（`lib/init.php`）の href を `https://pukiwiki.sourceforge.io/` に更新
