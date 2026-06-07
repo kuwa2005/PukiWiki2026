@@ -98,4 +98,6 @@ if(TRUE) {
 	echo $navi
 ?><hr><?php
 	echo $body
+?><hr><?php
+	echo pkwk_footer_credits_html()
 ?></body></html>

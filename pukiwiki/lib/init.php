@@ -19,6 +19,13 @@ define('S_COPYRIGHT',
 	. ' &copy; 2001-2022'
 	. ' <a href="https://pukiwiki.sourceforge.io/">PukiWiki Development Team</a>'
 );
+define('S_COPYRIGHT_2026',
+	'<strong>PukiWiki2026 '
+	. PKWK2026_VERSION
+	. '</strong>'
+	. ' &copy; 2026-'
+	. ' <a href="https://github.com/kuwa2005/PukiWiki2026">PukiWiki2026 Development Team</a>.'
+);
 
 /////////////////////////////////////////////////
 // Session security options

@@ -896,9 +896,7 @@ function _toolbar($key, $x = 20, $y = 20){
 <!-- Copyright etc -->
  Site admin: <a href="<?php echo $modifierlink ?>"><?php echo $modifier ?></a>
  <p>
- <?php echo S_COPYRIGHT ?>.
- Powered by PHP <?php echo PHP_VERSION ?><br />
- HTML convert time: <?php echo elapsedtime() ?> sec.
+ <?php echo pkwk_footer_credits_html() ?>
  </p>
 </div><!-- class="footer" -->
 
