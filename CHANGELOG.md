@@ -15,6 +15,7 @@
 ### Fixed
 
 - **強制パスワード変更の保存失敗時にログイン状態とみなさない** — `pkwk_is_authenticated()` が `pkwk_must_change_password` 中は FALSE を返すよう変更。`pukiwiki.ini.php` への hash 保存失敗時はセッションを破棄して loginform へリダイレクト（ナビの「ログアウト」非表示）。ini 保存失敗時は `lib/perm.php` で親ディレクトリ（`$perm_dir_mode` 既定 0777）と ini ファイル自身（`$perm_file_mode` 既定 0666）の chmod を **1 回だけ**試行し、保存を **1 回だけ**再試行（Windows では perm 修正スキップ）
+- **強制パスワード変更の保存失敗時に手動設定用ハッシュを再表示** — ini 保存失敗で loginform へリダイレクトした直後のみ、POST から生成した hash を 1 回限り表示（`pkwk_flash_set` / `pkwk_flash_consume`）。`gen-password-hash.php` / `docs/SETUP.md` 案内を併記
 
 ### Changed
 

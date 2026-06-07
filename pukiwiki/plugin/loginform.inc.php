@@ -55,6 +55,18 @@ function plugin_loginform_action()
 	$password = isset($_POST['password']) ? $_POST['password'] : '';
 	$isset_user_credential = $username || $password ;
 	$changepassword_failed = isset($_GET['changepassword_failed']) && $_GET['changepassword_failed'] === '1';
+	$changepassword_manual = NULL;
+	if ($changepassword_failed) {
+		$flash = pkwk_flash_consume('changepassword_manual');
+		if (is_array($flash) && isset($flash['user'], $flash['hash'])
+			&& is_string($flash['user']) && $flash['user'] !== ''
+			&& is_string($flash['hash']) && $flash['hash'] !== '') {
+			require_once(LIB_DIR . 'auth_ini.php');
+			if (pkwk_ini_is_valid_auth_hash($flash['hash'])) {
+				$changepassword_manual = $flash;
+			}
+		}
+	}
 	if ($username && $password && form_auth($username, $password)) {
 		// Sign in successfully completed
 		if (! empty($_SESSION['pkwk_must_change_password'])) {
@@ -122,6 +134,13 @@ function plugin_loginform_action()
   .loginform .errormessage {
     color: red;
   }
+  .loginform .manual-hash {
+    font-family: monospace;
+    word-break: break-all;
+    text-align: left;
+    max-width: 36em;
+    margin: 1em auto;
+  }
 </style>
 <div class="loginformcontainer">
 <form name="loginform" class="loginform" action="<?php echo htmlsc($action_url) ?>" method="post">
@@ -159,6 +178,11 @@ function plugin_loginform_action()
 <div>
 </div>
 </form>
+<?php if ($changepassword_manual): ?>
+<p>手動設定用ハッシュ（<code>$auth_users['<?php echo htmlsc($changepassword_manual['user']) ?>']</code>）:</p>
+<p class="manual-hash"><code><?php echo htmlsc($changepassword_manual['hash']) ?></code></p>
+<p><small>ハッシュ生成: <code>pukiwiki/tools/gen-password-hash.php</code> または <a href="https://github.com/kuwa2005/PukiWiki2026/blob/main/pukiwiki/docs/SETUP.md">docs/SETUP.md</a></small></p>
+<?php endif ?>
 </div>
 <script><!--
 window.addEventListener && window.addEventListener("DOMContentLoaded", function() {

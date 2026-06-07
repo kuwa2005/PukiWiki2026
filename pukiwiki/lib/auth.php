@@ -57,14 +57,58 @@ function pkwk_is_authenticated()
 }
 
 /**
+ * Store one-time flash data in the current session.
+ *
+ * @param string $key
+ * @param mixed $value
+ */
+function pkwk_flash_set($key, $value)
+{
+	pkwk_ensure_session();
+	if (! isset($_SESSION['pkwk_flash'])) {
+		$_SESSION['pkwk_flash'] = array();
+	}
+	$_SESSION['pkwk_flash'][$key] = $value;
+}
+
+/**
+ * Read and remove one-time flash data.
+ *
+ * @param string $key
+ * @return mixed|null
+ */
+function pkwk_flash_consume($key)
+{
+	if (session_status() !== PHP_SESSION_ACTIVE || ! isset($_SESSION['pkwk_flash'][$key])) {
+		return NULL;
+	}
+	$value = $_SESSION['pkwk_flash'][$key];
+	unset($_SESSION['pkwk_flash'][$key]);
+	if (empty($_SESSION['pkwk_flash'])) {
+		unset($_SESSION['pkwk_flash']);
+	}
+	return $value;
+}
+
+/**
  * Clear form-auth session and reset globals (logout without redirect).
+ *
+ * Preserves one-time flash data (e.g. manual password hash after changepassword failure).
  */
 function pkwk_form_auth_clear_session()
 {
+	$flash = array();
+	if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['pkwk_flash'])) {
+		$flash = $_SESSION['pkwk_flash'];
+	}
 	if (session_status() === PHP_SESSION_ACTIVE) {
 		$_SESSION = array();
 		session_regenerate_id(true);
 		session_destroy();
+	}
+	if ($flash) {
+		pkwk_ensure_session();
+		$_SESSION['pkwk_flash'] = $flash;
 	}
 	global $auth_user, $auth_user_fullname, $auth_user_groups;
 	$auth_user = '';
