@@ -14,6 +14,7 @@
 
 ### Changed
 
+- **公式同梱ファイルを `pukiwiki/` へ集約** — `COPYING.txt`・`README.txt`・`UPDATING.txt`・`INSTALL.txt`・`*.en.txt.zip`・`wiki.en.zip` を root から `pukiwiki/` へ移動。root は `index.php`・`.htaccess`・プロジェクト文書（`README.md` / `CHANGELOG.md`）等のみ
 - **デフォルト編集者パスワード** — 初期値を `pass` から `editor` に変更（ハッシュ `{x-php-sha256}1553cc62ff246044c683a61e203e65541990e7fcd4af9443d22b9557ecc9ac54`）。`pukiwiki.ini.php.example`・各種ドキュメントを更新。**必ず変更してから使うこと** を強調
 
 - **フッタの PukiWiki Development Team リンク** — `S_COPYRIGHT`（`lib/init.php`）の href を `https://pukiwiki.sourceforge.io/` に更新

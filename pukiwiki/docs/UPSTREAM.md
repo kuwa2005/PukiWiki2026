@@ -74,4 +74,4 @@ git diff --no-index $tmp pukiwiki/
 
 ## 上流 README
 
-公式同梱の説明はルートの [README.txt](../../README.txt) を参照。
+公式同梱の説明は [README.txt](../README.txt) を参照（`COPYING.txt`・`UPDATING.txt`・`INSTALL.txt` 等も同ディレクトリ）。
