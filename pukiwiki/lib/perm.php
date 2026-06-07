@@ -177,37 +177,140 @@ function pkwk_perm_check_on_boot()
 }
 
 /**
- * Try once to chmod pukiwiki.ini.php and its parent directory for writability.
+ * Prepare pukiwiki.ini.php and its parent directory for a single write.
  *
- * Uses $perm_dir_mode (default 0777) for the directory and $perm_file_mode
- * (default 0666) for the ini file. No-op on Windows / unsupported platforms.
+ * Chmods only when is_writable() is FALSE (mode 0644 でも実行ユーザーが書けなければ
+ * 0666 へ上げる). Records original modes so pkwk_perm_ini_write_restore() can revert
+ * only what this call changed.
  *
  * @param string $ini_path Path to pukiwiki.ini.php (realpath optional)
- * @return bool TRUE if at least one chmod succeeded
+ * @return array{
+ *   ini_path: string,
+ *   dir_path: string,
+ *   did_chmod_ini: bool,
+ *   ini_mode_before: int|null,
+ *   did_chmod_dir: bool,
+ *   dir_mode_before: int|null
+ * }
  */
-function pkwk_perm_try_fix_ini_writable($ini_path)
+function pkwk_perm_ini_write_prepare($ini_path)
 {
+	$ctx = array(
+		'ini_path'        => '',
+		'dir_path'        => '',
+		'did_chmod_ini'   => FALSE,
+		'ini_mode_before' => NULL,
+		'did_chmod_dir'   => FALSE,
+		'dir_mode_before' => NULL,
+	);
+
 	if (! pkwk_perm_is_supported() || $ini_path === '') {
-		return FALSE;
+		return $ctx;
 	}
 
 	global $perm_dir_mode, $perm_file_mode;
 	$dir_mode = isset($perm_dir_mode) ? (int)$perm_dir_mode : 0777;
 	$file_mode = isset($perm_file_mode) ? (int)$perm_file_mode : 0666;
 
-	$fixed = FALSE;
 	$resolved = realpath($ini_path);
 	$path = ($resolved !== FALSE) ? $resolved : $ini_path;
 	$dir = dirname($path);
+	$ctx['ini_path'] = $path;
+	$ctx['dir_path'] = $dir;
 
-	if (is_dir($dir) && @chmod($dir, $dir_mode)) {
-		$fixed = TRUE;
-	}
-	if (is_file($path) && @chmod($path, $file_mode)) {
-		$fixed = TRUE;
-	} elseif ($path !== $ini_path && is_file($ini_path) && @chmod($ini_path, $file_mode)) {
-		$fixed = TRUE;
+	if (is_file($path) && ! is_writable($path)) {
+		$mode_before = pkwk_perm_get_mode($path);
+		if ($mode_before !== FALSE && @chmod($path, $file_mode)) {
+			$ctx['did_chmod_ini'] = TRUE;
+			$ctx['ini_mode_before'] = $mode_before;
+		}
+	} elseif ($path !== $ini_path && is_file($ini_path) && ! is_writable($ini_path)) {
+		$mode_before = pkwk_perm_get_mode($ini_path);
+		if ($mode_before !== FALSE && @chmod($ini_path, $file_mode)) {
+			$ctx['did_chmod_ini'] = TRUE;
+			$ctx['ini_mode_before'] = $mode_before;
+			$ctx['ini_path'] = $ini_path;
+		}
 	}
 
-	return $fixed;
+	if (is_dir($dir) && ! is_writable($dir)) {
+		$mode_before = pkwk_perm_get_mode($dir);
+		if ($mode_before !== FALSE && @chmod($dir, $dir_mode)) {
+			$ctx['did_chmod_dir'] = TRUE;
+			$ctx['dir_mode_before'] = $mode_before;
+		}
+	}
+
+	return $ctx;
+}
+
+/**
+ * Restore modes chmod'd by pkwk_perm_ini_write_prepare() in the same request.
+ *
+ * @param array $ctx Return value of pkwk_perm_ini_write_prepare()
+ * @return void
+ */
+function pkwk_perm_ini_write_restore(array $ctx)
+{
+	if (! pkwk_perm_is_supported()) {
+		return;
+	}
+
+	if (! empty($ctx['did_chmod_ini'])
+		&& $ctx['ini_mode_before'] !== NULL
+		&& $ctx['ini_path'] !== ''
+		&& is_file($ctx['ini_path'])) {
+		@chmod($ctx['ini_path'], $ctx['ini_mode_before']);
+	}
+	if (! empty($ctx['did_chmod_dir'])
+		&& $ctx['dir_mode_before'] !== NULL
+		&& $ctx['dir_path'] !== ''
+		&& is_dir($ctx['dir_path'])) {
+		@chmod($ctx['dir_path'], $ctx['dir_mode_before']);
+	}
+}
+
+/**
+ * Administrator hint for ini write permission failures (Unix-like only).
+ *
+ * @param string $ini_path
+ * @return string
+ */
+function pkwk_perm_ini_write_debug_hint($ini_path)
+{
+	if (! pkwk_perm_is_supported() || $ini_path === '') {
+		return '';
+	}
+
+	$real = realpath($ini_path);
+	if ($real === FALSE || ! is_file($real)) {
+		return '';
+	}
+
+	$dir = dirname($real);
+	$parts = array();
+
+	$ini_mode = pkwk_perm_get_mode($real);
+	if ($ini_mode !== FALSE) {
+		$parts[] = 'ini mode=' . sprintf('%04o', $ini_mode);
+	}
+	$parts[] = 'ini is_writable=' . (is_writable($real) ? 'yes' : 'no');
+
+	if (is_dir($dir)) {
+		$dir_mode = pkwk_perm_get_mode($dir);
+		if ($dir_mode !== FALSE) {
+			$parts[] = 'dir mode=' . sprintf('%04o', $dir_mode);
+		}
+		$parts[] = 'dir is_writable=' . (is_writable($dir) ? 'yes' : 'no');
+	}
+
+	if (function_exists('posix_geteuid') && function_exists('fileowner')) {
+		$owner = @fileowner($real);
+		if ($owner !== FALSE) {
+			$parts[] = 'ini owner uid=' . $owner;
+			$parts[] = 'process euid=' . posix_geteuid();
+		}
+	}
+
+	return implode(', ', $parts);
 }
