@@ -9,6 +9,7 @@
 
 ### Changed
 
+- **フッタの PukiWiki Development Team リンク** — `S_COPYRIGHT`（`lib/init.php`）の href を `https://pukiwiki.sourceforge.io/` に更新
 - **開発用ディレクトリを `pukiwiki/` へ集約** — `docs/`, `tools/`, `vendor/`, `patches/`, `README.md`, `CHANGELOG.md` を root から `pukiwiki/` へ移動。`.github/` のみ root に残す
 - **バックアップ単位** — `index.php` + `pukiwiki/`（`docs/` 含む）。`docs/BACKUP.md` 更新
 - **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンク, `tools/gen-password-hash.php` ドキュメントパスを更新
