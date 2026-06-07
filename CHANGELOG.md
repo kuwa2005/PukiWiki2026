@@ -19,6 +19,10 @@
 - **`pukiwiki.ini.php`**, **`pukiwiki.ini.php.example`** — 既定 `$skin = 'classic'`
 - ルート直下の `skin/pukiwiki.*`・`main.js`・`search2.js` を `skin/classic/` に移行
 
+### Removed
+
+- **React forge（PR #39）** — 軽量・小サイズ最優先の方針に反するため revert。`skin/forge/ui/`・`dist/` を削除し、classic コピー + CSS 調整の軽量 forge に復元
+
 ---
 
 ## [1.0.0] - 2026-06-07
