@@ -69,14 +69,42 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回
 
 Web サーバー実行ユーザーが書き込めること:
 
-- `pukiwiki/wiki/`
-- `pukiwiki/cache/`
-- `pukiwiki/backup/`
-- `pukiwiki/attach/`（添付を使う場合）
+| 定数 | パス | 期待 mode（修正時） |
+|------|------|---------------------|
+| `DATA_DIR` | `pukiwiki/wiki/` | `0777` |
+| `DIFF_DIR` | `pukiwiki/diff/` | `0777` |
+| `BACKUP_DIR` | `pukiwiki/backup/` | `0777` |
+| `CACHE_DIR` | `pukiwiki/cache/` | `0777` |
+| `UPLOAD_DIR` | `pukiwiki/attach/` | `0777` |
+| `COUNTER_DIR` | `pukiwiki/counter/` | `0777` |
+
+再帰修正時のファイル mode 既定は `0666`（`$perm_file_mode`）。
+
+#### 起動時パーミッションチェック（PukiWiki2026）
+
+Unix/Linux 本番では、Wiki 起動時に上記ディレクトリ**自身の mode のみ**を確認します。
+
+- **許容 mode**（既定）: `0777`, `0775`, `0770` — いずれかなら配下には触れない
+- **不適切な場合のみ**: 当該ディレクトリを `$perm_dir_mode`（既定 `0777`）に修正し、配下のディレクトリ・ファイルも再帰的に `$perm_dir_mode` / `$perm_file_mode` へ設定
+- **存在しない場合**: `$perm_dir_mode` で `mkdir`（既存の書き込みチェック前）
+- **Windows 開発環境**: `PHP_OS_FAMILY` / `DIRECTORY_SEPARATOR` 判定で**自動スキップ**（`chmod` は意味を持たないため）
+
+`pukiwiki/pukiwiki.ini.php` で無効化する例:
+
+```php
+$perm_check_on_boot = FALSE;
+```
+
+追加のチェック対象（定数名）:
+
+```php
+$perm_check_dirs_extra = array(); // 例: カスタム定数を追加
+```
 
 ```powershell
 # Windows（IIS / 特定ユーザー向け例 — 環境に応じて調整）
 # icacls wiki /grant "IIS_IUSRS:(OI)(CI)M"
+# 注: Windows では起動時 chmod は行われません。ACL / 実行ユーザーの書き込み権を手動で設定してください。
 ```
 
 ### 3.3 動作確認チェックリスト

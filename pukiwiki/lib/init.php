@@ -189,9 +189,27 @@ define('UA_VERS', isset($user_agent['vers']) ? $user_agent['vers'] : '');
 unset($user_agent);	// Unset after reading UA_INI_FILE
 
 /////////////////////////////////////////////////
+// 起動時ディレクトリパーミッション（Unix-like のみ）
+
+if (! isset($perm_check_on_boot)) $perm_check_on_boot = TRUE;
+if (! isset($perm_dir_mode)) $perm_dir_mode = 0777;
+if (! isset($perm_file_mode)) $perm_file_mode = 0666;
+if (! isset($perm_acceptable_dir_modes)) {
+	$perm_acceptable_dir_modes = array(0777, 0775, 0770);
+}
+if (! isset($perm_check_dirs_extra)) $perm_check_dirs_extra = array();
+
+require_once(LIB_DIR . 'perm.php');
+$perm_result = pkwk_perm_check_on_boot();
+if (! empty($perm_result['errors'])) {
+	$die = implode("\n", $perm_result['errors']) . "\n";
+} else {
+	$die = '';
+}
+
+/////////////////////////////////////////////////
 // ディレクトリのチェック
 
-$die = '';
 foreach(array('DATA_DIR', 'DIFF_DIR', 'BACKUP_DIR', 'CACHE_DIR') as $dir){
 	if (! is_writable(constant($dir)))
 		$die .= 'Directory is not found or not writable (' . $dir . ')' . "\n";
