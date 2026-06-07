@@ -28,7 +28,7 @@ function pkwk_ini_is_valid_auth_hash($hash)
  * @param string $username
  * @param string $new_hash
  * @param string $ini_file Path to pukiwiki.ini.php
- * @return array{ok:bool,error?:string,manual?:bool}
+ * @return array{ok:bool,error?:string,manual?:bool,hint?:string}
  */
 function pkwk_ini_attempt_write_auth_user_hash($username, $new_hash, $ini_file)
 {
@@ -38,8 +38,20 @@ function pkwk_ini_attempt_write_auth_user_hash($username, $new_hash, $ini_file)
 	if ($real_ini === FALSE || ! is_file($real_ini) || ! is_readable($real_ini)) {
 		return array('ok' => FALSE, 'error' => 'ini_not_readable', 'manual' => TRUE);
 	}
+	$ini_dir = dirname($real_ini);
 	if (! is_writable($real_ini)) {
-		return array('ok' => FALSE, 'error' => 'ini_not_writable', 'manual' => TRUE);
+		$result = array('ok' => FALSE, 'error' => 'ini_not_writable', 'manual' => TRUE);
+		if (function_exists('pkwk_perm_ini_write_debug_hint')) {
+			$result['hint'] = pkwk_perm_ini_write_debug_hint($ini_file);
+		}
+		return $result;
+	}
+	if (! is_dir($ini_dir) || ! is_writable($ini_dir)) {
+		$result = array('ok' => FALSE, 'error' => 'ini_dir_not_writable', 'manual' => TRUE);
+		if (function_exists('pkwk_perm_ini_write_debug_hint')) {
+			$result['hint'] = pkwk_perm_ini_write_debug_hint($ini_file);
+		}
+		return $result;
 	}
 
 	$content = file_get_contents($real_ini);
@@ -85,11 +97,12 @@ function pkwk_ini_attempt_write_auth_user_hash($username, $new_hash, $ini_file)
 /**
  * Update one $auth_users entry in pukiwiki.ini.php (hash value only).
  *
- * On writable failure, tries Unix permission fix once and retries save once.
+ * On Unix-like hosts, chmods ini / parent dir only when is_writable() fails,
+ * writes, then restores modes changed in this call (e.g. 0644 after a 0666 bump).
  *
  * @param string $username
  * @param string $new_hash
- * @return array{ok:bool,error?:string,manual?:bool}
+ * @return array{ok:bool,error?:string,manual?:bool,hint?:string}
  */
 function pkwk_ini_update_auth_user_hash($username, $new_hash)
 {
@@ -103,15 +116,16 @@ function pkwk_ini_update_auth_user_hash($username, $new_hash)
 		return array('ok' => FALSE, 'error' => 'ini_not_configured');
 	}
 
+	require_once(LIB_DIR . 'perm.php');
 	$ini_file = INI_FILE;
+	$perm_ctx = pkwk_perm_ini_write_prepare($ini_file);
 	$result = pkwk_ini_attempt_write_auth_user_hash($username, $new_hash, $ini_file);
-	if (! empty($result['ok'])) {
-		return $result;
-	}
-	if (! empty($result['manual'])) {
-		require_once(LIB_DIR . 'perm.php');
-		if (pkwk_perm_try_fix_ini_writable($ini_file)) {
-			$result = pkwk_ini_attempt_write_auth_user_hash($username, $new_hash, $ini_file);
+	pkwk_perm_ini_write_restore($perm_ctx);
+
+	if (empty($result['ok']) && ! empty($result['manual']) && empty($result['hint'])) {
+		$hint = pkwk_perm_ini_write_debug_hint($ini_file);
+		if ($hint !== '') {
+			$result['hint'] = $hint;
 		}
 	}
 
