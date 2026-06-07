@@ -12,6 +12,10 @@
 - **初回ログイン強制パスワード変更** — デモ用 `editor` / `editor` でログインした場合、`plugin/changepassword` で変更完了まで Wiki 操作をブロック。`lib/auth_ini.php` で `pukiwiki.ini.php` の `$auth_users` 該当行を自動更新（書き込み可能な場合）
 - **起動時ディレクトリパーミッションチェック** — `lib/perm.php` を追加。Unix/Linux 本番で書き込みディレクトリ（`wiki/`, `diff/`, `backup/`, `cache/`, `attach/`, `counter/`）自身の mode のみ確認し、不適切な場合のみ chmod と配下の再帰修正。Windows では自動スキップ。`$perm_check_on_boot` 等は `pukiwiki.ini.php` で設定可能（`docs/DEPLOY.md` §3.2）
 
+### Fixed
+
+- **強制パスワード変更の保存失敗時にログイン状態とみなさない** — `pkwk_is_authenticated()` が `pkwk_must_change_password` 中は FALSE を返すよう変更。`pukiwiki.ini.php` への hash 保存失敗時はセッションを破棄して loginform へリダイレクト（ナビの「ログアウト」非表示）。ini 保存失敗時は `lib/perm.php` で親ディレクトリ（`$perm_dir_mode` 既定 0777）と ini ファイル自身（`$perm_file_mode` 既定 0666）の chmod を **1 回だけ**試行し、保存を **1 回だけ**再試行（Windows では perm 修正スキップ）
+
 ### Changed
 
 - **ログイン済みユーザーは `$adminpass` 入力不要** — `pkwk_is_authenticated()` / `pkwk_admin_authorized()` を `lib/auth.php` に追加。凍結・凍結解除、rename、diff/backup 削除、dump、links/update_entities、attach 管理者操作、編集の「更新日時を変更しない」、外部リンク制限（モード 2）で、フォームログイン済みなら `$adminpass` 再入力をスキップ。未ログイン時は従来どおり（`$edit_auth` 有効時は mutation 前にログイン誘導）

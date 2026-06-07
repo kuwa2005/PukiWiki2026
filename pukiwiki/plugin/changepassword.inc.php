@@ -23,7 +23,6 @@ function plugin_changepassword_action()
 	}
 
 	$errors = array();
-	$manual_hash = '';
 	$done = FALSE;
 
 	if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -48,12 +47,14 @@ function plugin_changepassword_action()
 				unset($_SESSION['pkwk_must_change_password']);
 				$done = TRUE;
 			} else {
-				$manual_hash = $new_hash;
-				if (! empty($result['manual'])) {
-					$errors[] = 'pukiwiki.ini.php を自動更新できませんでした。ファイルの書き込み権限を確認するか、下記ハッシュを手動で設定してください。';
-				} else {
-					$errors[] = 'パスワードの保存に失敗しました。';
+				pkwk_form_auth_clear_session();
+				$login_url = get_base_uri() . '?plugin=loginform&changepassword_failed=1';
+				if (isset($vars['page']) && is_pagename($vars['page'])) {
+					$login_url .= '&page=' . pagename_urlencode($vars['page']);
 				}
+				header('HTTP/1.0 302 Found');
+				header('Location: ' . $login_url);
+				exit;
 			}
 		}
 	}
@@ -103,10 +104,6 @@ function plugin_changepassword_action()
     color: #630;
     font-weight: bold;
   }
-  .changepassword .manual-hash {
-    font-family: monospace;
-    word-break: break-all;
-  }
 </style>
 <div class="changepasswordcontainer">
 <p class="notice">初期パスワードのままです。Wiki を利用する前に、必ず新しいパスワードを設定してください。</p>
@@ -116,11 +113,6 @@ function plugin_changepassword_action()
   <li><?php echo htmlsc($error) ?></li>
 <?php endforeach ?>
 </ul>
-<?php endif ?>
-<?php if ($manual_hash !== ''): ?>
-<p>手動設定用ハッシュ（<code>$auth_users['<?php echo htmlsc($auth_user) ?>']</code>）:</p>
-<p class="manual-hash"><code><?php echo htmlsc($manual_hash) ?></code></p>
-<p><small>ハッシュ生成: <code>pukiwiki/tools/gen-password-hash.php</code> または <a href="https://github.com/kuwa2005/PukiWiki2026/blob/main/pukiwiki/docs/SETUP.md">docs/SETUP.md</a></small></p>
 <?php endif ?>
 <form name="changepassword" class="changepassword" action="<?php echo htmlsc($action_url) ?>" method="post">
 <?php echo pkwk_csrf_hidden_field() ?>

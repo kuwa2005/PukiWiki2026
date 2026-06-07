@@ -43,12 +43,33 @@ function pkwk_login($pass = '')
 /**
  * Whether a form/session user is logged in ($auth_users / LDAP / etc.).
  *
+ * Mandatory password change is not treated as a completed login.
+ *
  * @return bool
  */
 function pkwk_is_authenticated()
 {
 	global $auth_user;
-	return $auth_user !== '';
+	if ($auth_user === '') {
+		return FALSE;
+	}
+	return ! pkwk_auth_user_must_change_password();
+}
+
+/**
+ * Clear form-auth session and reset globals (logout without redirect).
+ */
+function pkwk_form_auth_clear_session()
+{
+	if (session_status() === PHP_SESSION_ACTIVE) {
+		$_SESSION = array();
+		session_regenerate_id(true);
+		session_destroy();
+	}
+	global $auth_user, $auth_user_fullname, $auth_user_groups;
+	$auth_user = '';
+	$auth_user_fullname = '';
+	$auth_user_groups = array();
 }
 
 /**

@@ -16,6 +16,9 @@ function plugin_loginform_inline()
 		// non auth site
 		return 'Note: loginform is for auth enabled site';
 	}
+	if (! pkwk_is_authenticated()) {
+		return '';
+	}
 	$logout_param = '?plugin=loginform&pcmd=logout&page=' . pagename_urlencode($page);
 	return '<a href="' . htmlsc(get_base_uri() . $logout_param) . '">Log out</a>';
 }
@@ -51,6 +54,7 @@ function plugin_loginform_action()
 	$username = isset($_POST['username']) ? $_POST['username'] : '';
 	$password = isset($_POST['password']) ? $_POST['password'] : '';
 	$isset_user_credential = $username || $password ;
+	$changepassword_failed = isset($_GET['changepassword_failed']) && $_GET['changepassword_failed'] === '1';
 	if ($username && $password && form_auth($username, $password)) {
 		// Sign in successfully completed
 		if (! empty($_SESSION['pkwk_must_change_password'])) {
@@ -133,6 +137,12 @@ function plugin_loginform_action()
   <td class="label"><label for="_plugin_loginform_password"><?php echo htmlsc($_loginform_messages['password']) ?></label></td>
   <td><input type="password" name="password" id="_plugin_loginform_password"></td>
   </tr>
+<?php if ($changepassword_failed): ?>
+  <tr>
+    <td></td>
+    <td class="errormessage">パスワードの保存に失敗しました。ファイルの書き込み権限を確認してから、再度ログインしてください。</td>
+  </tr>
+<?php endif ?>
 <?php if ($isset_user_credential): ?>
   <tr>
     <td></td>

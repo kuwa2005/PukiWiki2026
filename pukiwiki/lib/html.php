@@ -30,13 +30,13 @@ function catbody($title, $page, $body)
 	$enable_logout = false;
 	if (AUTH_TYPE_FORM === $auth_type || AUTH_TYPE_EXTERNAL === $auth_type ||
 		AUTH_TYPE_SAML === $auth_type) {
-		if ($auth_user) {
+		if (pkwk_is_authenticated()) {
 			$enable_logout = true;
 		} else {
 			$enable_login = true;
 		}
 	} else if (AUTH_TYPE_BASIC === $auth_type) {
-		if ($auth_user) {
+		if (pkwk_is_authenticated()) {
 			$enable_logout = true;
 		}
 	}

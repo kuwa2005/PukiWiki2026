@@ -175,3 +175,39 @@ function pkwk_perm_check_on_boot()
 
 	return $result;
 }
+
+/**
+ * Try once to chmod pukiwiki.ini.php and its parent directory for writability.
+ *
+ * Uses $perm_dir_mode (default 0777) for the directory and $perm_file_mode
+ * (default 0666) for the ini file. No-op on Windows / unsupported platforms.
+ *
+ * @param string $ini_path Path to pukiwiki.ini.php (realpath optional)
+ * @return bool TRUE if at least one chmod succeeded
+ */
+function pkwk_perm_try_fix_ini_writable($ini_path)
+{
+	if (! pkwk_perm_is_supported() || $ini_path === '') {
+		return FALSE;
+	}
+
+	global $perm_dir_mode, $perm_file_mode;
+	$dir_mode = isset($perm_dir_mode) ? (int)$perm_dir_mode : 0777;
+	$file_mode = isset($perm_file_mode) ? (int)$perm_file_mode : 0666;
+
+	$fixed = FALSE;
+	$resolved = realpath($ini_path);
+	$path = ($resolved !== FALSE) ? $resolved : $ini_path;
+	$dir = dirname($path);
+
+	if (is_dir($dir) && @chmod($dir, $dir_mode)) {
+		$fixed = TRUE;
+	}
+	if (is_file($path) && @chmod($path, $file_mode)) {
+		$fixed = TRUE;
+	} elseif ($path !== $ini_path && is_file($ini_path) && @chmod($ini_path, $file_mode)) {
+		$fixed = TRUE;
+	}
+
+	return $fixed;
+}
