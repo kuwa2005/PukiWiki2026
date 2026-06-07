@@ -14,6 +14,7 @@
 
 ### Fixed
 
+- **添付ファイル情報画面の管理者パスワード案内** — ログイン済みでも削除・凍結・rename のラベルに「(管理者パスワードが必要です)」と表示されていた問題を修正。ログイン済みは操作案内のみ、未ログイン（`$edit_auth` 無効時）は従来どおり管理者パスワード案内（`$edit_auth` 有効時は mutation 前にログイン誘導）。凍結・凍結解除（PR #62）と同方針
 - **凍結・凍結解除の確認メッセージ** — ログイン済みでも「パスワードを入力してください」と表示されていた問題を修正。ログイン済みはボタン押下案内、未ログイン（`$edit_auth` 無効時）は従来どおり管理者パスワード案内（`$edit_auth` 有効時はログイン誘導でフォーム未到達）
 - **強制パスワード変更 — 666 でも ini 保存失敗・ハッシュ非表示** — `{x-php-password}` + Argon2 等（カンマ含む）の hash を `pkwk_ini_is_valid_auth_hash()` が誤って拒否していたため、権限修正前に `invalid_hash` で失敗していた問題を修正。`'editor' => 'editor'` 平文行・ダブルクォート形式も置換対象に。保存失敗時は理由コード・perm 診断 hint を loginform に表示。flash は session 破棄せず認証キーのみクリアして引き継ぎ。chmod 後 1 回再試行 — `pkwk_is_authenticated()` が `pkwk_must_change_password` 中は FALSE を返すよう変更。`pukiwiki.ini.php` への hash 保存失敗時はセッションを破棄して loginform へリダイレクト（ナビの「ログアウト」非表示）。ini 保存失敗時は `lib/perm.php` で親ディレクトリ（`$perm_dir_mode` 既定 0777）と ini ファイル自身（`$perm_file_mode` 既定 0666）の chmod を **1 回だけ**試行し、保存を **1 回だけ**再試行（Windows では perm 修正スキップ）
 - **強制パスワード変更の保存失敗時に手動設定用ハッシュを再表示** — ini 保存失敗で loginform へリダイレクトした直後のみ、POST から生成した hash を 1 回限り表示（`pkwk_flash_set` / `pkwk_flash_consume`）。`gen-password-hash.php` / `docs/SETUP.md` 案内を併記
