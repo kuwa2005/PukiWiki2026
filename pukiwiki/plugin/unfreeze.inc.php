@@ -28,7 +28,7 @@ function plugin_unfreeze_action()
 		$body = str_replace('$1', htmlsc(strip_bracket($page)),
 			$_title_isunfreezed);
 
-	} else if ($pass !== NULL && pkwk_login($pass)) {
+	} else if (isset($vars['ok']) && pkwk_admin_authorized($pass)) {
 		// Unfreeze
 		$postdata = get_source($page);
 		for ($i = count($postdata) - 1; $i >= 0; $i--) {
@@ -55,14 +55,17 @@ function plugin_unfreeze_action()
 		// Show unfreeze form
 		$msg    = $_title_unfreeze;
 		$s_page = htmlsc($page);
-		$body   = ($pass === NULL) ? '' : "<p><strong>$_msg_invalidpass</strong></p>\n";
+		$body   = (isset($vars['ok']) && ! pkwk_admin_authorized($pass)) ?
+			"<p><strong>$_msg_invalidpass</strong></p>\n" : '';
+		$pass_input = pkwk_is_authenticated() ? '' :
+			'<input type="password" name="pass" size="12" />';
 		$body  .= <<<EOD
 <p>$_msg_unfreezing</p>
 <form action="$script" method="post">
  <div>
   <input type="hidden"   name="cmd"  value="unfreeze" />
   <input type="hidden"   name="page" value="$s_page" />
-  <input type="password" name="pass" size="12" />
+  $pass_input
   <input type="submit"   name="ok"   value="$_btn_unfreeze" />
  </div>
 </form>

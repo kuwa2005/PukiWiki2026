@@ -40,6 +40,34 @@ function pkwk_login($pass = '')
 	}
 }
 
+/**
+ * Whether a form/session user is logged in ($auth_users / LDAP / etc.).
+ *
+ * @return bool
+ */
+function pkwk_is_authenticated()
+{
+	global $auth_user;
+	return $auth_user !== '';
+}
+
+/**
+ * Whether an admin-level operation is allowed (session login or $adminpass).
+ *
+ * @param string|null $pass Administrator password from a form, if any
+ * @return bool
+ */
+function pkwk_admin_authorized($pass = NULL)
+{
+	if (pkwk_is_authenticated()) {
+		return TRUE;
+	}
+	if ($pass === NULL || $pass === '') {
+		return FALSE;
+	}
+	return pkwk_login($pass);
+}
+
 // Compute RFC2307 'userPassword' value, like slappasswd (OpenLDAP)
 // $phrase : Pass-phrase
 // $scheme : Specify '{scheme}' or '{scheme}salt'

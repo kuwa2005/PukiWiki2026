@@ -123,6 +123,9 @@ function pkwk_spamfilter_is_admin_write()
 	if (in_array('admin', $auth_user_groups, TRUE)) {
 		return TRUE;
 	}
+	if (pkwk_is_authenticated()) {
+		return TRUE;
+	}
 	if (isset($_POST['pass']) && pkwk_login($_POST['pass'])) {
 		return TRUE;
 	}

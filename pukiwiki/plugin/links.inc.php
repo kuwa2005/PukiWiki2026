@@ -41,16 +41,20 @@ function plugin_links_action()
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
 
 	$msg = $body = '';
-	if (empty($vars['action']) || empty($post['adminpass']) || ! pkwk_login($post['adminpass'])) {
+	$adminpass = isset($post['adminpass']) ? $post['adminpass'] :
+		(isset($vars['adminpass']) ? $vars['adminpass'] : NULL);
+	if (empty($vars['action']) || ! pkwk_admin_authorized($adminpass)) {
 		$msg   = & $_links_messages['title_update'];
 		$body  = convert_html($_links_messages['msg_usage']);
+		$pass_input = pkwk_is_authenticated() ? '' :
+			'<label for="_p_links_adminpass">' . $_links_messages['msg_adminpass'] . '</label>' .
+			'<input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />';
 		$body .= <<<EOD
 <form method="post" action="$script">
  <div>
   <input type="hidden" name="plugin" value="links" />
   <input type="hidden" name="action" value="update" />
-  <label for="_p_links_adminpass">{$_links_messages['msg_adminpass']}</label>
-  <input type="password" name="adminpass" id="_p_links_adminpass" size="20" value="" />
+  $pass_input
   <input type="submit" value="{$_links_messages['btn_submit']}" />
  </div>
 </form>

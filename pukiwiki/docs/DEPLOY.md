@@ -56,7 +56,7 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回
 
 - ページ保存ディレクトリ（通常 `pukiwiki/wiki/` — `DATA_DIR` は `DATA_HOME . 'wiki/'`）
 - **`$auth_users`** — 雛形の `editor` / `editor` はデモ用。**必ず変更してから使うこと**
-- 管理者パスワード `$adminpass`（凍結解除・添付等）
+- 管理者パスワード `$adminpass`（`$edit_auth` 無効時やレガシー用。ログイン済みなら凍結解除・添付等で再入力不要）
 - タイムゾーン・文字コード（UTF-8）
 - 本番ではデバッグ表示を無効化（`index.php` の `error_reporting(0)` が既定。開発時のみ `define('PKWK_DEBUG', 1)` を `index.php` 先頭付近に追加）
 
