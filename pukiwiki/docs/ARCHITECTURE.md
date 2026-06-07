@@ -66,6 +66,7 @@ index.php（DATA_HOME = ./pukiwiki/）
 | `pukiwiki/backup/` | ページバックアップ（ランタイム） |
 | `pukiwiki/docs/` | 設計・デプロイ文書 |
 | `pukiwiki/tools/` | セットアップ支援 |
+| `pukiwiki/README.txt` 等 | 公式 PukiWiki 同梱（`INSTALL.txt`, `COPYING.txt`, `UPDATING.txt`, `*.en.txt.zip`, `wiki.en.zip`） |
 
 ---
 

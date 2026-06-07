@@ -123,3 +123,5 @@ $perm_check_on_boot = FALSE;
 - [DEPLOY.md](./DEPLOY.md) — デプロイ・ディレクトリ権限
 - [ANTI-SPAM.md](./ANTI-SPAM.md) — 編集認証・スパム対策
 - [tools/README.md](../tools/README.md) — 支援ツールのセキュリティ注意
+- 公式 [INSTALL.txt](../INSTALL.txt) — インストール・アップグレード手順（上流同梱）
+- 公式 [README.txt](../README.txt) — PukiWiki 1.5.4 同梱説明

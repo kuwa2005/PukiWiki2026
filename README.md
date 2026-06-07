@@ -28,6 +28,8 @@ pukiwiki2026/                    ← git リポジトリ root
     ├── pukiwiki.ini.php         … 設定（git 除外）
     ├── pukiwiki.ini.php.example
     ├── docs/, tools/            … 開発用（バックアップに含む）
+    ├── README.txt, UPDATING.txt, COPYING.txt, INSTALL.txt  … 公式同梱
+    ├── *.en.txt.zip, wiki.en.zip            … 公式同梱（英語・初期 wiki）
     └── …
 ```
 
@@ -81,4 +83,4 @@ git pull origin main   # 作業前に同期
 
 - 公式サイト: https://pukiwiki.osdn.jp/
 - 開発情報: https://pukiwiki.osdn.jp/dev/
-- 上流 README: [README.txt](README.txt)
+- 上流 README: [README.txt](pukiwiki/README.txt)
