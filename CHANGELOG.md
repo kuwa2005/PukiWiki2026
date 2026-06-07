@@ -10,14 +10,17 @@
 ### Added
 
 - **`skin/classic/`** — 既定スキン（PukiWiki 標準 pukiwiki スキンをサブディレクトリ化、デザイン非改変）
-- **`skin/forge/`** — 新スキン（classic コピー + 配色・タイポグラフィ・余白の modern 化）
-- **`docs/DESIGN.md`** — スキン・オプション plugin の軽量設計方針
+- **`skin/forge/ui/`** — React + Vite + TypeScript ソース（forge モダン UI）
+- **`skin/forge/dist/`** — forge ビルド成果物（PHP-only デプロイ対応）
+- **`docs/DESIGN.md`** — スキン・オプション plugin の設計方針（React forge 節、classic 非改変の明記）
 
 ### Changed
 
+- **`skin/forge/`** — CSS 調整スキンから React ベース UI に刷新（2026 向け洗練デザイン、`prefers-color-scheme` 対応）
 - **`default.ini.php`** — `$skin` による `SKIN_FILE` / `SKIN_ASSETS_DIR` 解決
 - **`pukiwiki.ini.php`**, **`pukiwiki.ini.php.example`** — 既定 `$skin = 'classic'`
 - ルート直下の `skin/pukiwiki.*`・`main.js`・`search2.js` を `skin/classic/` に移行
+- **`.gitignore`** — `skin/forge/ui/node_modules/` を除外
 
 ---
 

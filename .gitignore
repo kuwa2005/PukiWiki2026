@@ -41,3 +41,7 @@ composer.phar
 *.log
 tmp/
 temp/
+
+# forge React UI
+skin/forge/ui/node_modules/
+skin/forge/ui/tsconfig.tsbuildinfo

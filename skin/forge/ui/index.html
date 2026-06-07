@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forge Skin Dev</title>
+  </head>
+  <body>
+    <div id="pukiwiki-forge-root"></div>
+    <script type="application/json" id="pukiwiki-forge-initial">
+      {
+        "title": "FrontPage",
+        "page": "FrontPage",
+        "pageTitle": "PukiWiki Forge Dev",
+        "body": "<h2>Welcome to Forge</h2><p>Development preview for the React skin.</p>",
+        "menu": "",
+        "rightbar": "",
+        "notes": "",
+        "attaches": "",
+        "lastmodified": "2026-06-07",
+        "related": "",
+        "canonicalUrl": "/",
+        "topicpath": "",
+        "showTopicpath": false,
+        "showNavbar": true,
+        "showToolbar": true,
+        "isPage": true,
+        "isRead": true,
+        "readonly": false,
+        "isFreeze": false,
+        "functionFreeze": true,
+        "doBackup": true,
+        "fileUploads": true,
+        "logo": "/image/pukiwiki.png",
+        "logoAlt": "[PukiWiki]",
+        "topHref": "/",
+        "rssHref": "/?cmd=rss",
+        "navPrimary": [{"key":"top","label":"トップ","href":"/"}],
+        "navPage": [{"key":"edit","label":"編集","href":"/?cmd=edit"}],
+        "navGlobal": [{"key":"list","label":"一覧","href":"/?cmd=list"}],
+        "toolbar": [],
+        "footer": {
+          "modifier": "admin",
+          "modifierLink": "mailto:admin@example.com",
+          "copyright": "PukiWiki",
+          "phpVersion": "8.3.0",
+          "convertTime": "0.001"
+        }
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
