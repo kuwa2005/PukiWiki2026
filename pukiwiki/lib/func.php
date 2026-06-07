@@ -705,6 +705,14 @@ function elapsedtime()
 	return sprintf('%01.03f', getmicrotime() - $at_the_microtime);
 }
 
+// Footer credits: upstream PukiWiki, PukiWiki2026, PHP version, convert time
+function pkwk_footer_credits_html()
+{
+	return S_COPYRIGHT . '.<br />' . S_COPYRIGHT_2026 . '<br />'
+		. 'Powered by PHP ' . PHP_VERSION
+		. '. HTML convert time: ' . elapsedtime() . ' sec.';
+}
+
 // Get the date
 function get_date($format, $timestamp = NULL)
 {
