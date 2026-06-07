@@ -81,7 +81,9 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 
 ### 管理者パスワード（`$adminpass`）
 
-凍結解除・添付アップロード等に使用します。デモ用初期値は `$adminpass = 'editor'`（平文）です。本番では [方法 B](#方法-b-web-支援スクリプト手動変更) と同様にハッシュを生成し、`pukiwiki/pukiwiki.ini.php` の `$adminpass` に設定してください。
+**`$edit_auth` とフォームログインが有効な構成では、ログイン済みユーザーは `$adminpass` の再入力は不要です**（凍結・凍結解除、rename、添付の管理者操作、diff/backup 削除、dump 等）。`$adminpass` は未ログイン時のレガシー手段および `$edit_auth` 無効環境向けに `pukiwiki.ini.php` に残します。
+
+デモ用初期値は `$adminpass = 'editor'`（平文）です。本番では [方法 B](#方法-b-web-支援スクリプト手動変更) と同様にハッシュを生成し、`pukiwiki/pukiwiki.ini.php` の `$adminpass` に設定してください（`$edit_auth` 無効時や API 連携用）。
 
 ### ini 自動更新の制限
 

@@ -59,8 +59,8 @@ function plugin_dump_action()
 
 	$body = '';
 
-	if ($pass !== NULL) {
-		if (! pkwk_login($pass)) {
+	if (isset($_POST['ok']) && $act !== NULL) {
+		if (! pkwk_admin_authorized($pass)) {
 			$body = "<p><strong>パスワードが違います。</strong></p>\n";
 		} else {
 			switch($act){
@@ -226,6 +226,23 @@ function plugin_dump_disp_form()
 	$act_up   = PLUGIN_DUMP_RESTORE;
 	$maxsize  = PLUGIN_DUMP_MAX_FILESIZE;
 
+	$pass_fields_down = pkwk_is_authenticated() ?
+		'<input type="submit" name="ok" value="OK" />' :
+		<<<EOD
+<p><label for="_p_dump_adminpass_dump"><strong>管理者パスワード</strong></label>
+  <input type="password" name="pass" id="_p_dump_adminpass_dump" size="12" />
+  <input type="submit"   name="ok"   value="OK" />
+</p>
+EOD;
+	$pass_fields_restore = pkwk_is_authenticated() ?
+		'<input type="submit" name="ok" value="OK" />' :
+		<<<EOD
+<p><label for="_p_dump_adminpass_restore"><strong>管理者パスワード</strong></label>
+  <input type="password" name="pass" id="_p_dump_adminpass_restore" size="12" />
+  <input type="submit"   name="ok"   value="OK" />
+</p>
+EOD;
+
 	$data = <<<EOD
 <span class="small">
 </span>
@@ -258,10 +275,7 @@ function plugin_dump_disp_form()
   <label for="_p_dump_namedecode">エンコードされているページ名をディレクトリ階層つきのファイルにデコード
   (※リストアに使うことはできなくなります。また、一部の文字は '_' に置換されます)</label><br />
 </p>
-<p><label for="_p_dump_adminpass_dump"><strong>管理者パスワード</strong></label>
-  <input type="password" name="pass" id="_p_dump_adminpass_dump" size="12" />
-  <input type="submit"   name="ok"   value="OK" />
-</p>
+$pass_fields_down
  </div>
 </form>
 EOD;
@@ -281,10 +295,7 @@ EOD;
   <label for="_p_dump_upload_file">ファイル:</label>
   <input type="file" name="upload_file" id="_p_dump_upload_file" size="40" />
 </p>
-<p><label for="_p_dump_adminpass_restore"><strong>管理者パスワード</strong></label>
-  <input type="password" name="pass" id="_p_dump_adminpass_restore" size="12" />
-  <input type="submit"   name="ok"   value="OK" />
-</p>
+$pass_fields_restore
  </div>
 </form>
 EOD;

@@ -99,7 +99,7 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
    php -r "echo '{x-php-sha256}' . hash('sha256', 'your-password') . PHP_EOL;"
    ```
 
-2. **`$adminpass` を設定**（凍結解除・管理者操作・添付アップロード等に使用）
+2. **`$adminpass` を設定**（`$edit_auth` 無効時やレガシー用。ログイン済みなら凍結解除・管理者操作・添付等で再入力不要）
 
    ```php
    $adminpass = '{x-php-sha256}YOUR_ADMIN_HASH';
@@ -137,13 +137,13 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 ## 権限まとめ
 
-| 操作 | 匿名 | ログイン済み（`valid-user`） | 管理者（`$adminpass`） |
-|------|------|------------------------------|------------------------|
+| 操作 | 匿名 | ログイン済み（`valid-user`） | 未ログイン + `$adminpass`（レガシー） |
+|------|------|------------------------------|-------------------------------------|
 | ページ閲覧 | OK | OK | OK |
 | ページ編集 | **不可** | OK | OK |
 | コメント等プラグイン投稿 | **不可** | OK | OK |
-| 凍結ページの解除 | 不可 | 不可 | OK（パスワード入力） |
-| 添付アップロード | 不可（既定） | 設定次第 | OK（既定は管理者のみ） |
+| 凍結・凍結解除 | 不可 | OK（`$edit_auth` 通過後、パスワード不要） | OK（`$adminpass` 入力） |
+| 添付アップロード | 不可（既定） | OK（既定はログインで可） | OK（`$adminpass` 入力） |
 
 ---
 
@@ -325,7 +325,7 @@ $spam_external_link_allowlist = array('youtube.com', 'github.com');
 | `$spam_block_external_links` | `0` 無効（既定）、`1` 外部リンクを全員拒否、`2` 管理者のみ許可 |
 | `$spam_external_link_allowlist` | 許可するドメイン（サブドメイン含む。`www.` は正規化して比較） |
 
-自サイト判定は `get_base_uri(PKWK_URI_ABSOLUTE)` のホストと比較します。モード `2` では `auth_groups` の `admin` グループ所属、または POST の管理者パスワード（`pass` / `adminpass`）検証で許可します。
+自サイト判定は `get_base_uri(PKWK_URI_ABSOLUTE)` のホストと比較します。モード `2` では `auth_groups` の `admin` グループ所属、フォームログイン済み、または POST の管理者パスワード（`pass` / `adminpass`）検証で許可します。
 
 ### 動作
 

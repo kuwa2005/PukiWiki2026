@@ -84,8 +84,8 @@ function plugin_diff_delete($page)
 	if (! file_exists($filename)) $body = make_pagelink($page) . '\'s diff seems not found';
 	if ($body) return array('msg'=>$_title_diff_delete, 'body'=>$body);
 
-	if (isset($vars['pass'])) {
-		if (pkwk_login($vars['pass'])) {
+	if (isset($vars['ok'])) {
+		if (pkwk_admin_authorized(isset($vars['pass']) ? $vars['pass'] : NULL)) {
 			unlink($filename);
 			return array(
 				'msg'  => $_title_diff_delete,
@@ -97,14 +97,17 @@ function plugin_diff_delete($page)
 	}
 
 	$s_page = htmlsc($page);
+	$pass_input = pkwk_is_authenticated() ? '' :
+		'<input type="password" name="pass" size="12" />';
+	$pass_msg = pkwk_is_authenticated() ? '' : "<p>$_msg_diff_adminpass</p>\n";
 	$body .= <<<EOD
-<p>$_msg_diff_adminpass</p>
+$pass_msg
 <form action="$script" method="post">
  <div>
   <input type="hidden"   name="cmd"    value="diff" />
   <input type="hidden"   name="page"   value="$s_page" />
   <input type="hidden"   name="action" value="delete" />
-  <input type="password" name="pass"   size="12" />
+  $pass_input
   <input type="submit"   name="ok"     value="$_btn_delete" />
  </div>
 </form>

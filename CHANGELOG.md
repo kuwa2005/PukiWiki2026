@@ -14,6 +14,7 @@
 
 ### Changed
 
+- **ログイン済みユーザーは `$adminpass` 入力不要** — `pkwk_is_authenticated()` / `pkwk_admin_authorized()` を `lib/auth.php` に追加。凍結・凍結解除、rename、diff/backup 削除、dump、links/update_entities、attach 管理者操作、編集の「更新日時を変更しない」、外部リンク制限（モード 2）で、フォームログイン済みなら `$adminpass` 再入力をスキップ。未ログイン時は従来どおり（`$edit_auth` 有効時は mutation 前にログイン誘導）
 - **公式同梱ファイルを `pukiwiki/` へ集約** — `COPYING.txt`・`README.txt`・`UPDATING.txt`・`INSTALL.txt`・`*.en.txt.zip`・`wiki.en.zip` を root から `pukiwiki/` へ移動。root は `index.php`・`.htaccess`・プロジェクト文書（`README.md` / `CHANGELOG.md`）等のみ。`BACKUP.md`・`ARCHITECTURE.md`・`DEPLOY.md`・`SETUP.md`・`UPSTREAM.md` の参照を更新
 - **デフォルト編集者パスワード** — 初期値を `pass` から `editor` に変更（ハッシュ `{x-php-sha256}1553cc62ff246044c683a61e203e65541990e7fcd4af9443d22b9557ecc9ac54`）。`pukiwiki.ini.php.example`・各種ドキュメントを更新。**必ず変更してから使うこと** を強調
 

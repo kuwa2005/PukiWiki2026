@@ -212,7 +212,7 @@ function plugin_rename_regex($arr_from, $arr_to)
 
 function plugin_rename_phase3($pages)
 {
-	global $_rename_messages;
+	global $vars, $_rename_messages;
 
 	$script = get_base_uri();
 	$msg = $input = '';
@@ -225,9 +225,9 @@ function plugin_rename_phase3($pages)
 				$exists[$_page][$old] = $new;
 
 	$pass = plugin_rename_getvar('pass');
-	if ($pass != '' && pkwk_login($pass)) {
+	if (isset($vars['rename_confirm']) && pkwk_admin_authorized($pass)) {
 		return plugin_rename_proceed($pages, $files, $exists);
-	} else if ($pass != '') {
+	} else if (isset($vars['rename_confirm']) && $pass != '') {
 		$msg = plugin_rename_err('adminpass');
 	}
 
@@ -275,14 +275,17 @@ function plugin_rename_phase3($pages)
 
 	$ret = array();
 	$ret['msg'] = $_rename_messages['msg_title'];
+	$pass_input = pkwk_is_authenticated() ? '' :
+		'<label for="_p_rename_adminpass">' . $_rename_messages['msg_adminpass'] . '</label>' .
+		'<input type="password" name="pass" id="_p_rename_adminpass" value="" />';
 	$ret['body'] = <<<EOD
 <p>$msg</p>
 <form action="$script" method="post">
  <div>
   <input type="hidden" name="plugin" value="rename" />
+  <input type="hidden" name="rename_confirm" value="1" />
   $input
-  <label for="_p_rename_adminpass">{$_rename_messages['msg_adminpass']}</label>
-  <input type="password" name="pass" id="_p_rename_adminpass" value="" />
+  $pass_input
   <input type="submit" value="{$_rename_messages['btn_submit']}" />
  </div>
 </form>

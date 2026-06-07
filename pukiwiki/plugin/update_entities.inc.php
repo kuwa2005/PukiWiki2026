@@ -45,17 +45,20 @@ function plugin_update_entities_action()
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits this');
 
 	$msg = $body = '';
-	if (empty($vars['action']) || empty($vars['adminpass']) || ! pkwk_login($vars['adminpass'])) {
+	$adminpass = isset($vars['adminpass']) ? $vars['adminpass'] : NULL;
+	if (empty($vars['action']) || ! pkwk_admin_authorized($adminpass)) {
 		$msg   = & $_entities_messages['title_update'];
 		$items = plugin_update_entities_create();
 		$body  = convert_html(sprintf($_entities_messages['msg_usage'], join("\n" . '-', $items)));
+		$pass_input = pkwk_is_authenticated() ? '' :
+			'<label for="_p_update_entities_adminpass">' . $_entities_messages['msg_adminpass'] . '</label>' .
+			'<input type="password" name="adminpass" id="_p_update_entities_adminpass" size="20" value="" />';
 		$body .= <<<EOD
 <form method="post" action="$script">
  <div>
   <input type="hidden" name="plugin" value="update_entities" />
   <input type="hidden" name="action" value="update" />
-  <label for="_p_update_entities_adminpass">{$_entities_messages['msg_adminpass']}</label>
-  <input type="password" name="adminpass" id="_p_update_entities_adminpass" size="20" value="" />
+  $pass_input
   <input type="submit" value="{$_entities_messages['btn_submit']}" />
  </div>
 </form>

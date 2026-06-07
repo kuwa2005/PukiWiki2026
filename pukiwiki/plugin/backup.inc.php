@@ -132,8 +132,8 @@ function plugin_backup_delete($page)
 		return array('msg'=>$_title_pagebackuplist, 'body'=>plugin_backup_get_list($page)); // Say "is not found"
 
 	$body = '';
-	if (isset($vars['pass'])) {
-		if (pkwk_login($vars['pass'])) {
+	if (isset($vars['ok'])) {
+		if (pkwk_admin_authorized(isset($vars['pass']) ? $vars['pass'] : NULL)) {
 			_backup_delete($page);
 			return array(
 				'msg'  => $_title_backup_delete,
@@ -146,14 +146,17 @@ function plugin_backup_delete($page)
 
 	$script = get_base_uri();
 	$s_page = htmlsc($page);
+	$pass_input = pkwk_is_authenticated() ? '' :
+		'<input type="password" name="pass" size="12" />';
+	$pass_msg = pkwk_is_authenticated() ? '' : "<p>$_msg_backup_adminpass</p>\n";
 	$body .= <<<EOD
-<p>$_msg_backup_adminpass</p>
+$pass_msg
 <form action="$script" method="post">
  <div>
   <input type="hidden"   name="cmd"    value="backup" />
   <input type="hidden"   name="page"   value="$s_page" />
   <input type="hidden"   name="action" value="delete" />
-  <input type="password" name="pass"   size="12" />
+  $pass_input
   <input type="submit"   name="ok"     value="$_btn_delete" />
  </div>
 </form>

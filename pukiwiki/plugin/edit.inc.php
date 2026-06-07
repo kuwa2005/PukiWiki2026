@@ -272,7 +272,8 @@ function plugin_edit_write()
 
 	// $notimeupdate: Checkbox 'Do not change timestamp'
 	$notimestamp = isset($vars['notimestamp']) && $vars['notimestamp'] != '';
-	if ($notimeupdate > 1 && $notimestamp && ! pkwk_login($vars['pass'])) {
+	if ($notimeupdate > 1 && $notimestamp &&
+		! pkwk_admin_authorized(isset($vars['pass']) ? $vars['pass'] : NULL)) {
 		// Enable only administrator & password error
 		$retvars['body']  = '<p><strong>' . $_msg_invalidpass . '</strong></p>' . "\n";
 		$retvars['body'] .= edit_form($page, $msg, $digest, FALSE);
