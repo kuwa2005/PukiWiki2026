@@ -56,14 +56,26 @@ function plugin_loginform_action()
 	$isset_user_credential = $username || $password ;
 	$changepassword_failed = isset($_GET['changepassword_failed']) && $_GET['changepassword_failed'] === '1';
 	$changepassword_manual = NULL;
+	$changepassword_error = '';
+	$changepassword_hint = '';
 	if ($changepassword_failed) {
+		pkwk_ensure_session();
 		$flash = pkwk_flash_consume('changepassword_manual');
-		if (is_array($flash) && isset($flash['user'], $flash['hash'])
-			&& is_string($flash['user']) && $flash['user'] !== ''
-			&& is_string($flash['hash']) && $flash['hash'] !== '') {
-			require_once(LIB_DIR . 'auth_ini.php');
-			if (pkwk_ini_is_valid_auth_hash($flash['hash'])) {
-				$changepassword_manual = $flash;
+		if (is_array($flash)) {
+			if (isset($flash['user'], $flash['hash'])
+				&& is_string($flash['user']) && $flash['user'] !== ''
+				&& is_string($flash['hash']) && $flash['hash'] !== '') {
+				$changepassword_manual = array(
+					'user' => $flash['user'],
+					'hash' => $flash['hash'],
+				);
+			}
+			if (! empty($flash['error']) && is_string($flash['error'])) {
+				require_once(LIB_DIR . 'auth_ini.php');
+				$changepassword_error = pkwk_ini_auth_write_error_message($flash['error']);
+			}
+			if (! empty($flash['hint']) && is_string($flash['hint'])) {
+				$changepassword_hint = $flash['hint'];
 			}
 		}
 	}
@@ -141,6 +153,14 @@ function plugin_loginform_action()
     max-width: 36em;
     margin: 1em auto;
   }
+  .loginform .debug-hint {
+    font-family: monospace;
+    font-size: 0.85em;
+    color: #555;
+    text-align: left;
+    max-width: 36em;
+    margin: 0.5em auto;
+  }
 </style>
 <div class="loginformcontainer">
 <form name="loginform" class="loginform" action="<?php echo htmlsc($action_url) ?>" method="post">
@@ -159,7 +179,7 @@ function plugin_loginform_action()
 <?php if ($changepassword_failed): ?>
   <tr>
     <td></td>
-    <td class="errormessage">パスワードの保存に失敗しました。ファイルの書き込み権限を確認してから、再度ログインしてください。</td>
+    <td class="errormessage"><?php echo htmlsc($changepassword_error !== '' ? $changepassword_error : 'パスワードの保存に失敗しました。ファイルの書き込み権限を確認してから、再度ログインしてください。') ?></td>
   </tr>
 <?php endif ?>
 <?php if ($isset_user_credential): ?>
@@ -178,10 +198,15 @@ function plugin_loginform_action()
 <div>
 </div>
 </form>
+<?php if ($changepassword_failed && $changepassword_hint !== ''): ?>
+<p class="debug-hint">診断: <?php echo htmlsc($changepassword_hint) ?></p>
+<?php endif ?>
 <?php if ($changepassword_manual): ?>
 <p>手動設定用ハッシュ（<code>$auth_users['<?php echo htmlsc($changepassword_manual['user']) ?>']</code>）:</p>
 <p class="manual-hash"><code><?php echo htmlsc($changepassword_manual['hash']) ?></code></p>
 <p><small>ハッシュ生成: <code>pukiwiki/tools/gen-password-hash.php</code> または <a href="https://github.com/kuwa2005/PukiWiki2026/blob/main/pukiwiki/docs/SETUP.md">docs/SETUP.md</a></small></p>
+<?php elseif ($changepassword_failed): ?>
+<p class="errormessage"><small>手動設定用ハッシュの表示に失敗しました。上記の診断情報を確認するか、<code>pukiwiki/tools/gen-password-hash.php</code> でハッシュを生成してください。</small></p>
 <?php endif ?>
 </div>
 <script><!--

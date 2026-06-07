@@ -48,8 +48,10 @@ function plugin_changepassword_action()
 				$done = TRUE;
 			} else {
 				pkwk_flash_set('changepassword_manual', array(
-					'user' => $auth_user,
-					'hash' => $new_hash,
+					'user'  => $auth_user,
+					'hash'  => $new_hash,
+					'error' => isset($result['error']) ? (string)$result['error'] : '',
+					'hint'  => isset($result['hint']) ? (string)$result['hint'] : '',
 				));
 				pkwk_form_auth_clear_session();
 				$login_url = get_base_uri() . '?plugin=loginform&changepassword_failed=1';

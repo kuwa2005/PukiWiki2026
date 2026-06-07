@@ -14,7 +14,7 @@
 
 ### Fixed
 
-- **強制パスワード変更の保存失敗時にログイン状態とみなさない** — `pkwk_is_authenticated()` が `pkwk_must_change_password` 中は FALSE を返すよう変更。`pukiwiki.ini.php` への hash 保存失敗時はセッションを破棄して loginform へリダイレクト（ナビの「ログアウト」非表示）。ini 保存失敗時は `lib/perm.php` で親ディレクトリ（`$perm_dir_mode` 既定 0777）と ini ファイル自身（`$perm_file_mode` 既定 0666）の chmod を **1 回だけ**試行し、保存を **1 回だけ**再試行（Windows では perm 修正スキップ）
+- **強制パスワード変更 — 666 でも ini 保存失敗・ハッシュ非表示** — `{x-php-password}` + Argon2 等（カンマ含む）の hash を `pkwk_ini_is_valid_auth_hash()` が誤って拒否していたため、権限修正前に `invalid_hash` で失敗していた問題を修正。`'editor' => 'editor'` 平文行・ダブルクォート形式も置換対象に。保存失敗時は理由コード・perm 診断 hint を loginform に表示。flash は session 破棄せず認証キーのみクリアして引き継ぎ。chmod 後 1 回再試行 — `pkwk_is_authenticated()` が `pkwk_must_change_password` 中は FALSE を返すよう変更。`pukiwiki.ini.php` への hash 保存失敗時はセッションを破棄して loginform へリダイレクト（ナビの「ログアウト」非表示）。ini 保存失敗時は `lib/perm.php` で親ディレクトリ（`$perm_dir_mode` 既定 0777）と ini ファイル自身（`$perm_file_mode` 既定 0666）の chmod を **1 回だけ**試行し、保存を **1 回だけ**再試行（Windows では perm 修正スキップ）
 - **強制パスワード変更の保存失敗時に手動設定用ハッシュを再表示** — ini 保存失敗で loginform へリダイレクトした直後のみ、POST から生成した hash を 1 回限り表示（`pkwk_flash_set` / `pkwk_flash_consume`）。`gen-password-hash.php` / `docs/SETUP.md` 案内を併記
 - **pukiwiki.ini.php 書き込み時のパーミッション修正** — mode 0644 でも Web サーバー実行ユーザーが書けない場合、`is_writable()` 判定で ini（0666）と親ディレクトリ（0777）を chmod してから atomic rename。書き込み処理内で chmod した分だけ完了後（失敗時も）元 mode へ復元。もともと書き込み可能・666 固定などプログラムが触っていない場合は変更しない。失敗時は owner/euid 等の debug hint を返す
 

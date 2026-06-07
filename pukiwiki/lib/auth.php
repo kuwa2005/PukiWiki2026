@@ -94,22 +94,22 @@ function pkwk_flash_consume($key)
  * Clear form-auth session and reset globals (logout without redirect).
  *
  * Preserves one-time flash data (e.g. manual password hash after changepassword failure).
+ * Does not destroy the session — avoids losing flash across redirect when cookie path differs.
  */
 function pkwk_form_auth_clear_session()
 {
-	$flash = array();
-	if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['pkwk_flash'])) {
-		$flash = $_SESSION['pkwk_flash'];
-	}
-	if (session_status() === PHP_SESSION_ACTIVE) {
-		$_SESSION = array();
-		session_regenerate_id(true);
-		session_destroy();
-	}
+	pkwk_ensure_session();
+	$flash = isset($_SESSION['pkwk_flash']) ? $_SESSION['pkwk_flash'] : array();
+
+	unset($_SESSION['authenticated_user']);
+	unset($_SESSION['authenticated_user_fullname']);
+	unset($_SESSION['dynamic_member_groups']);
+	unset($_SESSION['pkwk_must_change_password']);
+
 	if ($flash) {
-		pkwk_ensure_session();
 		$_SESSION['pkwk_flash'] = $flash;
 	}
+
 	global $auth_user, $auth_user_fullname, $auth_user_groups;
 	$auth_user = '';
 	$auth_user_fullname = '';
