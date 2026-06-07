@@ -536,12 +536,13 @@ class AttachFile
 		$s_file = htmlsc($this->file);
 		$s_err = ($err == '') ? '' : '<p style="font-weight:bold">' . $_attach_messages[$err] . '</p>';
 
+		$msg_require = pkwk_is_authenticated() ? '' : $_attach_messages['msg_require'];
 		$msg_rename  = '';
 		if ($this->age) {
 			$msg_freezed = '';
 			$msg_delete  = '<input type="radio" name="pcmd" id="_p_attach_delete" value="delete" />' .
 				'<label for="_p_attach_delete">' .  $_attach_messages['msg_delete'] .
-				$_attach_messages['msg_require'] . '</label><br />';
+				$msg_require . '</label><br />';
 			$msg_freeze  = '';
 		} else {
 			if ($this->status['freeze']) {
@@ -549,22 +550,22 @@ class AttachFile
 				$msg_delete  = '';
 				$msg_freeze  = '<input type="radio" name="pcmd" id="_p_attach_unfreeze" value="unfreeze" />' .
 					'<label for="_p_attach_unfreeze">' .  $_attach_messages['msg_unfreeze'] .
-					$_attach_messages['msg_require'] . '</label><br />';
+					$msg_require . '</label><br />';
 			} else {
 				$msg_freezed = '';
 				$msg_delete = '<input type="radio" name="pcmd" id="_p_attach_delete" value="delete" />' .
 					'<label for="_p_attach_delete">' . $_attach_messages['msg_delete'];
-				if (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age)
-					$msg_delete .= $_attach_messages['msg_require'];
+				if (! pkwk_is_authenticated() && (PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->age))
+					$msg_delete .= $msg_require;
 				$msg_delete .= '</label><br />';
 				$msg_freeze  = '<input type="radio" name="pcmd" id="_p_attach_freeze" value="freeze" />' .
 					'<label for="_p_attach_freeze">' .  $_attach_messages['msg_freeze'] .
-					$_attach_messages['msg_require'] . '</label><br />';
+					$msg_require . '</label><br />';
 
 				if (PLUGIN_ATTACH_RENAME_ENABLE) {
 					$msg_rename  = '<input type="radio" name="pcmd" id="_p_attach_rename" value="rename" />' .
 						'<label for="_p_attach_rename">' .  $_attach_messages['msg_rename'] .
-						$_attach_messages['msg_require'] . '</label><br />&nbsp;&nbsp;&nbsp;&nbsp;' .
+						$msg_require . '</label><br />&nbsp;&nbsp;&nbsp;&nbsp;' .
 						'<label for="_p_attach_newname">' . $_attach_messages['msg_newname'] .
 						':</label> ' .
 						'<input type="text" name="newname" id="_p_attach_newname" size="40" value="' .
@@ -575,6 +576,13 @@ class AttachFile
 		$info = $this->toString(TRUE, FALSE);
 		$hash = $this->gethash();
 		$csrf = pkwk_csrf_hidden_field();
+		$has_actions = ($msg_delete !== '' || $msg_freeze !== '' || $msg_rename !== '');
+		$action_msg = '';
+		if ($has_actions) {
+			$action_msg = pkwk_is_authenticated()
+				? '<p>' . $_attach_messages['msg_action_confirm'] . "</p>\n"
+				: '';
+		}
 
 		$retval = array('msg'=>sprintf($_attach_messages['msg_info'], htmlsc($this->file)));
 		$retval['body'] = <<< EOD
@@ -595,6 +603,7 @@ class AttachFile
 </dl>
 <hr />
 $s_err
+$action_msg
 <form action="$script" method="post">
   $csrf
   <div>
@@ -608,8 +617,11 @@ $s_err
   <br />
 EOD;
 		if (! pkwk_is_authenticated()) {
+			$pass_label = $_attach_messages[
+				(PLUGIN_ATTACH_DELETE_ADMIN_ONLY || $this->status['freeze'] || $this->age)
+					? 'msg_adminpass' : 'msg_password'];
 			$retval['body'] .= <<< EOD
-  <label for="_p_attach_password">{$_attach_messages['msg_password']}:</label>
+  <label for="_p_attach_password">{$pass_label}:</label>
   <input type="password" name="pass" id="_p_attach_password" size="8" />
 EOD;
 		}

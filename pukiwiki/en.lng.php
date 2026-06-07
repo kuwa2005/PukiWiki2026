@@ -168,6 +168,7 @@ $_attach_messages = array(
 	'msg_rename'   => 'Rename',
 	'msg_newname'  => 'New file name',
 	'msg_require'  => '(require administrator password)',
+	'msg_action_confirm' => 'Select an action and press the button below.',
 	'msg_filesize' => 'size',
 	'msg_date'     => 'date',
 	'msg_dlcount'  => 'access count',

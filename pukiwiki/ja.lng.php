@@ -170,6 +170,7 @@ $_attach_messages = array(
 	'msg_rename'   => '名前を変更します。',
 	'msg_newname'  => '新しい名前',
 	'msg_require'  => '(管理者パスワードが必要です)',
+	'msg_action_confirm' => '操作を選んで、以下のボタンを押してください。',
 	'msg_filesize' => 'サイズ',
 	'msg_date'     => '登録日時',
 	'msg_dlcount'  => 'アクセス数',
