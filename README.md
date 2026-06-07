@@ -35,13 +35,15 @@ pukiwiki2026/                    ← git リポジトリ root
 
 **`.htaccess`:** 同梱の `.htaccess` は**任意・推奨**（Apache で直接アクセス拒否に使える。無くても Wiki 本体は動作）。詳細: [pukiwiki/docs/DEPLOY.md §4.5](pukiwiki/docs/DEPLOY.md#45-htaccess任意推奨)
 
+**起動時パーミッションチェック:** Unix/Linux 本番で書き込みディレクトリの mode を起動時に確認・修正（不適切な場合のみ配下も再帰修正）。Windows 開発環境では自動スキップ。詳細: [pukiwiki/docs/DEPLOY.md §3.2](pukiwiki/docs/DEPLOY.md#32-パーミッション)
+
 公式との diff は git タグ **`upstream-1.5.4-utf8`** を基準に取ります（[pukiwiki/docs/UPSTREAM.md](pukiwiki/docs/UPSTREAM.md)）。ローカルに vendor コピーは不要です。
 
 ## クイックスタート
 
 1. Web サーバー（Apache / nginx + PHP 8.x 推奨）のドキュメントルート、または仮想ホストで本フォルダを公開する。
 2. `pukiwiki/pukiwiki.ini.php.example` を参考に `pukiwiki/pukiwiki.ini.php` を編集する（初回はコピー）。
-3. `pukiwiki/wiki/`・`pukiwiki/cache/`・`pukiwiki/backup/` に書き込み権限を付与する。
+3. `pukiwiki/wiki/`・`pukiwiki/cache/`・`pukiwiki/backup/` 等に書き込み権限を付与する（Unix/Linux 本番では起動時パーミッションチェックが自動実行 — [pukiwiki/docs/DEPLOY.md §3.2](pukiwiki/docs/DEPLOY.md#32-パーミッション)）。
 4. ブラウザで `index.php` にアクセスし、初期ページが表示されることを確認する。
 
 ### 初回ログイン

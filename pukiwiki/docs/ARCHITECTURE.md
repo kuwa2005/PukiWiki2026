@@ -42,6 +42,7 @@ index.php（DATA_HOME = ./pukiwiki/）
    └── pukiwiki/
          ├── lib/init.php（bootstrap, S_VERSION）
          │      ├── pukiwiki.ini.php
+         │      ├── lib/perm.php（起動時パーミッションチェック・Unix/Linux）
          │      └── lib/pukiwiki.php（メイン処理）
          ├── plugin/*.inc.php（機能拡張）
          ├── skin/*.skin.php（表示）
@@ -56,6 +57,7 @@ index.php（DATA_HOME = ./pukiwiki/）
 |------|------|
 | `index.php` | エントリポイント（`DATA_HOME` 定義のみ） |
 | `pukiwiki/lib/` | コアライブラリ、Wiki エンジン |
+| `pukiwiki/lib/perm.php` | 起動時ディレクトリパーミッションチェック（Unix/Linux 本番向け） |
 | `pukiwiki/plugin/` | プラグイン（`plugin=xxx` で呼び出し） |
 | `pukiwiki/skin/` | 表示テンプレート・CSS |
 | `pukiwiki/wiki/` | ページデータ（テキスト） |
@@ -96,9 +98,13 @@ index.php（DATA_HOME = ./pukiwiki/）
 - **セキュリティ**:
 - **テスト観点**:
 
-### 4.2 機能 B: _______________
+### 4.2 起動時ディレクトリパーミッションチェック
 
-（同上）
+- **要件**: Unix/Linux 本番で書き込みディレクトリ自身の mode のみ確認。不適切な場合のみ chmod + 配下再帰修正。Windows ではスキップ。
+- **変更ファイル**: `lib/perm.php`（新規）, `lib/init.php`（呼び出し）, `pukiwiki.ini.php.example`
+- **対象定数**: `DATA_DIR`, `DIFF_DIR`, `BACKUP_DIR`, `CACHE_DIR`, `UPLOAD_DIR`, `COUNTER_DIR`
+- **設定**: `$perm_check_on_boot`, `$perm_dir_mode`, `$perm_file_mode`, `$perm_acceptable_dir_modes`, `$perm_check_dirs_extra`
+- **テスト観点**: 許容 mode（0777/0775/0770）では配下に触れないこと。0700 等では修正されること。Windows でスキップされること。
 
 ---
 
@@ -111,6 +117,7 @@ index.php（DATA_HOME = ./pukiwiki/）
 | ファイルアップロード | `attach/` 制限 |
 | 本番設定 | `lib/init.php` のデバッグ表示オフ等 |
 | ディレクトリ保護 | `.htaccess` は**任意・推奨**（Apache）。無くても Wiki 本体は動作。詳細: [DEPLOY.md §4.5](DEPLOY.md#45-htaccess任意推奨) |
+| 起動時パーミッション | Unix/Linux 本番で `lib/perm.php` が書き込みディレクトリ mode を確認・修正（不適切な場合のみ配下再帰）。Windows ではスキップ |
 
 ### 5.1 `.htaccess` の位置付け
 
@@ -134,7 +141,7 @@ index.php（DATA_HOME = ./pukiwiki/）
 | 日付 | 決定 | 理由 | 代替案 |
 |------|------|------|--------|
 | 2026-06-07 | git タグ `upstream-1.5.4-utf8` を diff 基準に | vendor/ コピー不要 | submodule / vendor ディレクトリ |
-| | | | |
+| 2026-06-07 | 起動時パーミッションチェック（`lib/perm.php`） | Unix/Linux 本番の mode 不整合を起動時に自動修正 | 手動 chmod のみ / cron 定期修正 |
 
 ---
 
