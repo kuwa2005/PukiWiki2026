@@ -133,6 +133,11 @@ function is_pagename($str)
 			$is_pagename = ($is_pagename && preg_match($pattern, $str));
 	}
 
+	if ($is_pagename && function_exists('pkwk_is_safe_identifier') &&
+		! pkwk_is_safe_identifier($str)) {
+		$is_pagename = FALSE;
+	}
+
 	return $is_pagename;
 }
 

@@ -429,3 +429,48 @@ function pkwk_sanitize_html_style_attributes($html)
 		$html
 	);
 }
+
+/**
+ * Detect dangerous Unicode in user-visible identifiers (SEC-U01).
+ *
+ * Rejects BiDi controls, zero-width, and related invisible characters
+ * per SECURITY-AUDIT.md / Unicode TR39 guidance.
+ *
+ * @param string $str
+ * @return string|false Reason code, or FALSE if safe
+ */
+function pkwk_identifier_unsafe_unicode_reason($str)
+{
+	if (! is_string($str) || $str === '') {
+		return FALSE;
+	}
+	if (@preg_match(
+		'/[\x{202A}-\x{202E}\x{2066}-\x{2069}\x{206A}-\x{206F}\x{200B}-\x{200F}\x{FEFF}\x{061C}]/u',
+		$str
+	)) {
+		return 'unsafe_unicode';
+	}
+	return FALSE;
+}
+
+/**
+ * Whether an identifier (page name, username, attach filename, etc.) is safe (SEC-U01).
+ *
+ * @param string $str
+ * @return bool
+ */
+function pkwk_is_safe_identifier($str)
+{
+	return pkwk_identifier_unsafe_unicode_reason($str) === FALSE;
+}
+
+/**
+ * Alias for page-name checks (SEC-U01).
+ *
+ * @param string $str
+ * @return bool
+ */
+function pkwk_is_safe_pagename($str)
+{
+	return pkwk_is_safe_identifier($str);
+}

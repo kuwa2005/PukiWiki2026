@@ -184,6 +184,7 @@ $_attach_messages = array(
 	'err_rename'   => 'Cannot rename this file',
 	'err_password' => 'Wrong password.',
 	'err_adminpass'=> 'Wrong administrator password',
+	'err_unsafe_filename' => 'The file name contains disallowed characters (BiDi controls, zero-width characters, etc.).',
 	'btn_upload'   => 'Upload',
 	'btn_info'     => 'Information',
 	'btn_submit'   => 'Submit'
@@ -446,8 +447,14 @@ $_loginform_messages = array(
 	'username' => 'Username',
 	'password' => 'Password',
 	'login' => 'Log in',
-	'invalid_username_or_password' => 'The username or password you entered is incorrect'
+	'invalid_username_or_password' => 'The username or password you entered is incorrect',
+	'unsafe_username' => 'The username contains disallowed characters (BiDi controls, zero-width characters, etc.).'
 );
+
+///////////////////////////////////////
+// security.php — identifier validation (SEC-U01)
+$_msg_unsafe_pagename = 'The page name contains disallowed characters (BiDi controls, zero-width characters, etc.). Please use a valid page name.';
+$_msg_unsafe_filename = 'The file name contains disallowed characters (BiDi controls, zero-width characters, etc.).';
 
 ///////////////////////////////////////
 // external_link.inc.php

@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- **SEC-U01 — Unicode BiDi/RTL 制御文字によるページ名なりすまし** — `pkwk_is_safe_identifier()` / `pkwk_is_safe_pagename()` を `lib/security.php` に追加。`is_pagename()`・read 表示・loginform ユーザー名・添付 upload/rename で BiDi 制御（U+202A–U+202E, U+2066–U+2069 等）・ゼロ幅文字を拒否。テスト: `pukiwiki/tools/test-unicode-identifier.php`（Closes #81）
 - **セキュリティ再監査（2026-06-07）** — `is_pagename_bytes_within_hard_limit()` が `PKWK_PAGENAME_BYTES_SOFT_LIMIT` を誤参照していた問題を修正（SEC-M09）。プラグイン POST フォームへ CSRF トークンを自動注入する `pkwk_csrf_inject_forms()` を追加（SEC-M10 部分対応）
 - **添付ファイル情報画面の管理者パスワード案内** — ログイン済みでも削除・凍結・rename のラベルに「(管理者パスワードが必要です)」と表示されていた問題を修正。ログイン済みは操作案内のみ、未ログイン（`$edit_auth` 無効時）は従来どおり管理者パスワード案内（`$edit_auth` 有効時は mutation 前にログイン誘導）。凍結・凍結解除（PR #62）と同方針
 - **凍結・凍結解除の確認メッセージ** — ログイン済みでも「パスワードを入力してください」と表示されていた問題を修正。ログイン済みはボタン押下案内、未ログイン（`$edit_auth` 無効時）は従来どおり管理者パスワード案内（`$edit_auth` 有効時はログイン誘導でフォーム未到達）

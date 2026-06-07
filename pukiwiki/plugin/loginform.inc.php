@@ -54,6 +54,8 @@ function plugin_loginform_action()
 	$username = isset($_POST['username']) ? $_POST['username'] : '';
 	$password = isset($_POST['password']) ? $_POST['password'] : '';
 	$isset_user_credential = $username || $password ;
+	$unsafe_username = ($username !== '' && function_exists('pkwk_is_safe_identifier') &&
+		! pkwk_is_safe_identifier($username));
 	$changepassword_failed = isset($_GET['changepassword_failed']) && $_GET['changepassword_failed'] === '1';
 	$changepassword_manual = NULL;
 	$changepassword_error = '';
@@ -79,7 +81,7 @@ function plugin_loginform_action()
 			}
 		}
 	}
-	if ($username && $password && form_auth($username, $password)) {
+	if ($username && $password && ! $unsafe_username && form_auth($username, $password)) {
 		// Sign in successfully completed
 		if (! empty($_SESSION['pkwk_must_change_password'])) {
 			$change_url = get_base_uri() . '?plugin=changepassword';
@@ -182,7 +184,12 @@ function plugin_loginform_action()
     <td class="errormessage"><?php echo htmlsc($changepassword_error !== '' ? $changepassword_error : 'パスワードの保存に失敗しました。ファイルの書き込み権限を確認してから、再度ログインしてください。') ?></td>
   </tr>
 <?php endif ?>
-<?php if ($isset_user_credential): ?>
+<?php if ($unsafe_username): ?>
+  <tr>
+    <td></td>
+    <td class="errormessage"><?php echo htmlsc($_loginform_messages['unsafe_username']) ?></td>
+  </tr>
+<?php elseif ($isset_user_credential): ?>
   <tr>
     <td></td>
     <td class="errormessage"><?php echo $_loginform_messages['invalid_username_or_password'] ?></td>

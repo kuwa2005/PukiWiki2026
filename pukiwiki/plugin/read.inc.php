@@ -8,7 +8,7 @@
 
 function plugin_read_action()
 {
-	global $vars, $_title_invalidwn, $_msg_invalidiwn, $autoalias;
+	global $vars, $_title_invalidwn, $_msg_invalidiwn, $_msg_unsafe_pagename, $autoalias;
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 	if (is_page($page)) {
@@ -20,6 +20,12 @@ function plugin_read_action()
 
 	} else if (! PKWK_SAFE_MODE && is_interwiki($page)) {
 		return do_plugin_action('interwiki'); // Process InterWikiName
+
+	} else if (function_exists('pkwk_is_safe_identifier') && ! pkwk_is_safe_identifier($page)) {
+		return array(
+			'msg'  => $_title_invalidwn,
+			'body' => '<p>' . htmlsc($_msg_unsafe_pagename) . '</p>'
+		);
 
 	} else if (is_pagename($page)) {
 		if ($autoalias) {

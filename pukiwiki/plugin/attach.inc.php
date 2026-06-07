@@ -187,6 +187,11 @@ function attach_upload($file, $page, $pass = NULL)
 		return array(
 			'result'=>FALSE,
 			'msg'=>$_attach_messages['err_exceed']);
+	} else if (function_exists('pkwk_is_safe_identifier') &&
+		! pkwk_is_safe_identifier($file['name'])) {
+		return array(
+			'result'=>FALSE,
+			'msg'=>$_attach_messages['err_unsafe_filename']);
 	} else if (! is_pagename($page) || ($pass !== TRUE && ! is_editable($page))) {
 		return array(
 			'result'=>FALSE,'
@@ -710,6 +715,9 @@ EOD;
 				! pkwk_attach_verify_password($pass, $this->status['pass'])) {
 				return attach_info('err_password');
 			}
+		}
+		if (function_exists('pkwk_is_safe_identifier') && ! pkwk_is_safe_identifier($newname)) {
+			return attach_info('err_unsafe_filename');
 		}
 		$newbase = UPLOAD_DIR . encode($this->page) . '_' . encode($newname);
 		if (file_exists($newbase)) {

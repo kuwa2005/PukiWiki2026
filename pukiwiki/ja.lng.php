@@ -186,6 +186,7 @@ $_attach_messages = array(
 	'err_rename'   => 'ファイル名を変更できませんでした',
 	'err_password' => 'パスワードが一致しません。',
 	'err_adminpass'=> '管理者パスワードが一致しません。',
+	'err_unsafe_filename' => 'ファイル名に使用できない文字（双方向制御文字・ゼロ幅文字など）が含まれています。',
 	'btn_upload'   => 'アップロード',
 	'btn_info'     => '詳細',
 	'btn_submit'   => '実行'
@@ -448,8 +449,14 @@ $_loginform_messages = array(
 	'username' => 'ユーザー名:',
 	'password' => 'パスワード:',
 	'login' => 'ログイン',
-	'invalid_username_or_password' => 'ユーザー名またはパスワードが違います'
+	'invalid_username_or_password' => 'ユーザー名またはパスワードが違います',
+	'unsafe_username' => 'ユーザー名に使用できない文字（双方向制御文字・ゼロ幅文字など）が含まれています。'
 );
+
+///////////////////////////////////////
+// security.php — identifier validation (SEC-U01)
+$_msg_unsafe_pagename = 'ページ名に使用できない文字（双方向制御文字・ゼロ幅文字など）が含まれています。正しいページ名を指定してください。';
+$_msg_unsafe_filename = 'ファイル名に使用できない文字（双方向制御文字・ゼロ幅文字など）が含まれています。';
 
 ///////////////////////////////////////
 // external_link.inc.php
