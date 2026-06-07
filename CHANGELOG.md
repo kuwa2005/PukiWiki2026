@@ -9,9 +9,12 @@
 
 ### Added
 
+- **初回ログイン強制パスワード変更** — デモ用 `editor` / `editor` でログインした場合、`plugin/changepassword` で変更完了まで Wiki 操作をブロック。`lib/auth_ini.php` で `pukiwiki.ini.php` の `$auth_users` 該当行を自動更新（書き込み可能な場合）
 - **起動時ディレクトリパーミッションチェック** — `lib/perm.php` を追加。Unix/Linux 本番で書き込みディレクトリ（`wiki/`, `diff/`, `backup/`, `cache/`, `attach/`, `counter/`）自身の mode のみ確認し、不適切な場合のみ chmod と配下の再帰修正。Windows では自動スキップ。`$perm_check_on_boot` 等は `pukiwiki.ini.php` で設定可能（`docs/DEPLOY.md` §3.2）
 
 ### Changed
+
+- **デフォルト編集者パスワード** — 初期値を `pass` から `editor` に変更（ハッシュ `{x-php-sha256}1553cc62ff246044c683a61e203e65541990e7fcd4af9443d22b9557ecc9ac54`）。`pukiwiki.ini.php.example`・各種ドキュメントを更新。**必ず変更してから使うこと** を強調
 
 - **フッタの PukiWiki Development Team リンク** — `S_COPYRIGHT`（`lib/init.php`）の href を `https://pukiwiki.sourceforge.io/` に更新
 - **`.htaccess` の位置付け** — 任意・推奨であることを `pukiwiki/docs/DEPLOY.md` §4.5、`ARCHITECTURE.md`、`README.md`、`SECURITY-AUDIT.md` に明記。ルート / `pukiwiki/.htaccess` の役割分担を整理

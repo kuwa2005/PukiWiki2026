@@ -53,6 +53,15 @@ function plugin_loginform_action()
 	$isset_user_credential = $username || $password ;
 	if ($username && $password && form_auth($username, $password)) {
 		// Sign in successfully completed
+		if (! empty($_SESSION['pkwk_must_change_password'])) {
+			$change_url = get_base_uri() . '?plugin=changepassword';
+			if ($page_after_login) {
+				$change_url .= '&page=' . pagename_urlencode($page_after_login);
+			}
+			header('HTTP/1.0 302 Found');
+			header('Location: ' . $change_url);
+			exit;
+		}
 		form_auth_redirect($url_after_login, $page_after_login);
 		exit; // or 'return FALSE;' - Don't double check for FORM_AUTH
 	}

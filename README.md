@@ -51,11 +51,11 @@ pukiwiki2026/                    ← git リポジトリ root
 | 項目 | 値 |
 |------|-----|
 | ユーザー名 | `editor` |
-| パスワード | `pass` |
+| パスワード | `editor` |
 
-> **必ず変更して使うこと。** `editor` / `pass` はデモ用初期値です。本番・公開前にパスワードを変更してください。
+> **必ず変更して使うこと。** `editor` / `editor` はデモ用初期値です。初回ログイン時にパスワード変更画面が表示されます。本番・公開前にも必ずパスワードを変更してください。
 
-パスワードハッシュの生成: **`pukiwiki/tools/gen-password-hash.php`**（Web）または [pukiwiki/docs/SETUP.md](pukiwiki/docs/SETUP.md) の CLI 手順。
+パスワード変更: 初回ログイン時の **強制変更 UI**（`?plugin=changepassword`）または **`pukiwiki/tools/gen-password-hash.php`**（Web）/ [pukiwiki/docs/SETUP.md](pukiwiki/docs/SETUP.md) の CLI 手順。
 
 詳細: [pukiwiki/docs/SETUP.md](pukiwiki/docs/SETUP.md) · [pukiwiki/docs/DEPLOY.md](pukiwiki/docs/DEPLOY.md)
 

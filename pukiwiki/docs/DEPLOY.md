@@ -46,7 +46,7 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回
 `pukiwiki/pukiwiki.ini.php` で最低限確認する項目:
 
 - ページ保存ディレクトリ（通常 `pukiwiki/wiki/` — `DATA_DIR` は `DATA_HOME . 'wiki/'`）
-- **`$auth_users`** — 雛形の `editor` / `pass` はデモ用。**公開前に必ず変更**
+- **`$auth_users`** — 雛形の `editor` / `editor` はデモ用。**必ず変更してから使うこと**
 - 管理者パスワード `$adminpass`（凍結解除・添付等）
 - タイムゾーン・文字コード（UTF-8）
 - 本番ではデバッグ表示を無効化（`index.php` の `error_reporting(0)` が既定。開発時のみ `define('PKWK_DEBUG', 1)` を `index.php` 先頭付近に追加）
@@ -56,9 +56,9 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回
 | 項目 | 初期値（デモ用） |
 |------|------------------|
 | ユーザー名 | `editor` |
-| パスワード | `pass` |
+| パスワード | `editor` |
 
-> **必ず変更して使うこと。** 詳細: [SETUP.md](SETUP.md)
+> **必ず変更して使うこと。** 初回ログイン時にパスワード変更画面が表示されます。詳細: [SETUP.md](SETUP.md)
 
 パスワードハッシュ生成:
 

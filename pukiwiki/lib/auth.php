@@ -8,6 +8,10 @@
 
 define('PKWK_PASSPHRASE_LIMIT_LENGTH', 512);
 
+/** Default demo password (must be changed before production use). */
+define('PKWK_DEFAULT_PASSWORD', 'editor');
+define('PKWK_DEFAULT_PASSWORD_HASH', '{x-php-sha256}1553cc62ff246044c683a61e203e65541990e7fcd4af9443d22b9557ecc9ac54');
+
 /////////////////////////////////////////////////
 // Auth type
 
@@ -356,7 +360,89 @@ function pkwk_resolve_auth_page($vars)
  */
 function pkwk_edit_auth_readonly_post_plugins()
 {
-	return array('search', 'loginform', 'saml', 'basicauthlogout');
+	return array('search', 'loginform', 'changepassword', 'saml', 'basicauthlogout');
+}
+
+/**
+ * Whether the user still has the default demo password in ini.
+ *
+ * @param string $username
+ * @return bool
+ */
+function pkwk_auth_user_has_default_password($username)
+{
+	global $auth_users;
+
+	if ($username === '' || ! is_array($auth_users) || ! array_key_exists($username, $auth_users)) {
+		return FALSE;
+	}
+
+	return pkwk_hash_verify(PKWK_DEFAULT_PASSWORD, $auth_users[$username]);
+}
+
+/**
+ * Whether the current session must change password before using the wiki.
+ *
+ * @return bool
+ */
+function pkwk_auth_user_must_change_password()
+{
+	if (session_status() !== PHP_SESSION_ACTIVE) {
+		return FALSE;
+	}
+	if (! empty($_SESSION['pkwk_must_change_password'])) {
+		return TRUE;
+	}
+
+	global $auth_user;
+	return pkwk_auth_user_has_default_password($auth_user);
+}
+
+/**
+ * Requests allowed while password change is mandatory.
+ *
+ * @param array $vars
+ * @return bool
+ */
+function pkwk_password_change_is_exempt_request($vars)
+{
+	if (isset($vars['plugin']) && $vars['plugin'] === 'changepassword') {
+		return TRUE;
+	}
+	if (isset($vars['plugin']) && $vars['plugin'] === 'loginform' &&
+		isset($_GET['pcmd']) && $_GET['pcmd'] === 'logout') {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * Redirect to changepassword until default password is replaced.
+ *
+ * @param array $vars
+ * @return void
+ */
+function pkwk_enforce_password_change_if_required($vars)
+{
+	global $auth_user, $auth_type;
+
+	if ($auth_type !== AUTH_TYPE_FORM || $auth_user === '') {
+		return;
+	}
+	if (! pkwk_auth_user_must_change_password()) {
+		return;
+	}
+	if (pkwk_password_change_is_exempt_request($vars)) {
+		return;
+	}
+
+	$url = get_base_uri() . '?plugin=changepassword';
+	if (isset($vars['page']) && is_pagename($vars['page'])) {
+		$url .= '&page=' . pagename_urlencode($vars['page']);
+	}
+	header('HTTP/1.0 302 Found');
+	header('Location: ' . $url);
+	exit;
 }
 
 /**
@@ -765,6 +851,11 @@ function form_auth($username, $password)
 				session_regenerate_id(true); // require: PHP5.1+
 				$_SESSION['authenticated_user'] = $user;
 				$_SESSION['authenticated_user_fullname'] = $user;
+				if (pkwk_auth_user_has_default_password($user)) {
+					$_SESSION['pkwk_must_change_password'] = TRUE;
+				} else {
+					unset($_SESSION['pkwk_must_change_password']);
+				}
 				pkwk_login_rate_limit_reset();
 				return true;
 			}

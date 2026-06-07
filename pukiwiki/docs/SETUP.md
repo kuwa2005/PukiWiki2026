@@ -25,29 +25,37 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
 | 項目 | 値 |
 |------|-----|
 | ユーザー名 | `editor` |
-| パスワード | `pass` |
+| パスワード | `editor` |
 
 `pukiwiki.ini.php.example` およびローカル雛形には、上記の SHA-256 ハッシュが既定で入っています。
 
-> **警告:** `editor` / `pass` は**デモ・動作確認用**です。**本番公開・インターネット公開前に必ずパスワードを変更**してください。変更しないまま公開すると第三者に編集され得ます。
+> **警告:** `editor` / `editor` は**デモ・動作確認用の初期値**です。**必ず変更してから使ってください。** 本番公開・インターネット公開前にも必ずパスワードを変更してください。変更しないまま公開すると第三者に編集され得ます。
 
 ログイン手順:
 
 1. ブラウザで Wiki を開く
 2. 任意ページの「編集」をクリック（未ログイン時はログインフォームへ）
 3. または `?plugin=loginform` を開く
-4. ユーザー名 `editor`、パスワード `pass` でログイン
+4. ユーザー名 `editor`、パスワード `editor` でログイン
+5. **初回ログイン時はパスワード変更画面**（`?plugin=changepassword`）が表示されます。新しいパスワードを設定するまで Wiki の他操作はできません
 
 ---
 
 ## 3. パスワードの変更
 
-### 方法 A: Web 支援スクリプト（推奨・初回セットアップ時）
+### 方法 A: 初回ログイン時の強制変更（推奨）
+
+1. 上記のデモアカウントでログイン
+2. 表示される **パスワード変更（必須）** 画面で新しいパスワードを入力（8 文字以上、`editor` は不可）
+3. 成功すると `pukiwiki.ini.php` の `$auth_users['editor']` が自動更新されます（ファイルが書き込み可能な場合）
+4. 自動更新できない場合は、画面に表示されたハッシュを手動で ini に反映してください
+
+### 方法 B: Web 支援スクリプト（手動変更）
 
 1. ブラウザで **`/pukiwiki/tools/gen-password-hash.php`** を開く  
    例: `http://localhost:8080/pukiwiki/tools/gen-password-hash.php`
 2. 新しい平文パスワードを入力
-3. ハッシュ方式を選択（通常は `{x-php-sha256}`）
+3. ハッシュ方式を選択（通常は `{x-php-sha256}` または `{x-php-password}`）
 4. 生成された文字列をコピー
 5. `pukiwiki/pukiwiki.ini.php` の `$auth_users` を更新:
 
@@ -59,7 +67,7 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
 
 6. **本番公開後は `pukiwiki/tools/gen-password-hash.php` を削除**するか、`pukiwiki/tools/.htaccess` 等で IP 制限する（[tools/README.md](../tools/README.md)）
 
-### 方法 B: PHP CLI
+### 方法 C: PHP CLI
 
 ```bash
 php -r "echo '{x-php-sha256}' . hash('sha256', 'your-new-password') . PHP_EOL;"
@@ -75,13 +83,20 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 
 凍結解除・添付アップロード等に使用します。同様にハッシュを生成し、`pukiwiki/pukiwiki.ini.php` の `$adminpass` に設定してください（初期の `{x-php-md5}!` のままでは管理者操作ができません）。
 
+### ini 自動更新の制限
+
+- `pukiwiki/pukiwiki.ini.php` が **書き込み可能** な場合のみ、強制変更 UI から `$auth_users` の該当行を更新します
+- 更新対象はログイン中ユーザーの hash 行のみ（ファイル全体の上書きはしません）
+- 書き込み不可の場合はハッシュを画面表示し、[方法 B](#方法-b-web-支援スクリプト手動変更) の手順を案内します
+
 ---
 
 ## 4. 動作確認
 
 - [ ] ログアウト状態で編集 → ログイン画面へ誘導される
-- [ ] 新パスワードで `editor` がログインできる
-- [ ] 旧パスワード `pass` ではログインできない
+- [ ] 初回ログイン（`editor` / `editor`）→ パスワード変更画面へ誘導される
+- [ ] 新パスワード設定後に Wiki の閲覧・編集ができる
+- [ ] 旧パスワード `editor` ではログインできない
 - [ ] ログイン後にページ編集・保存できる
 - [ ] 匿名のままページ閲覧できる
 

@@ -62,6 +62,8 @@ $is_cmd = FALSE;
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 	pkwk_csrf_verify_or_die($vars);
 }
+ensure_valid_auth_user();
+pkwk_enforce_password_change_if_required($vars);
 if (isset($vars['cmd'])) {
 	$is_cmd  = TRUE;
 	$plugin = & $vars['cmd'];
@@ -71,7 +73,6 @@ if (isset($vars['cmd'])) {
 	$plugin = '';
 }
 if ($plugin != '') {
-	ensure_valid_auth_user();
 	enforce_edit_auth_for_request($vars);
 	if (exist_plugin_action($plugin)) {
 		// Found and exec

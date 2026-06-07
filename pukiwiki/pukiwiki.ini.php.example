@@ -31,9 +31,10 @@
 // $adminpass = '{x-php-sha256}YOUR_HASH_HERE';
 
 // 編集者（1件以上必須）
-// 警告: 下記 editor / pass はデモ用初期値。本番・公開前に必ず変更すること。
+// 警告: 下記 editor / editor はデモ用初期値。**必ず変更してから使うこと。**
+// 初回ログイン時にパスワード変更画面が表示されます（plugin/changepassword）。
 $auth_users = array(
-    'editor' => '{x-php-sha256}d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1', // pass — 必ず変更
+    'editor' => '{x-php-sha256}1553cc62ff246044c683a61e203e65541990e7fcd4af9443d22b9557ecc9ac54', // editor — 必ず変更
 );
 
 // 信頼プロキシ（HTTP_X_FORWARDED_USER 使用時のみ）
