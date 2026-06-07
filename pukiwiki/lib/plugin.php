@@ -113,6 +113,10 @@ function do_plugin_action($name)
 			'<div><input type="hidden" name="encode_hint" value="' .
 			PKWK_ENCODING_HINT . '" /></div>', $retvar);
 
+	if (is_string($retvar)) {
+		$retvar = pkwk_csrf_inject_forms($retvar);
+	}
+
 	return $retvar;
 }
 
@@ -152,12 +156,11 @@ function do_plugin_convert($name, $args = '')
 			($args != '' ? '(' . $args . ')' : ''));
 	} else if (PKWK_ENCODING_HINT != '') {
 		// Insert a hidden field, supports idenrtifying text enconding
-		return preg_replace('/(<form[^>]*>)/', '$1 ' . "\n" .
+		$retvar = preg_replace('/(<form[^>]*>)/', '$1 ' . "\n" .
 			'<div><input type="hidden" name="encode_hint" value="' .
 			PKWK_ENCODING_HINT . '" /></div>', $retvar);
-	} else {
-		return $retvar;
 	}
+	return is_string($retvar) ? pkwk_csrf_inject_forms($retvar) : $retvar;
 }
 
 // Call API 'inline' of the plugin

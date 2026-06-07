@@ -59,6 +59,26 @@ function pkwk_csrf_hidden_field()
 }
 
 /**
+ * Inject CSRF hidden fields into POST forms that lack a token (SEC-C02).
+ *
+ * @param string $html
+ * @return string
+ */
+function pkwk_csrf_inject_forms($html)
+{
+	if ($html === '' || stripos($html, 'pkwk_csrf_token') !== FALSE) {
+		return $html;
+	}
+	return preg_replace_callback(
+		'/<form\b[^>]*\bmethod=(["\'])post\1[^>]*>/i',
+		function ($m) {
+			return $m[0] . "\n" . pkwk_csrf_hidden_field();
+		},
+		$html
+	);
+}
+
+/**
  * POST plugins exempt from CSRF (read-only search etc.).
  *
  * @return array

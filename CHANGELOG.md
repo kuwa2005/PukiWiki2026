@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- **セキュリティ再監査（2026-06-07）** — `is_pagename_bytes_within_hard_limit()` が `PKWK_PAGENAME_BYTES_SOFT_LIMIT` を誤参照していた問題を修正（SEC-M09）。プラグイン POST フォームへ CSRF トークンを自動注入する `pkwk_csrf_inject_forms()` を追加（SEC-M10 部分対応）
 - **添付ファイル情報画面の管理者パスワード案内** — ログイン済みでも削除・凍結・rename のラベルに「(管理者パスワードが必要です)」と表示されていた問題を修正。ログイン済みは操作案内のみ、未ログイン（`$edit_auth` 無効時）は従来どおり管理者パスワード案内（`$edit_auth` 有効時は mutation 前にログイン誘導）。凍結・凍結解除（PR #62）と同方針
 - **凍結・凍結解除の確認メッセージ** — ログイン済みでも「パスワードを入力してください」と表示されていた問題を修正。ログイン済みはボタン押下案内、未ログイン（`$edit_auth` 無効時）は従来どおり管理者パスワード案内（`$edit_auth` 有効時はログイン誘導でフォーム未到達）
 - **強制パスワード変更 — 666 でも ini 保存失敗・ハッシュ非表示** — `{x-php-password}` + Argon2 等（カンマ含む）の hash を `pkwk_ini_is_valid_auth_hash()` が誤って拒否していたため、権限修正前に `invalid_hash` で失敗していた問題を修正。`'editor' => 'editor'` 平文行・ダブルクォート形式も置換対象に。保存失敗時は理由コード・perm 診断 hint を loginform に表示。flash は session 破棄せず認証キーのみクリアして引き継ぎ。chmod 後 1 回再試行 — `pkwk_is_authenticated()` が `pkwk_must_change_password` 中は FALSE を返すよう変更。`pukiwiki.ini.php` への hash 保存失敗時はセッションを破棄して loginform へリダイレクト（ナビの「ログアウト」非表示）。ini 保存失敗時は `lib/perm.php` で親ディレクトリ（`$perm_dir_mode` 既定 0777）と ini ファイル自身（`$perm_file_mode` 既定 0666）の chmod を **1 回だけ**試行し、保存を **1 回だけ**再試行（Windows では perm 修正スキップ）
@@ -24,6 +25,7 @@
 
 ### Changed
 
+- **`docs/SECURITY-AUDIT.md`** — 2026-06-07 再監査。初回 Critical/High の Fixed 反映、Unicode/BiDi 攻撃（SEC-U01〜U05）とテストケース追記
 - **添付ファイル上限を ini 設定化（既定 2GB）** — `pukiwiki.ini.php` の `$attach_max_filesize`（バイト）で変更可能に。雛形既定を 1MB から **2GB**（`2 * 1024 * 1024 * 1024`）へ変更。PHP / Web サーバー側の上限も合わせて引き上げる必要あり（`docs/SETUP.md`）
 - **フッタに PukiWiki2026 のクレジットを追加** — `S_COPYRIGHT_2026`（`lib/init.php`）と `pkwk_footer_credits_html()`（`lib/func.php`）を追加。上流 PukiWiki・PukiWiki2026・PHP バージョン・HTML convert time を全スキン（`pukiwiki` / `tdiary` / `keitai`）で統一表示
 - **ログイン済みユーザーは `$adminpass` 入力不要** — `pkwk_is_authenticated()` / `pkwk_admin_authorized()` を `lib/auth.php` に追加。凍結・凍結解除、rename、diff/backup 削除、dump、links/update_entities、attach 管理者操作、編集の「更新日時を変更しない」、外部リンク制限（モード 2）で、フォームログイン済みなら `$adminpass` 再入力をスキップ。未ログイン時は従来どおり（`$edit_auth` 有効時は mutation 前にログイン誘導）
