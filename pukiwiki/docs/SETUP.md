@@ -44,8 +44,8 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
 
 ### 方法 A: Web 支援スクリプト（推奨・初回セットアップ時）
 
-1. ブラウザで **`/tools/gen-password-hash.php`** を開く  
-   例: `http://localhost:8080/tools/gen-password-hash.php`
+1. ブラウザで **`/pukiwiki/tools/gen-password-hash.php`** を開く  
+   例: `http://localhost:8080/pukiwiki/tools/gen-password-hash.php`
 2. 新しい平文パスワードを入力
 3. ハッシュ方式を選択（通常は `{x-php-sha256}`）
 4. 生成された文字列をコピー
@@ -57,7 +57,7 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php
    );
    ```
 
-6. **本番公開後は `tools/gen-password-hash.php` を削除**するか、`tools/.htaccess` 等で IP 制限する（[tools/README.md](../tools/README.md)）
+6. **本番公開後は `pukiwiki/tools/gen-password-hash.php` を削除**するか、`pukiwiki/tools/.htaccess` 等で IP 制限する（[tools/README.md](../tools/README.md)）
 
 ### 方法 B: PHP CLI
 

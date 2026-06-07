@@ -48,8 +48,7 @@ index.php（DATA_HOME = ./pukiwiki/）
          └── wiki/*.txt（ページ本文・データ）
 ```
 
-**デプロイ / バックアップ単位:** リポジトリ root の `index.php` と `pukiwiki/` ディレクトリのみ。  
-`docs/`, `tools/`, `vendor/` 等は開発用でバックアップ対象外。
+**デプロイ / バックアップ単位:** リポジトリ root の `index.php` と `pukiwiki/` ディレクトリ（`docs/`・`tools/`・`vendor/`・`patches/` を含む）。
 
 ### 2.1 主要ディレクトリ
 
@@ -63,8 +62,10 @@ index.php（DATA_HOME = ./pukiwiki/）
 | `pukiwiki/attach/` | 添付ファイル |
 | `pukiwiki/cache/` | キャッシュ（ランタイム） |
 | `pukiwiki/backup/` | ページバックアップ（ランタイム） |
-| `docs/` | 設計・デプロイ文書（開発用） |
-| `tools/` | セットアップ支援（開発用） |
+| `pukiwiki/docs/` | 設計・デプロイ文書 |
+| `pukiwiki/tools/` | セットアップ支援 |
+| `pukiwiki/vendor/` | 上流 pristine 参照用 |
+| `pukiwiki/patches/` | パッチ保管 |
 
 ---
 

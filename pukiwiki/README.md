@@ -20,18 +20,20 @@
 ```
 pukiwiki2026/                    ← git リポジトリ root
 ├── index.php                    ← エントリ（DATA_HOME 定義）
-├── README.md, CHANGELOG.md      … 開発用
-├── docs/, tools/, vendor/        … 開発用（バックアップ対象外）
+├── .github/, .gitignore         … CI・git 設定（root のみ）
 └── pukiwiki/                    ← ★ デプロイ / バックアップ対象
     ├── lib/, plugin/, skin/, image/
     ├── wiki/, cache/, backup/, attach/
     ├── pukiwiki.ini.php         … 設定（git 除外）
-    └── pukiwiki.ini.php.example
+    ├── pukiwiki.ini.php.example
+    ├── README.md, CHANGELOG.md  … 開発用ドキュメント
+    ├── docs/, tools/, vendor/    … 開発用（バックアップに含む）
+    └── patches/                 … パッチ保管
 ```
 
-**バックアップ:** `index.php` と `pukiwiki/` をコピーするだけで完了。詳細: [docs/BACKUP.md](docs/BACKUP.md)
+**バックアップ:** `index.php` と `pukiwiki/` をコピーするだけで完了（`docs/` 含む）。詳細: [docs/BACKUP.md](docs/BACKUP.md)
 
-`vendor/` には**未改造の公式配布物**を別途置き、diff の基準に使います（[docs/UPSTREAM.md](docs/UPSTREAM.md)）。
+`pukiwiki/vendor/` には**未改造の公式配布物**を別途置き、diff の基準に使います（[docs/UPSTREAM.md](docs/UPSTREAM.md)）。
 
 ## クイックスタート
 
@@ -49,7 +51,7 @@ pukiwiki2026/                    ← git リポジトリ root
 
 > **必ず変更して使うこと。** `editor` / `pass` はデモ用初期値です。本番・公開前にパスワードを変更してください。
 
-パスワードハッシュの生成: **`tools/gen-password-hash.php`**（Web）または [docs/SETUP.md](docs/SETUP.md) の CLI 手順。
+パスワードハッシュの生成: **`pukiwiki/tools/gen-password-hash.php`**（Web）または [docs/SETUP.md](docs/SETUP.md) の CLI 手順。
 
 詳細: [docs/SETUP.md](docs/SETUP.md) · [docs/DEPLOY.md](docs/DEPLOY.md)
 
@@ -69,10 +71,10 @@ git pull origin main   # 作業前に同期
 # 変更後: git add … → git commit → git push origin main
 ```
 
-`.env` や `pukiwiki/wiki/`・`pukiwiki/cache/`・`vendor/pukiwiki-1.5.4_utf8/` 等は `.gitignore` で除外済みです。
+`.env` や `pukiwiki/wiki/`・`pukiwiki/cache/`・`pukiwiki/vendor/pukiwiki-1.5.4_utf8/` 等は `.gitignore` で除外済みです。
 
 ## 参考リンク
 
 - 公式サイト: https://pukiwiki.osdn.jp/
 - 開発情報: https://pukiwiki.osdn.jp/dev/
-- 上流 README: [README.txt](README.txt)
+- 上流 README: [README.txt](../README.txt)

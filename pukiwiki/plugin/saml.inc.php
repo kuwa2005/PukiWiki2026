@@ -7,8 +7,8 @@
 //
 // PukiWiki SAML Plugin
 
-require 'vendor/autoload.php';
-require_once 'vendor/onelogin/php-saml/_toolkit_loader.php';
+require DATA_HOME . 'vendor/autoload.php';
+require_once DATA_HOME . 'vendor/onelogin/php-saml/_toolkit_loader.php';
 
 define('PLUGIN_SAML_AUTHUSER_ID_ATTR', 'UserId');
 define('PLUGIN_SAML_AUTHUSER_DISPLAYNAME_ATTR', 'DisplayName');

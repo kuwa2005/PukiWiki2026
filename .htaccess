@@ -11,7 +11,7 @@
   Require all denied
 </FilesMatch>
 
-# 開発用ディレクトリへの直接アクセスを拒否（本番は index.php + pukiwiki/ のみ配置）
+# 開発用ディレクトリへの直接アクセスを拒否（git checkout 全体を DocumentRoot にした場合）
 <IfModule mod_authz_core.c>
-  RedirectMatch 403 ^/(docs|tools|vendor|patches|\.github)(/|$)
+  RedirectMatch 403 ^/\.github(/|$)
 </IfModule>

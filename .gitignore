@@ -21,8 +21,8 @@ pukiwiki/attach/*
 !pukiwiki/attach/index.html
 
 # vendor 内の上流実体（参照用コピーはローカル任意）
-vendor/*
-!vendor/.gitkeep
+pukiwiki/vendor/*
+!pukiwiki/vendor/.gitkeep
 
 # OS / エディタ
 .DS_Store

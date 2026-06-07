@@ -62,7 +62,7 @@ Copy-Item pukiwiki\pukiwiki.ini.php.example pukiwiki\pukiwiki.ini.php   # 初回
 
 パスワードハッシュ生成:
 
-- Web: **`/tools/gen-password-hash.php`**（セットアップ後は削除または IP 制限）
+- Web: **`/pukiwiki/tools/gen-password-hash.php`**（セットアップ後は削除または IP 制限）
 - CLI: [SETUP.md](SETUP.md) 参照
 
 ### 3.2 ディレクトリ権限
@@ -104,7 +104,7 @@ Web サーバー実行ユーザーが書き込めること:
 - `.env`（秘密情報）
 - `pukiwiki/wiki/`（本番データ — 初回以外は上書きしない）
 - `pukiwiki/cache/`, `pukiwiki/backup/`（再生成可だが運用中は注意）
-- `docs/`, `tools/`, `vendor/`（開発用 — 本番 DocumentRoot には置かない）
+- `pukiwiki/docs/`, `pukiwiki/tools/`, `pukiwiki/vendor/`（開発用 — 本番では `.htaccess` で Web アクセス拒否、または配置から除外）
 
 ### 4.2 Apache 例（抜粋）
 

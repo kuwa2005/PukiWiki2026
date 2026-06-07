@@ -85,9 +85,9 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
    );
    ```
 
-   ハッシュ生成（推奨）: Web 支援スクリプト **`tools/gen-password-hash.php`**
+   ハッシュ生成（推奨）: Web 支援スクリプト **`pukiwiki/tools/gen-password-hash.php`**
 
-   - URL 例: `https://your-wiki.example/tools/gen-password-hash.php`
+   - URL 例: `https://your-wiki.example/pukiwiki/tools/gen-password-hash.php`
    - `{x-php-sha256}` または `{x-php-password}` を選択可能
    - **本番公開後は削除または IP 制限**（[tools/README.md](../tools/README.md)）
 

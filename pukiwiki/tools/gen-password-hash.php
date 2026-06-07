@@ -116,6 +116,6 @@ legend { padding: 0 0.25rem; }
 </div>
 <?php } ?>
 
-<p><small>詳細: <a href="../docs/SETUP.md">docs/SETUP.md</a></small></p>
+<p><small>詳細: <a href="../docs/SETUP.md">pukiwiki/docs/SETUP.md</a></small></p>
 </body>
 </html>

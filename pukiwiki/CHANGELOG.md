@@ -9,6 +9,10 @@
 
 ### Changed
 
+- **開発用ディレクトリを `pukiwiki/` へ集約** — `docs/`, `tools/`, `vendor/`, `patches/`, `README.md`, `CHANGELOG.md` を root から `pukiwiki/` へ移動。`.github/` のみ root に残す
+- **バックアップ単位** — `index.php` + `pukiwiki/`（`docs/` 含む）。`docs/BACKUP.md` 更新
+- **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンク, `tools/gen-password-hash.php` ドキュメントパスを更新
+- **`plugin/saml.inc.php`** — `vendor/` 参照を `DATA_HOME` 基準に修正
 - **ディレクトリ構成を `pukiwiki/` 集約（案 B 改）** — Wiki 運用に必要なファイルを `pukiwiki/` 配下へ移動。デプロイ / バックアップ単位は `index.php` + `pukiwiki/` のみ
 - **`index.php`** — `DATA_HOME` を `__DIR__ . '/pukiwiki/'` に変更
 - **`.htaccess`** — ルートは開発用ディレクトリ保護、`pukiwiki/.htaccess` に ini 保護を移動

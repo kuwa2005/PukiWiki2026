@@ -26,4 +26,4 @@ jobs:
         run: |
           # lib/mbstring.php は mbstring 拡張未導入時の polyfill。
           # 拡張あり環境で php -l 単体実行すると redeclare となるため除外。
-          find . -name '*.php' -not -path './vendor/*' -not -path './pukiwiki/lib/mbstring.php' -print0 | xargs -0 -n1 php -l
+          find . -name '*.php' -not -path './pukiwiki/vendor/*' -not -path './pukiwiki/lib/mbstring.php' -print0 | xargs -0 -n1 php -l
