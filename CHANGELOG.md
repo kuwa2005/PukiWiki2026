@@ -17,39 +17,17 @@
 - **`.htaccess` の位置付け** — 任意・推奨であることを `pukiwiki/docs/DEPLOY.md` §4.5、`ARCHITECTURE.md`、`README.md`、`SECURITY-AUDIT.md` に明記。ルート / `pukiwiki/.htaccess` の役割分担を整理
 - **`README.md` / `CHANGELOG.md` を root へ戻す** — git / プロジェクト文書はリポジトリ root。`docs/`・`tools/` は `pukiwiki/` 内のまま
 - **upstream diff を git タグ基準に** — `vendor/` ローカルコピー不要。`upstream-1.5.4-utf8` と `pukiwiki/docs/UPSTREAM.md` を参照
-- **開発用ディレクトリを `pukiwiki/` へ集約** — `docs/`, `tools/` を `pukiwiki/` 配下へ。`.github/` のみ root
-- **バックアップ単位** — `index.php` + `pukiwiki/`（`docs/`・`tools/` 含む）。`pukiwiki/docs/BACKUP.md` 更新
-- **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンクを更新
-
-### Removed
-
-- **`vendor/`** — 公式 pristine コピーのローカル置き場（git タグ `upstream-1.5.4-utf8` で代替）
-- **`patches/`** — 未使用のパッチ保管プレースホルダ
-
-### Changed
-
-- **開発用ディレクトリを `pukiwiki/` へ集約** — `docs/`, `tools/`, `vendor/`, `patches/`, `README.md`, `CHANGELOG.md` を root から `pukiwiki/` へ移動。`.github/` のみ root に残す
-- **バックアップ単位** — `index.php` + `pukiwiki/`（`docs/` 含む）。`docs/BACKUP.md` 更新
-- **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンク, `tools/gen-password-hash.php` ドキュメントパスを更新
-- **`plugin/saml.inc.php`** — `vendor/` 参照を `DATA_HOME` 基準に修正
-- **ディレクトリ構成を `pukiwiki/` 集約（案 B 改）** — Wiki 運用に必要なファイルを `pukiwiki/` 配下へ移動。デプロイ / バックアップ単位は `index.php` + `pukiwiki/` のみ
-- **`index.php`** — `DATA_HOME` を `__DIR__ . '/pukiwiki/'` に変更
-- **`.htaccess`** — ルートは開発用ディレクトリ保護、`pukiwiki/.htaccess` に ini 保護を移動
-- **`SKIN_DIR` / `IMAGE_DIR`** — Web URL を `pukiwiki/skin/`・`pukiwiki/image/` に更新。`SKIN_FILE` は `DATA_HOME . 'skin/'` 基準
-- **`skin/pukiwiki.skin.php`** — JS 参照を `SKIN_DIR` 定数利用に修正
-- **`.gitignore`** — パスを `pukiwiki/` 基準に更新
-- **docs** — `DEPLOY.md`, `SETUP.md`, `ARCHITECTURE.md`, `UPSTREAM.md` 更新、`BACKUP.md` 新規
-- **CI** — `pukiwiki/lib/mbstring.php` 除外パス更新
-
-### Changed
-
+- **ディレクトリ構成を `pukiwiki/` へ集約（案 B 改）** — Wiki 運用に必要なファイルを `pukiwiki/` 配下へ。デプロイ / バックアップ単位は `index.php` + `pukiwiki/`（`docs/`・`tools/` 含む）。`.github/` のみ root
+- **パス参照** — `.gitignore`, CI (`php.yml`), `.htaccess`, `AGENTS.md`, docs 相互リンク, `plugin/saml.inc.php`（`DATA_HOME` 基準）等を更新
 - **スキン構成を v1.0.0 に復元** — PR #37（classic/forge サブディレクトリ化）・PR #39（React forge）・PR #41（React revert）を巻き戻し。`skin/pukiwiki.skin.php` 等を `skin/` 直下に戻し、`default.ini.php` の SKIN 解決ロジックを簡素化
 - **`pukiwiki.ini.php.example`** — `$skin` 設定を削除（サブディレクトリ方式廃止）
 
 ### Removed
 
-- **`skin/classic/`**, **`skin/forge/`** — サブディレクトリ方式のスキンを削除
-- **`docs/DESIGN.md`** — スキン分離設計ドキュメントを削除
+- **`vendor/`** — 公式 pristine コピーのローカル置き場（git タグ `upstream-1.5.4-utf8` で代替）
+- **`patches/`** — 未使用のパッチ保管プレースホルダ
+- **`skin/classic/`**, **`skin/forge/`** — サブディレクトリ方式のスキン
+- **`docs/DESIGN.md`** — スキン分離設計ドキュメント
 
 ---
 

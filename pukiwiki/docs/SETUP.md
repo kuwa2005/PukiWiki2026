@@ -89,7 +89,21 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 
 ---
 
-## 5. 関連ドキュメント
+## 5. ディレクトリパーミッション（Unix/Linux 本番）
+
+PukiWiki2026 は Unix/Linux 本番環境で、Wiki 起動時に書き込みディレクトリ**自身の mode のみ**を確認します。不適切な場合のみ chmod と配下の再帰修正を行います（全件無条件チェックはしません）。Windows 開発環境では自動スキップされます。
+
+`pukiwiki/pukiwiki.ini.php` で無効化する例:
+
+```php
+$perm_check_on_boot = FALSE;
+```
+
+その他の設定（修正 mode・許容 mode・追加チェック対象）は `pukiwiki/pukiwiki.ini.php.example` を参照。詳細: [DEPLOY.md §3.2](./DEPLOY.md#32-パーミッション)
+
+---
+
+## 6. 関連ドキュメント
 
 - [DEPLOY.md](./DEPLOY.md) — デプロイ・ディレクトリ権限
 - [ANTI-SPAM.md](./ANTI-SPAM.md) — 編集認証・スパム対策
