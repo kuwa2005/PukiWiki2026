@@ -483,6 +483,28 @@ div#attach {
   padding:0;
   margin:0;
 }
+.pkwk-attach-draggable {
+  cursor:grab;
+  display:inline-block;
+}
+.pkwk-attach-draggable:active,
+.pkwk-attach-draggable.pkwk-attach-dragging {
+  cursor:grabbing;
+  opacity:0.7;
+}
+.edit_form textarea.pkwk-edit-dragover {
+  outline:2px dashed #4a90d9;
+  background-color:#f0f7ff;
+}
+.pkwk-edit-dd-status {
+  min-height:1.2em;
+  margin:0.25em 0;
+  color:#555;
+}
+.pkwk-edit-dd-status--error {
+  color:#c00;
+  font-weight:bold;
+}
 div#toolbar {
   clear:both;
   padding:0;

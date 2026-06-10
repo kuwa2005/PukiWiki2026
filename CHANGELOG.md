@@ -7,6 +7,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- **編集画面の D&D / クリップボード貼り付け添付** — `cmd=edit` で textarea へファイル D&D または画像の Ctrl+V 貼り付けで attach API 経由アップロードし、成功時に `#ref(ファイル名)` をカーソル位置へ挿入。ページ下部の添付一覧から textarea へ D&D でも `#ref` を挿入。paste 時のファイル名は `paste-YYYYMMDD-HHmmss` 形式（`skin/edit-dragdrop.js`、`plugin/attach.inc.php` の `pcmd=api`）
+
 ### Changed
 
 - **編集画面のテキストエリア高さ** — `cmd=edit` で textarea がビューポート上下いっぱいに伸び、下部ツールバー（`#toolbar`）が常に見えるよう CSS を調整（`pukiwiki.css` / `tdiary.css`、flexbox + sticky toolbar）
