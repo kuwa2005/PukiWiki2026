@@ -732,6 +732,59 @@ div.img_margin {
   margin-right:32px;
 }
 
+img.ref-small {
+  max-width:30%;
+  height:auto;
+}
+
+img.ref-middle {
+  max-width:50%;
+  height:auto;
+}
+
+img.ref-big {
+  max-width:75%;
+  height:auto;
+}
+
+img.ref-full {
+  max-width:none;
+  width:auto;
+  height:auto;
+}
+
+a.ref-popup-trigger {
+  cursor:zoom-in;
+}
+
+.ref-popup-overlay {
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  box-sizing:border-box;
+  background:rgba(0,0,0,0.85);
+  cursor:zoom-out;
+}
+
+.ref-popup-overlay img {
+  display:block;
+  max-width:100vw;
+  max-height:100vh;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  cursor:default;
+}
+
+.ref-popup-overlay.ref-popup-overlay--closing {
+  opacity:0;
+  transition:opacity 0.15s ease;
+}
+
 /* vote.inc.php */
 td.vote_label {
   color:inherit;

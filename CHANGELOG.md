@@ -9,6 +9,7 @@
 
 ### Added
 
+- **#ref 画像サイズ・ポップアップ** — `small` / `middle` / `big` / `full` プリセット（CSS `max-width` 30/50/75%）、従来の `640x480`・`50%` と併用可。`popup` でクリック時ライトボップ（`skin/ref-popup.js`）。paste 挿入は `#ref(ファイル,middle)`（`plugin/ref.inc.php`、`skin/pukiwiki.css`）
 - **編集画面の D&D / クリップボード貼り付け添付** — `cmd=edit` で textarea へファイル D&D または画像の Ctrl+V 貼り付けで attach API 経由アップロードし、成功時に `#ref(ファイル名)` をカーソル位置へ挿入。ページ下部の添付一覧から textarea へ D&D でも `#ref` を挿入。paste 時のファイル名は `paste-YYYYMMDD-HHmmss` 形式（`skin/edit-dragdrop.js`、`plugin/attach.inc.php` の `pcmd=api`）
 
 ### Changed

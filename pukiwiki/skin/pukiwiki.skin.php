@@ -76,6 +76,7 @@ header('Content-Type: text/html; charset=' . CONTENT_CHARSET);
  <link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo $link['rss'] ?>" /><?php // RSS auto-discovery ?>
  <script type="text/javascript" src="<?php echo SKIN_DIR ?>main.js" defer></script>
  <script type="text/javascript" src="<?php echo SKIN_DIR ?>search2.js" defer></script>
+ <script type="text/javascript" src="<?php echo SKIN_DIR ?>ref-popup.js" defer></script>
 <?php if (arg_check('edit')) { ?>
  <script type="text/javascript" src="<?php echo SKIN_DIR ?>edit-dragdrop.js" defer></script>
 <?php } ?>
