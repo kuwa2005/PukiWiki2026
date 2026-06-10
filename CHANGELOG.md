@@ -7,6 +7,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- **凍結ページの匿名 comment / article** — `$comment_auth = 0`（既定）で `#comment` / `#pcomment` / `#article` を凍結ページでも匿名投稿可能に。CAPTCHA（reCAPTCHA 未設定時 honeypot）、IP レート制限、既存 Akismet / 外部リンク制限 / CSRF と連携（`lib/comment.php`）
+
+### Fixed
+
+- **凍結ページの comment / article がログイン必須になる問題** — SPAM-01 の `enforce_edit_auth_for_request()`・`check_editable()`・`page_write()` 防御層が guest POST プラグインも遮断していた問題を修正。ページ編集と comment / article 追加を分離
+
 ---
 
 ## [1.0.1] - 2026-06-07

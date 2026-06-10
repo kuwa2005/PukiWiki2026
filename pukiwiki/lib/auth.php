@@ -608,6 +608,9 @@ function pkwk_is_mutation_request($vars)
 		if (empty($_POST) && empty($_FILES)) {
 			return FALSE;
 		}
+		if (pkwk_guest_comment_allowed($vars)) {
+			return FALSE;
+		}
 		if (isset($vars['plugin']) &&
 			in_array($vars['plugin'], pkwk_edit_auth_readonly_post_plugins(), TRUE)) {
 			return FALSE;
@@ -670,6 +673,9 @@ function enforce_edit_auth_for_request($vars)
 	global $edit_auth, $auth_user;
 
 	if (! $edit_auth || $auth_user !== '') {
+		return;
+	}
+	if (pkwk_guest_comment_allowed($vars)) {
 		return;
 	}
 	if (! pkwk_is_mutation_request($vars)) {

@@ -39,14 +39,14 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 | プラグイン | 用途 |
 |-----------|------|
-| `comment` | コメント欄 |
 | `memo` | メモ欄 |
 | `insert` | テキスト挿入欄 |
 | `vote` | 投票欄 |
-| `article` | 掲示板風投稿 |
 | `paint` | お絵描き欄 |
 
-`edit` / `add` / `pcomment` / `tracker` / `bugtrack` / `attach`（一部）はもともと `check_editable()` を使用しています。
+`comment` / `pcomment` / `article` は **凍結ページでも匿名投稿可**（`$comment_auth = 0` 既定）とし、CAPTCHA・レート制限・Akismet でスパム対策します（[ゲスト comment 節](#ゲスト-commentarticle凍結ページ) 参照）。
+
+`edit` / `add` / `tracker` / `bugtrack` / `attach`（一部）はもともと `check_editable()` を使用しています。
 
 ### 3. `page_write()` への防御層
 
@@ -58,7 +58,8 @@ $read_auth = 0;  // 閲覧は匿名可（変更なし）
 
 | 種別 | 動作 |
 |------|------|
-| 未認証 POST（`?write=` / `?plugin=comment` 等） | ログインフォームへリダイレクト（`AUTH_TYPE_FORM` 時） |
+| 未認証 POST（`?write=` / `?plugin=memo` 等） | ログインフォームへリダイレクト（`AUTH_TYPE_FORM` 時） |
+| 未認証 POST `?plugin=comment` / `?plugin=pcomment` / `?plugin=article` | `$comment_auth = 0` 時は許可（CAPTCHA 等のゲスト対策あり） |
 | 未認証 GET `cmd=edit` 等 | 編集フォームを表示せずログイン誘導 |
 | 未認証 GET 閲覧 | 従来どおり許可 |
 | 例外 | `plugin=search` / `plugin=loginform` / `plugin=saml` の POST、`attach` の download/list 等 |
@@ -168,6 +169,49 @@ $edit_auth = 0;
 
 ---
 
+## ゲスト comment / article（凍結ページ）
+
+公式 PukiWiki と同様、**凍結（`#freeze`）されたページでも `#comment` / `#pcomment` / `#article` による投稿**を匿名で許可できます（`$comment_auth = 0` が既定）。ページ本文の編集（`cmd=edit`）は引き続きログイン必須です。
+
+### 設定（pukiwiki.ini.php）
+
+```php
+$comment_auth = 0;                  // 0=匿名可, 1=編集と同様ログイン必須
+$comment_captcha_enabled = 1;       // 匿名 comment 時 CAPTCHA（reCAPTCHA 未設定時は honeypot）
+$comment_rate_limit_max = 10;       // IP あたりの投稿上限（0=無制限）
+$comment_rate_limit_window = 3600;  // レート制限の集計秒数（秒）
+```
+
+| 設定 | 既定 | 説明 |
+|------|------|------|
+| `$comment_auth` | `0` | `1` にすると comment / article も `$edit_auth` と同様にログイン必須（旧 SPAM-01 相当） |
+| `$comment_captcha_enabled` | `1` | 匿名 comment / article フォームに CAPTCHA を表示・検証 |
+| `$comment_rate_limit_max` | `10` | 同一 IP から `$comment_rate_limit_window` 秒以内に投稿できる最大件数 |
+| `$comment_rate_limit_window` | `3600` | レート制限の集計ウィンドウ（秒） |
+
+CAPTCHA プロバイダは編集用 `$captcha_provider` / reCAPTCHA キーを共有します。`$captcha_enabled = 0` かつ reCAPTCHA 未設定の場合、匿名 comment / article では **honeypot**（`pkwk_hp_url` 隠しフィールド）が自動適用されます。
+
+### 多層防御（匿名 comment / article 時）
+
+| 層 | 実装 | 既定 |
+|----|------|------|
+| CSRF | `pkwk_csrf_inject_forms()` | 常時 |
+| CAPTCHA / honeypot | `pkwk_captcha_comment_form_markup()` | ON |
+| IP レート制限 | `cache/comment_ratelimit/` | 10 件 / 時間 |
+| 外部リンク制限 | `page_write()` → `pkwk_spamfilter_*` | OFF（有効化時は comment にも適用） |
+| Akismet | `page_write()` → `pkwk_akismet_*` | OFF（有効化時は comment にも適用） |
+
+ログイン済みユーザーが comment / article する場合は CAPTCHA・レート制限をスキップし、従来どおり `$edit_auth` 下でも投稿できます。
+
+### テスト
+
+1. ページを凍結し `#comment` または `#article` を設置 → 未ログインで投稿が成功すること
+2. honeypot フィールド（`pkwk_hp_url`）に値を入れて POST → 拒否されること
+3. `$comment_auth = 1` → 未ログイン POST がログイン誘導になること
+4. `$edit_auth = 1` のまま `cmd=edit` → 未ログインは従来どおり拒否されること
+
+---
+
 ## 将来の拡張（B: 追加防御）
 
 | 対策 | 状態 | 備考 |
@@ -176,7 +220,7 @@ $edit_auth = 0;
 | **CAPTCHA（編集時）** | **実装済み** | SPAM-02 (#14)。`lib/captcha.php` — reCAPTCHA v2/v3 または honeypot（既定 OFF） |
 | 新規ページ作成の追加制限 | 部分対応 | `newpage` → `edit` 経由で認証済み |
 | **外部リンク POST 制限** | **実装済み** | SPAM-04 (#16)。`lib/spamfilter.php` — 本文中の外部 URL を拒否（既定 OFF） |
-| レート制限 | **実装済み** | SPAM-03 (#15)。`loginform` / 編集 POST の IP 単位制限 |
+| レート制限 | **実装済み** | SPAM-03 (#15)。`loginform` / 編集 POST の IP 単位制限。**匿名 comment** にも IP レート制限（`lib/comment.php`） |
 | CSRF トークン | **実装済み** | SEC-C02 (#2)。`lib/csrf.php` |
 
 ---

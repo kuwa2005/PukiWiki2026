@@ -356,6 +356,14 @@ $recaptcha_site_key = '';
 $recaptcha_secret_key = '';
 
 /////////////////////////////////////////////////
+// Guest comment / article — 凍結ページの #comment / #pcomment / #article（docs/ANTI-SPAM.md）
+
+$comment_auth = 0;                  // 0=匿名可（公式 PukiWiki 互換）, 1=編集と同様ログイン必須
+$comment_captcha_enabled = 1;       // 匿名 comment / article 時 CAPTCHA（reCAPTCHA 未設定時は honeypot）
+$comment_rate_limit_max = 10;       // IP あたりの投稿上限（0=無制限）
+$comment_rate_limit_window = 3600;  // レート制限の集計秒数
+
+/////////////////////////////////////////////////
 // External link filter — 書き込み POST 制限（docs/ANTI-SPAM.md, SPAM-04）
 
 $spam_block_external_links = 0;       // 0=無効, 1=全員拒否, 2=管理者のみ許可
