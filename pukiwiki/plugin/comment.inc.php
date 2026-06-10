@@ -27,7 +27,7 @@ function plugin_comment_action()
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 
 	if (! isset($vars['refer'])) return array('msg'=>'', 'body'=>'');
-	check_editable($vars['refer']);
+	check_commentable($vars['refer']);
 
 	if (! isset($vars['msg'])) return array('msg'=>'', 'body'=>''); // Do nothing
 
@@ -79,7 +79,11 @@ function plugin_comment_action()
 			$title = $_title_comment_collided;
 			$body  = $_msg_comment_collided . make_pagelink($vars['refer']);
 		}
+		pkwk_comment_antispam_verify_or_die($vars['refer'], $postdata);
+		pkwk_comment_write_begin();
 		page_write($vars['refer'], $postdata);
+		pkwk_comment_write_end();
+		pkwk_comment_rate_limit_record();
 	} else {
 		// failed to add the comment
 		$title = $_title_comment_collided;
@@ -120,6 +124,7 @@ function plugin_comment_convert()
 
 	$script = get_page_uri($page);
 	$s_page = htmlsc($page);
+	$captcha = pkwk_captcha_comment_form_markup('_p_comment_form');
 	$string = <<<EOD
 <br />
 <form action="$script" method="post" class="_p_comment_form">
@@ -133,6 +138,7 @@ function plugin_comment_convert()
   $nametags
   <input type="text"   name="msg" id="_p_comment_comment_{$comment_no}"
    size="$comment_cols" required />
+  $captcha
   <input type="submit" name="comment" value="$_btn_comment" />
  </div>
 </form>

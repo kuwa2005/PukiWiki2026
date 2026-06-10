@@ -545,3 +545,11 @@ if (! isset($recaptcha_secret_key)) $recaptcha_secret_key = '';
 
 if (! isset($spam_block_external_links)) $spam_block_external_links = 0;
 if (! isset($spam_external_link_allowlist)) $spam_external_link_allowlist = array();
+
+/////////////////////////////////////////////////
+// Guest comment (#comment / #pcomment on frozen pages)
+
+if (! isset($comment_auth)) $comment_auth = 0;
+if (! isset($comment_captcha_enabled)) $comment_captcha_enabled = 1;
+if (! isset($comment_rate_limit_max)) $comment_rate_limit_max = 10;
+if (! isset($comment_rate_limit_window)) $comment_rate_limit_window = 3600;
