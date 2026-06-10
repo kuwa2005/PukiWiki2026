@@ -251,6 +251,83 @@ location ~ ^/skin/(.*)$ {
 
 ---
 
+### 4.7 既存環境のアップデート（稼働中 Wiki）
+
+初回インストール（§3）後、**すでに稼働中の Wiki を新バージョンへ更新**するときの手順です。デプロイ単位は `index.php` + `pukiwiki/` ですが、**`pukiwiki/` を丸ごと上書きせず、プログラム部分だけを選んでコピー**します。
+
+#### 上書きしてよいもの（プログラム本体）
+
+| 場所 | 内容 | 備考 |
+|------|------|------|
+| **`index.php`**（root） | エントリポイント | 本番では `PKWK_DEBUG` を付けない |
+| **`.htaccess`**（root） | Apache 用アクセス制御 | 任意だが推奨。差分があれば更新 |
+| **`pukiwiki/lib/`** | コア（認証・CSRF 等） | 上書き可 |
+| **`pukiwiki/plugin/`** | プラグイン | 上書き可 |
+| **`pukiwiki/skin/`** | スキン・CSS/JS | 上書き可（カスタム skin は事前に退避） |
+| **`pukiwiki/image/`** | 画像アセット | 上書き可 |
+| **`pukiwiki/docs/`** | 開発・運用ドキュメント | 上書き可（Wiki 動作には不要だが更新可） |
+| **`pukiwiki/tools/`** | セットアップ支援 | 上書き可（本番では Web から遮断推奨） |
+| **`pukiwiki/pukiwiki.ini.php.example`** | 設定の雛形 | **参照用**。実ファイルは上書きしない |
+| **`pukiwiki/.htaccess`** 等 | データ dir 保護 | 更新分があれば反映 |
+| **`pukiwiki/*.lng.php`** | 言語ファイル | 上書き可 |
+| **公式同梱** | `README.txt`, `INSTALL.txt`, `COPYING.txt`, `UPDATING.txt`, `*.en.txt.zip`, `wiki.en.zip` | 上書き可（`wiki.en.zip` は初期 wiki 用。運用 `wiki/` には展開しない） |
+
+root の `README.md` / `CHANGELOG.md` / `.github/` は git 用プロジェクト文書で、Wiki 稼働には不要です。
+
+#### コピーしてはいけないもの（運用データ）
+
+| 場所 | 内容 | 理由 |
+|------|------|------|
+| **`pukiwiki/pukiwiki.ini.php`** | 本番設定 | **上書き禁止**。新しい `.example` と diff で追加分だけ手動マージ |
+| **`pukiwiki/wiki/`** | ページ本文 | **最重要データ** |
+| **`pukiwiki/attach/`** | 添付ファイル | 運用データ |
+| **`pukiwiki/backup/`** | ページ履歴 | 運用データ |
+| **`pukiwiki/cache/`** | キャッシュ | 再生成可。更新後に削除しても可 |
+| **`pukiwiki/diff/`** | 差分データ | 運用データ |
+| **`pukiwiki/counter/`** | アクセスカウンタ | 運用データ |
+
+#### 推奨手順
+
+1. **バックアップ（必須）** — 最低でも `pukiwiki/wiki/`・`pukiwiki/attach/`・`pukiwiki/pukiwiki.ini.php` を退避。[BACKUP.md](BACKUP.md) 参照。
+
+   ```powershell
+   $src = "D:\path\to\production\pukiwiki2026"
+   $backup = "D:\backup\pukiwiki2026-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+   New-Item -ItemType Directory -Path $backup -Force | Out-Null
+   Copy-Item "$src\index.php", "$src\pukiwiki" -Destination $backup -Recurse
+   ```
+
+2. **プログラムだけコピー** — 新バージョンを `$new`、本番を `$prod` とする:
+
+   ```powershell
+   $new = "D:\path\to\PukiWiki2026-new"
+   $prod = "D:\path\to\production\pukiwiki2026"
+
+   Copy-Item "$new\index.php" -Destination $prod -Force
+   Copy-Item "$new\.htaccess" -Destination $prod -Force -ErrorAction SilentlyContinue
+
+   $dirs = @('lib','plugin','skin','image','docs','tools')
+   foreach ($d in $dirs) {
+     Copy-Item "$new\pukiwiki\$d" -Destination "$prod\pukiwiki\$d" -Recurse -Force
+   }
+
+   Copy-Item "$new\pukiwiki\pukiwiki.ini.php.example" -Destination "$prod\pukiwiki\" -Force
+   Copy-Item "$new\pukiwiki\.htaccess" -Destination "$prod\pukiwiki\" -Force -ErrorAction SilentlyContinue
+   Copy-Item "$new\pukiwiki\*.lng.php" -Destination "$prod\pukiwiki\" -Force -ErrorAction SilentlyContinue
+   Copy-Item "$new\pukiwiki\*.txt","$new\pukiwiki\*.zip" -Destination "$prod\pukiwiki\" -Force -ErrorAction SilentlyContinue
+   ```
+
+3. **`pukiwiki.ini.php` の差分確認** — 本番 ini はそのまま残し、新バージョンの `pukiwiki.ini.php.example` と diff。新リリースで追加された設定（例: `$comment_auth` / `$comment_captcha_enabled`、v1.0.1 の `$perm_check_on_boot` 等）だけ追記。認証情報は本番の値を維持。[SETUP.md](SETUP.md)・[ANTI-SPAM.md](ANTI-SPAM.md) 参照。
+
+4. **更新後の確認** — トップ表示・編集保存・添付・ログイン。問題があれば `pukiwiki/cache/` を削除。不具合時は [§6 ロールバック](#6-ロールバック) へ。
+
+| 分類 | パス |
+|------|------|
+| **上書きする** | `index.php`, `.htaccess`, `pukiwiki/lib`, `plugin`, `skin`, `image`, `docs`, `tools`, `.example`, `.htaccess` 類 |
+| **触らない** | `pukiwiki/pukiwiki.ini.php`, `wiki/`, `attach/`, `backup/`, `cache/`, `diff/`, `counter/` |
+
+---
+
 ## 5. リリース後
 
 1. [CHANGELOG.md](../../CHANGELOG.md) にリリース内容を記載
@@ -289,4 +366,5 @@ Copy-Item index.php, pukiwiki -Destination $backup -Recurse
 - [PUKIWIKI154-SKIN.md](PUKIWIKI154-SKIN.md) — PukiWiki 1.5.4 スキン・`SKIN_DIR` / `SKIN_FILE`
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [BACKUP.md](BACKUP.md) — バックアップ・リストア
+- [EDIT-DRAGDROP.md](EDIT-DRAGDROP.md) — 編集画面 D&D / paste・`#ref` 記法
 - 公式 [README.txt](../README.txt) · [INSTALL.txt](../INSTALL.txt)

@@ -356,7 +356,8 @@ $recaptcha_site_key = '';
 $recaptcha_secret_key = '';
 
 /////////////////////////////////////////////////
-// Guest comment / article — 凍結ページの #comment / #pcomment / #article（docs/ANTI-SPAM.md）
+// Guest comment / article — 凍結ページの #comment / #pcomment / #article
+// v1.0.1 以前からアップデートする場合は本ブロックを既存 pukiwiki.ini.php に追記（docs/ANTI-SPAM.md, docs/DEPLOY.md §4.7）
 
 $comment_auth = 0;                  // 0=匿名可（公式 PukiWiki 互換）, 1=編集と同様ログイン必須
 $comment_captcha_enabled = 1;       // 匿名 comment / article 時 CAPTCHA（reCAPTCHA 未設定時は honeypot）
