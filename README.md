@@ -9,7 +9,7 @@
 
 | 項目 | 内容 |
 |------|------|
-| バージョン | **PukiWiki2026 v1.0.1** |
+| バージョン | **PukiWiki2026 v1.0.1**（main には v1.0.1 以降の未リリース改善あり — [CHANGELOG.md](CHANGELOG.md) [Unreleased]） |
 | ベース | [PukiWiki](https://pukiwiki.osdn.jp/) **1.5.4 UTF-8** |
 | ライセンス | **GPL v2** または（あなたの選択で）それ以降の GPL（上流に準拠） |
 | リリース | [v1.0.1](https://github.com/kuwa2005/PukiWiki2026/releases/tag/v1.0.1) |
@@ -60,6 +60,14 @@ pukiwiki2026/                    ← git リポジトリ root
 パスワード変更: 初回ログイン時の **強制変更 UI**（`?plugin=changepassword`）または **`pukiwiki/tools/gen-password-hash.php`**（Web）/ [pukiwiki/docs/SETUP.md](pukiwiki/docs/SETUP.md) の CLI 手順。
 
 詳細: [pukiwiki/docs/SETUP.md](pukiwiki/docs/SETUP.md) · [pukiwiki/docs/DEPLOY.md](pukiwiki/docs/DEPLOY.md)
+
+## 主な機能（v1.0.1 以降・main）
+
+- **編集認証・CSRF・スパム対策** — 匿名編集ブロック、Akismet / CAPTCHA / 外部リンク制限（任意有効化）
+- **凍結ページの comment / article** — 匿名投稿可（CAPTCHA・IP レート制限付き）
+- **編集画面 UX** — textarea ビューポート高さ、D&D / クリップボード貼り付けで添付と `#ref` 挿入、画像サイズプリセット（`small`〜`full`）と `popup`
+
+詳細: [CHANGELOG.md](CHANGELOG.md) [Unreleased] · [pukiwiki/docs/EDIT-DRAGDROP.md](pukiwiki/docs/EDIT-DRAGDROP.md) · [pukiwiki/docs/ANTI-SPAM.md](pukiwiki/docs/ANTI-SPAM.md)
 
 ## 改造の進め方
 

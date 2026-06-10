@@ -89,7 +89,7 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 
 ### 凍結ページのコメント・掲示板（`#comment` / `#pcomment` / `#article`）
 
-`$edit_auth = 1` でも、凍結ページ上の comment / article プラグインは **匿名投稿可**（`$comment_auth = 0` 既定）。スパム対策として CAPTCHA（reCAPTCHA 未設定時は honeypot）と IP レート制限が自動適用されます。詳細は [ANTI-SPAM.md — ゲスト comment / article](./ANTI-SPAM.md#ゲスト-commentarticle凍結ページ) を参照してください。
+`$edit_auth = 1` でも、凍結ページ上の comment / article プラグインは **匿名投稿可**（`$comment_auth = 0` 既定）。スパム対策として CAPTCHA（reCAPTCHA 未設定時は honeypot）と IP レート制限が自動適用されます。詳細は [ANTI-SPAM.md — ゲスト comment / article](./ANTI-SPAM.md#ゲスト-commentarticle凍結ページ) を参照してください。v1.0.1 からのアップデート時は [DEPLOY.md §4.7](./DEPLOY.md#47-既存環境のアップデート稼働中-wiki) で ini 差分マージ。
 
 ```php
 $comment_auth = 0;                  // 1 にすると comment / article もログイン必須

@@ -210,6 +210,8 @@ CAPTCHA プロバイダは編集用 `$captcha_provider` / reCAPTCHA キーを共
 3. `$comment_auth = 1` → 未ログイン POST がログイン誘導になること
 4. `$edit_auth = 1` のまま `cmd=edit` → 未ログインは従来どおり拒否されること
 
+v1.0.1 からアップデートする場合、`$comment_auth` 等の新設定は [DEPLOY.md §4.7](./DEPLOY.md#47-既存環境のアップデート稼働中-wiki) の ini 差分手順に従って `pukiwiki.ini.php.example` から追記してください。
+
 ---
 
 ## 将来の拡張（B: 追加防御）
