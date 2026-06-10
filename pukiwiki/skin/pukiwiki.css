@@ -349,6 +349,58 @@ strong.word9 {
   width:95%;
 }
 
+/* cmd=edit: viewport-height textarea; keep bottom toolbar visible */
+@media screen {
+  body:has(form._plugin_edit_edit_form) {
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    min-height:100dvh;
+  }
+  body:has(form._plugin_edit_edit_form) #contents {
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+  }
+  body:has(form._plugin_edit_edit_form) div#body {
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    max-width:100%;
+  }
+  body:has(form._plugin_edit_edit_form) .edit_form {
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+  }
+  body:has(form._plugin_edit_edit_form) form._plugin_edit_edit_form {
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+  }
+  body:has(form._plugin_edit_edit_form) form._plugin_edit_edit_form > br {
+    display:none;
+  }
+  body:has(form._plugin_edit_edit_form) .edit_form textarea[name="msg"] {
+    flex:1 1 auto;
+    min-height:12em;
+    height:auto;
+    resize:vertical;
+    box-sizing:border-box;
+  }
+  body:has(form._plugin_edit_edit_form) div#toolbar {
+    position:sticky;
+    bottom:0;
+    z-index:10;
+    background-color:white;
+    padding:2px 0;
+  }
+}
+
 /* pukiwiki.skin.php */
 div#header {
   padding:0;
@@ -740,6 +792,9 @@ tr.bugtrack_state_undef td {
 
 /* Mobile-friendly Responsive layout */
 @media (max-width:767px) {
+  body:has(form._plugin_edit_edit_form) .edit_form textarea[name="msg"] {
+    min-height:8em;
+  }
   div#contents {
     flex-flow:column wrap;
   }

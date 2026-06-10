@@ -7,6 +7,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **編集画面のテキストエリア高さ** — `cmd=edit` で textarea がビューポート上下いっぱいに伸び、下部ツールバー（`#toolbar`）が常に見えるよう CSS を調整（`pukiwiki.css` / `tdiary.css`、flexbox + sticky toolbar）
+
 ### Added
 
 - **凍結ページの匿名 comment / article** — `$comment_auth = 0`（既定）で `#comment` / `#pcomment` / `#article` を凍結ページでも匿名投稿可能に。CAPTCHA（reCAPTCHA 未設定時 honeypot）、IP レート制限、既存 Akismet / 外部リンク制限 / CSRF と連携（`lib/comment.php`）
