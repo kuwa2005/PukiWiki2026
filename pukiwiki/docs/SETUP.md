@@ -87,6 +87,17 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 
 デモ用初期値は `$adminpass = 'editor'`（平文）です。本番では [方法 B](#方法-b-web-支援スクリプト手動変更) と同様にハッシュを生成し、`pukiwiki/pukiwiki.ini.php` の `$adminpass` に設定してください（`$edit_auth` 無効時や API 連携用）。
 
+### 凍結ページのコメント・掲示板（`#comment` / `#pcomment` / `#article`）
+
+`$edit_auth = 1` でも、凍結ページ上の comment / article プラグインは **匿名投稿可**（`$comment_auth = 0` 既定）。スパム対策として CAPTCHA（reCAPTCHA 未設定時は honeypot）と IP レート制限が自動適用されます。詳細は [ANTI-SPAM.md — ゲスト comment / article](./ANTI-SPAM.md#ゲスト-commentarticle凍結ページ) を参照してください。v1.0.1 からのアップデート時は [DEPLOY.md §4.7](./DEPLOY.md#47-既存環境のアップデート稼働中-wiki) で ini 差分マージ。
+
+```php
+$comment_auth = 0;                  // 1 にすると comment / article もログイン必須
+$comment_captcha_enabled = 1;
+$comment_rate_limit_max = 10;
+$comment_rate_limit_window = 3600;
+```
+
 ### ini 自動更新の制限
 
 - `pukiwiki/pukiwiki.ini.php` が **書き込み可能** な場合のみ、強制変更 UI から `$auth_users` の該当行を更新します
@@ -103,6 +114,7 @@ php -r "echo '{x-php-password}' . password_hash('your-new-password', PASSWORD_DE
 - [ ] 旧パスワード `editor` ではログインできない
 - [ ] ログイン後にページ編集・保存できる
 - [ ] 匿名のままページ閲覧できる
+- [ ] 凍結ページの `#comment` / `#article` で未ログイン投稿できる（honeypot / CAPTCHA 動作）
 
 詳細なテスト観点: [ANTI-SPAM.md](./ANTI-SPAM.md)
 

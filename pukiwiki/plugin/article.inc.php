@@ -55,7 +55,7 @@ function plugin_article_action()
 	$script = get_base_uri();
 	if (PKWK_READONLY) die_message('PKWK_READONLY prohibits editing');
 	if (! isset($vars['refer'])) return array('msg'=>'','body'=>'');
-	check_editable($vars['refer']);
+	check_commentable($vars['refer']);
 
 	if ($post['msg'] == '')
 		return array('msg'=>'','body'=>'');
@@ -112,7 +112,11 @@ function plugin_article_action()
 EOD;
 
 	} else {
+		pkwk_comment_antispam_verify_or_die($post['refer'], trim($postdata));
+		pkwk_comment_write_begin();
 		page_write($post['refer'], trim($postdata));
+		pkwk_comment_write_end();
+		pkwk_comment_rate_limit_record();
 
 		// 投稿内容のメール自動送信
 		if (PLUGIN_ARTICLE_MAIL_AUTO_SEND) {
@@ -164,6 +168,7 @@ function plugin_article_convert()
 	$subject_cols = PLUGIN_ARTICLE_SUBJECT_COLS;
 	$article_rows = PLUGIN_ARTICLE_ROWS;
 	$article_cols = PLUGIN_ARTICLE_COLS;
+	$captcha = pkwk_captcha_comment_form_markup('_p_article_form');
 	$string = <<<EOD
 <form action="$script" method="post" class="_p_article_form">
  <div>
@@ -176,6 +181,7 @@ function plugin_article_convert()
   <label for="_p_article_subject_$article_no">$_btn_subject</label>
   <input type="text" name="subject" id="_p_article_subject_$article_no" size="$subject_cols" /><br />
   <textarea name="msg" rows="$article_rows" cols="$article_cols">\n</textarea><br />
+  $captcha
   <input type="submit" name="article" value="$_btn_article" />
  </div>
 </form>

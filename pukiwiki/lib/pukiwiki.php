@@ -27,6 +27,7 @@ require(LIB_DIR . 'diff.php');
 require(LIB_DIR . 'config.php');
 require(LIB_DIR . 'link.php');
 require(LIB_DIR . 'auth.php');
+require(LIB_DIR . 'comment.php');
 require(LIB_DIR . 'security.php');
 require(LIB_DIR . 'csrf.php');
 require(LIB_DIR . 'proxy.php');

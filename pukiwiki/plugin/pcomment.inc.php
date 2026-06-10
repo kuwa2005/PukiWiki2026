@@ -134,6 +134,7 @@ function plugin_pcomment_convert()
 		$s_nodate = htmlsc($params['nodate']);
 		$s_count  = htmlsc($count);
 
+		$captcha = pkwk_captcha_comment_form_markup('_p_pcomment_form');
 		$form_start = '<form action="' . get_base_uri() .
 			'" method="post" class="_p_pcomment_form">' . "\n";
 		$form = <<<EOD
@@ -146,6 +147,7 @@ function plugin_pcomment_convert()
   <input type="hidden" name="dir"    value="$dir" />
   <input type="hidden" name="count"  value="$count" />
   $radio $title $name $comment
+  $captcha
   <input type="submit" value="{$_pcmt_messages['btn_comment']}" />
   </div>
 EOD;
@@ -195,7 +197,7 @@ function plugin_pcomment_insert()
 			'collided'=>TRUE
 		);
 
-	check_editable($page, true, true);
+	check_commentable($page, true, true);
 
 	$ret = array('msg' => $_title_updated, 'collided' => FALSE);
 
@@ -273,7 +275,11 @@ function plugin_pcomment_insert()
 
 		$postdata = join('', $postdata);
 	}
+	pkwk_comment_antispam_verify_or_die($page, $postdata);
+	pkwk_comment_write_begin();
 	page_write($page, $postdata, PLUGIN_PCOMMENT_TIMESTAMP);
+	pkwk_comment_write_end();
+	pkwk_comment_rate_limit_record();
 
 	if (PLUGIN_PCOMMENT_TIMESTAMP) {
 		if ($refer != '') pkwk_touch_file(get_filename($refer));

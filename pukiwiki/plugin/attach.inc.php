@@ -89,6 +89,10 @@ function plugin_attach_action()
 {
 	global $vars, $_attach_messages;
 
+	if (isset($vars['pcmd']) && $vars['pcmd'] === 'api') {
+		attach_api_action();
+	}
+
 	// Backward compatible
 	if (isset($vars['openfile'])) {
 		$vars['file'] = $vars['openfile'];
@@ -145,20 +149,78 @@ function plugin_attach_action()
 }
 
 //-------- call from skin
+function attach_filelist_inner($page)
+{
+	$obj = new AttachPages($page, 0);
+	if (! isset($obj->pages[$page])) {
+		return '';
+	}
+	return $obj->pages[$page]->toString(TRUE);
+}
+
+function attach_filelist_markup($page)
+{
+	global $_attach_messages;
+	$inner = attach_filelist_inner($page);
+	return $_attach_messages['msg_file'] . ': ' . $inner;
+}
+
 function attach_filelist()
+{
+	global $vars;
+
+	$page = isset($vars['page']) ? $vars['page'] : '';
+	$inner = attach_filelist_inner($page);
+	if ($inner === '') {
+		return '';
+	}
+	return '<span id="pkwk-attach-list">' .
+		attach_filelist_markup($page) . '</span>' . "\n";
+}
+
+/**
+ * JSON API for edit-screen drag-and-drop upload (pcmd=api).
+ */
+function attach_api_action()
 {
 	global $vars, $_attach_messages;
 
-	$page = isset($vars['page']) ? $vars['page'] : '';
-
-	$obj = new AttachPages($page, 0);
-
-	if (! isset($obj->pages[$page])) {
-		return '';
-	} else {
-		return $_attach_messages['msg_file'] . ': ' .
-		$obj->toString($page, TRUE) . "\n";
+	$refer = isset($vars['refer']) ? $vars['refer'] : '';
+	if ($refer === '' && isset($vars['page'])) {
+		$refer = $vars['page'];
 	}
+	if ($refer === '' || ! is_pagename($refer)) {
+		attach_api_json(array('ok' => FALSE, 'error' => 'invalid page'));
+	}
+	check_editable($refer);
+
+	if (isset($_FILES['attach_file'])) {
+		$pass = isset($vars['pass']) ? $vars['pass'] : NULL;
+		$result = attach_upload($_FILES['attach_file'], $refer, $pass);
+		if (! empty($result['result'])) {
+			$filename = isset($_FILES['attach_file']['name']) ?
+				$_FILES['attach_file']['name'] : '';
+			attach_api_json(array(
+				'ok' => TRUE,
+				'message' => isset($result['msg']) ? $result['msg'] : '',
+				'filename' => $filename,
+				'attach_html' => attach_filelist_markup($refer),
+			));
+		}
+		$error = isset($result['msg']) ? $result['msg'] :
+			$_attach_messages['err_noparm'];
+		attach_api_json(array('ok' => FALSE, 'error' => $error));
+	}
+
+	attach_api_json(array('ok' => FALSE, 'error' => 'invalid request'));
+}
+
+function attach_api_json($obj)
+{
+	pkwk_common_headers();
+	header('Content-Type: application/json; charset=UTF-8');
+	print(json_encode($obj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+	exit;
 }
 
 //-------- 実体
@@ -540,7 +602,15 @@ class AttachFile
 			$count = ($showicon && ! empty($this->status['count'][$this->age])) ?
 				sprintf($_attach_messages['msg_count'], $this->status['count'][$this->age]) : '';
 		}
-		return "<a href=\"$script?plugin=attach&amp;pcmd=open$param\" title=\"$title\">$label</a>$count$info";
+		$link = "<a href=\"$script?plugin=attach&amp;pcmd=open$param\" title=\"$title\">$label</a>$count$info";
+		if ($showicon && $showinfo) {
+			$s_page = htmlsc($this->page);
+			$s_file = htmlsc($this->file);
+			return '<span class="pkwk-attach-draggable" draggable="true"' .
+				' data-attach-page="' . $s_page . '"' .
+				' data-attach-file="' . $s_file . '">' . $link . '</span>';
+		}
+		return $link;
 	}
 
 	// 情報表示

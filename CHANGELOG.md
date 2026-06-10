@@ -7,9 +7,26 @@
 
 ## [Unreleased]
 
+v1.0.1 以降の変更（次回リリース候補）。対応 PR: [#88](https://github.com/kuwa2005/PukiWiki2026/pull/88)・[#90](https://github.com/kuwa2005/PukiWiki2026/pull/90)・[#92](https://github.com/kuwa2005/PukiWiki2026/pull/92)・[#94](https://github.com/kuwa2005/PukiWiki2026/pull/94)。
+
+### Changed
+
+- **ISSUES.md** — 再監査記録 Issue #83 を closed に更新（オープン Issue なし）
+
 ### Added
 
 - **`PukiWiki2026の紹介記事.md`** — ライター発注用の紹介記事構成・執筆指示書
+- **凍結ページの匿名 comment / article**（PR #88）— `$comment_auth = 0`（既定）で `#comment` / `#pcomment` / `#article` を凍結ページでも匿名投稿可能に。CAPTCHA（reCAPTCHA 未設定時 honeypot）、IP レート制限、既存 Akismet / 外部リンク制限 / CSRF と連携（`lib/comment.php`）。設定: `docs/ANTI-SPAM.md`・`docs/SETUP.md`
+- **編集画面の D&D / クリップボード貼り付け添付**（PR #92）— `cmd=edit` で textarea へファイル D&D または画像の Ctrl+V 貼り付けで attach API 経由アップロードし、成功時に `#ref(ファイル名)` をカーソル位置へ挿入。ページ下部の添付一覧から textarea へ D&D でも `#ref` を挿入。paste 時のファイル名は `paste-YYYYMMDD-HHmmss` 形式（`skin/edit-dragdrop.js`、`plugin/attach.inc.php` の `pcmd=api`）。詳細: `docs/EDIT-DRAGDROP.md`
+- **#ref 画像サイズ・ポップアップ**（PR #94）— `small` / `middle` / `big` / `full` プリセット（CSS `max-width` 30/50/75%）、従来の `640x480`・`50%` と併用可。`popup` でクリック時ライトボックス（`skin/ref-popup.js`）。paste 挿入は `#ref(ファイル,middle)`（`plugin/ref.inc.php`、`skin/pukiwiki.css`）。記法: `docs/EDIT-DRAGDROP.md`
+
+### Changed
+
+- **編集画面のテキストエリア高さ**（PR #90）— `cmd=edit` で textarea がビューポート上下いっぱいに伸び、下部ツールバー（`#toolbar`）が常に見えるよう CSS を調整（`pukiwiki.css` / `tdiary.css`、flexbox + sticky toolbar）
+
+### Fixed
+
+- **凍結ページの comment / article がログイン必須になる問題**（PR #88, Closes #87）— SPAM-01 の `enforce_edit_auth_for_request()`・`check_editable()`・`page_write()` 防御層が guest POST プラグインも遮断していた問題を修正。ページ編集と comment / article 追加を分離
 
 ---
 

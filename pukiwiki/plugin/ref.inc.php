@@ -45,6 +45,9 @@ define('PLUGIN_REF_IMAGE', '/\.(gif|png|jpe?g|swf)$/i');
 // Usage (a part of)
 define('PLUGIN_REF_USAGE', "([pagename/]attached-file-name[,parameters, ... ][,title])");
 
+// Responsive size presets (max-width % of container). See skin/pukiwiki.css .ref-* classes.
+define('PLUGIN_REF_SIZE_PRESETS', 'small,middle,big,full');
+
 function plugin_ref_inline()
 {
 	// Not reached, because of "$aryargs[] = & $body" at plugin.php
@@ -123,6 +126,11 @@ function plugin_ref_body($args)
 		'nolink' => FALSE, // 元ファイルへのリンクを張らない
 		'noimg'  => FALSE, // 画像を展開しない
 		'zoom'   => FALSE, // 縦横比を保持する
+		'small'  => FALSE, // 表示幅プリセット（小）
+		'middle' => FALSE, // 表示幅プリセット（中）
+		'big'    => FALSE, // 表示幅プリセット（大）
+		'full'   => FALSE, // 元画像サイズ
+		'popup'  => FALSE, // クリックでポップアップ表示
 		'_size'  => FALSE, // サイズ指定あり
 		'_size_auto_aspect_ratio' => FALSE, // Size with auto aspect ratio
 		'_w'     => 0,       // 幅
@@ -371,15 +379,49 @@ function plugin_ref_body($args)
 		}
 	}
 	if ($is_image) { // 画像
-		$params['_body'] = "<img src=\"$url\" alt=\"$title\" title=\"$title\" $info/>";
-		if (! $params['nolink'] && $url2)
+		$has_explicit_size = $params['_size'] || $params['_%'] ||
+			$params['_size_auto_aspect_ratio'];
+		$ref_class = ref_size_preset_class($params, $has_explicit_size);
+		$class_attr = $ref_class ? ' class="' . $ref_class . '"' : '';
+		if (! $has_explicit_size && $ref_class) {
+			// Preset sizes are controlled by CSS, not width/height attributes
+			$info = '';
+		}
+		$params['_body'] = "<img src=\"$url\" alt=\"$title\" title=\"$title\" $info$class_attr/>";
+		if ($params['popup'] && $url2) {
+			$params['_body'] = '<a href="' . $url2 .
+				'" class="ref-popup-trigger" title="' . $title . '">' .
+				$params['_body'] . '</a>';
+		} else if (! $params['nolink'] && $url2) {
 			$params['_body'] = "<a href=\"$url2\" title=\"$title\">{$params['_body']}</a>";
+		}
 	} else {
 		$icon = $params['noicon'] ? '' : FILE_ICON;
 		$params['_body'] = "<a href=\"$url\" title=\"$info\">$icon$title</a>";
 	}
 
 	return $params;
+}
+
+// Return CSS class for responsive size preset (small|middle|big|full)
+function ref_size_preset_class($params, $has_explicit_size)
+{
+	if ($has_explicit_size) {
+		return '';
+	}
+	if ($params['full']) {
+		return 'ref-full';
+	}
+	if ($params['big']) {
+		return 'ref-big';
+	}
+	if ($params['middle']) {
+		return 'ref-middle';
+	}
+	if ($params['small']) {
+		return 'ref-small';
+	}
+	return '';
 }
 
 // オプションを解析する
