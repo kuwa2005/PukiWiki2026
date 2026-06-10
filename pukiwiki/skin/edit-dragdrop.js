@@ -48,11 +48,12 @@ window.addEventListener && window.addEventListener('DOMContentLoaded', function 
     setupAttachDragSources(pageName)
   }
 
-  function buildRefText (page, file, currentPage) {
+  function buildRefText (page, file, currentPage, options) {
+    var suffix = options ? ',' + options : ''
     if (page === currentPage) {
-      return '#ref(' + file + ')'
+      return '#ref(' + file + suffix + ')'
     }
-    return '#ref(' + page + '/' + file + ')'
+    return '#ref(' + page + '/' + file + suffix + ')'
   }
 
   function insertAtCursor (textarea, text) {
@@ -166,7 +167,7 @@ window.addEventListener && window.addEventListener('DOMContentLoaded', function 
       var files = blobs.map(function (blob, index) {
         return blobToNamedFile(blob, makePasteFilename(blob, index, blobs.length))
       })
-      uploadFiles(files, textarea, pageName, uploadPath, csrfToken, statusEl)
+      uploadFiles(files, textarea, pageName, uploadPath, csrfToken, statusEl, 'middle')
     })
   }
 
@@ -242,7 +243,7 @@ window.addEventListener && window.addEventListener('DOMContentLoaded', function 
     })
   }
 
-  function uploadFiles (files, textarea, pageName, uploadPath, csrfToken, statusEl) {
+  function uploadFiles (files, textarea, pageName, uploadPath, csrfToken, statusEl, refOptions) {
     var index = 0
     var uploadedCount = 0
 
@@ -279,7 +280,7 @@ window.addEventListener && window.addEventListener('DOMContentLoaded', function 
         })
       }).then(function (obj) {
         var name = obj.filename || file.name
-        insertAtCursor(textarea, buildRefText(pageName, name, pageName) + '\n')
+        insertAtCursor(textarea, buildRefText(pageName, name, pageName, refOptions) + '\n')
         uploadedCount++
         if (obj.attach_html) {
           updateAttachList(obj.attach_html)
